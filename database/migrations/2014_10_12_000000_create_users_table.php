@@ -19,9 +19,6 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->date('birthday');
             $table->string('picture_url');
-            $table->string('provider_profile_url');
-            $table->unsignedBigInteger('users_provider_id')->unique();
-            $table->enum('oauth_provider', ['','facebook', 'twitter']);
             $table->rememberToken();
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);
