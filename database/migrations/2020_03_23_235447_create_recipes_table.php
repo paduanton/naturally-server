@@ -17,7 +17,6 @@ class CreateRecipesTable extends Migration
             $table->timeTz('cooking_time', 0);
             $table->string('notes')->nullable();
             $table->enum('meal_type', ['breakfast', 'dessert', 'dinner', 'lunch']); 
-            $table->string('picture_url');
             $table->string('video_url')->nullable();
             $table->double('yields');
             $table->enum('complexity', ['easy', 'normal', 'hard'])->nullable(); 
