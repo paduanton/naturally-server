@@ -19,7 +19,7 @@ class CreateRecipesTable extends Migration
             $table->enum('meal_type', ['breakfast', 'dessert', 'dinner', 'lunch']); 
             $table->string('picture_url');
             $table->string('video_url')->nullable();
-            $table->unsignedSmallInteger('yields');
+            $table->double('yields');
             $table->enum('complexity', ['easy', 'normal', 'hard'])->nullable(); 
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);
