@@ -19,7 +19,7 @@ class CreateCommentsTable extends Migration
             $table->softDeletesTz('deleted_at', 0);
             $table->foreign('users_id')->references('id')->on('users');
             $table->foreign('recipes_id')->references('id')->on('recipes');
-            $table->foreign('comments_id')->references('id')->on('comments');
+            $table->foreign('parent_comments_id')->references('id')->on('comments');
         });
     }
 
