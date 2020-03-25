@@ -14,5 +14,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return ['naturally-v1', date(DATE_ISO8601), env('APP_ENV')];
 });
