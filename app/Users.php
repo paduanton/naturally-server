@@ -14,7 +14,7 @@ class Users extends Authenticatable
     protected $table = 'users';
 
     protected $fillable = [
-        'name', 'last_name', 'user_name','email', 'password', 'birthday', 'picture_url'
+        'name', 'last_name', 'username','email', 'password', 'birthday', 'picture_url'
     ];
 
     
@@ -27,8 +27,14 @@ class Users extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function address()
+    public function recipes()
     {
-        return $this->hasOne('App\Entities\AddressEntity', 'user_id');
+        return $this->hasMany('App\Recipes');
     }
+
+    public function oauth_providers()
+    {
+        return $this->hasMany('App\OAuthProviders');
+    }
+
 }
