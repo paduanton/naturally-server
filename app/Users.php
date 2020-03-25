@@ -14,7 +14,7 @@ class Users extends Authenticatable
     protected $table = 'users';
 
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'last_name', 'user_name','email', 'password', 'birthday', 'picture_url'
     ];
 
     
@@ -22,9 +22,13 @@ class Users extends Authenticatable
         'password', 'remember_token',
     ];
 
-    // protected $dates = ['deleted_at'];
-    
+
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function address()
+    {
+        return $this->hasOne('App\Entities\AddressEntity', 'user_id');
+    }
 }

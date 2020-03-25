@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Directions extends Model
 {
-    //
+    protected $table = 'directions';
 }
