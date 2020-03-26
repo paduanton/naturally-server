@@ -23,12 +23,9 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         return ['naturally-v1', date(DATE_ISO8601), env('APP_ENV')];
     });
 
-    $router->get('/users', 'UsersController@index');
-    $router->get('/users/{id}', 'UsersControllers@show');
+    Route::apiResource('/users', 'API\UsersController');
+
 });
-
-
-Route::apiResource('/users', 'API\UsersController');
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();

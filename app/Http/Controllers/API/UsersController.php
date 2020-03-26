@@ -6,19 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Users;
 use Illuminate\Http\Request;
 use App\Http\Resources\Users as UsersResource;
-// use Illuminate\Database\Eloquent\ModelNotFoundException;
-// throw new ModelNotFoundException('There is no User.');
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UsersController extends Controller
 {
-    
+
     public function index()
     {
-        try {
-            return UsersResource::collection(Users::all());
-        } catch (\Exception $e) {
-            abort(500);
-        }
+        if (Users::all()->isEmpty()) {
+            throw new ModelNotFoundException;
+        } 
+
+        return UsersResource::collection(Users::all());
+        
     }
 
     /**
@@ -34,15 +34,12 @@ class UsersController extends Controller
 
     public function show($id)
     {
-        try {
-            if (empty(Users::find($id))) {
-                abort(404);
-            }
-            var_dump(Users::find($id));
-            return new UsersResource(Users::find($id));
-        } catch (\Exception $e) {
-            abort(500);
+        if (!Users::find($id)) {
+            throw new ModelNotFoundException;
         }
+
+        return new UsersResource(Users::find($id));
+    
     }
 
     /**
