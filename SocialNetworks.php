@@ -4,9 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class OAuthProviders extends Model
+class SocialNetWorks extends Model
 {
-    protected $table = 'oauth_providers';
+    protected $table = 'social_networks';
 
     public function users()
     {

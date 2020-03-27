@@ -9,13 +9,13 @@ class CreateOauthProvidersTable extends Migration
     
     public function up()
     {
-        Schema::create('oauth_providers', function (Blueprint $table) {
+        Schema::create('social_networks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('users_id');
             $table->enum('name', ['facebook', 'twitter', 'google']); 
-            // user name?
-            $table->string('provider_profile_url');
-            $table->string('provider_picture_url');
+            $table->string('username');
+            $table->string('profile_url');
+            $table->string('picture_url');
             $table->unsignedBigInteger('users_provider_id')->unique();
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);

@@ -33,9 +33,9 @@ class Users extends Authenticatable
         return $this->hasMany('App\Recipes');
     }
 
-    public function oauth_providers()
+    public function social_networks()
     {
-        return $this->hasMany('App\OAuthProviders');
+        return $this->hasMany('App\SocialNetWorks');
     }
 
 }
