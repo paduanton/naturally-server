@@ -15,7 +15,7 @@ class CreateSocialNetworksTable extends Migration
             $table->enum('provider_name', ['facebook', 'twitter', 'google']); 
             $table->unsignedBigInteger('provider_id')->unique();
             $table->string('username');
-            $table->string('profile_url');
+            $table->string('profile_url')->nullable();
             $table->string('picture_url');
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);
@@ -25,6 +25,6 @@ class CreateSocialNetworksTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('oauth_providers');
+        Schema::dropIfExists('social_networks');
     }
 }

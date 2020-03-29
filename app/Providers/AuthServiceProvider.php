@@ -5,7 +5,8 @@ namespace App\Providers;
 use Laravel\Passport\Passport;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
-
+use App\Services\Interfaces\SocialNetworksProviderInterface;
+use App\Services\SocialNetworksProvider;
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -26,5 +27,6 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
         Passport::routes();
+        $this->app->bind(SocialNetworksProviderInterface::class, SocialNetworksProvider::class);
     }
 }

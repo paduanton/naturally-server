@@ -23,7 +23,10 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         return ['naturally-v1', date(DATE_ISO8601), env('APP_ENV')];
     });
 
-    Route::apiResource('/users', 'API\UsersController');
+
+    $router->post('/oauth/social', 'API\SocialAuthController@authenticate');
+
+    $router->apiResource('/users', 'API\UsersController');
 
 });
 

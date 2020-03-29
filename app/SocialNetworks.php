@@ -10,6 +10,6 @@ class SocialNetWorks extends Model
 
     public function users()
     {
-        return $this->belongsTo('App\Users');
+        return $this->belongsTo(Users::class);
     }
 }

@@ -30,12 +30,12 @@ class Users extends Authenticatable
 
     public function recipes()
     {
-        return $this->hasMany('App\Recipes');
+        return $this->hasMany(Recipes::class);
     }
 
     public function social_networks()
     {
-        return $this->hasMany('App\SocialNetWorks');
+        return $this->hasMany(SocialNetWorks::class);
     }
 
 }
