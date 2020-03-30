@@ -36,9 +36,9 @@ class SocialAuthController extends Controller
             throw OAuthServerException::invalidRequest('access_token');
         }
 
-        if (!$this->isProviderSupported($provider)) {
-            throw OAuthServerException::invalidRequest('provider', 'Invalid provider');
-        }
+        // if (!$this->isProviderSupported($provider)) {
+        //     throw OAuthServerException::invalidRequest('provider', 'Invalid provider');
+        // }
 
         try {
             $user = $this->socialProvider->getUserEntityByAccessToken($provider, $providerAccessToken);
