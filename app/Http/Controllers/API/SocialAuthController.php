@@ -24,7 +24,6 @@ class SocialAuthController extends Controller
 
     public function authenticate(Request $request)
     {
-
         $provider = $request['provider'];
         $providerAccessToken = $request['access_token'];
         
@@ -36,9 +35,9 @@ class SocialAuthController extends Controller
             throw OAuthServerException::invalidRequest('access_token');
         }
 
-        // if (!$this->isProviderSupported($provider)) {
-        //     throw OAuthServerException::invalidRequest('provider', 'Invalid provider');
-        // }
+        if (!$this->isProviderSupported($provider)) {
+            throw OAuthServerException::invalidRequest('provider', 'Invalid provider');
+        }
 
         try {
             $user = $this->socialProvider->getUserEntityByAccessToken($provider, $providerAccessToken);
@@ -47,14 +46,13 @@ class SocialAuthController extends Controller
             return response()->json($accessToken);
         } catch (Exception $exception) {
             throw OAuthServerException::invalidCredentials();
-            abort(500);
         }
 
     }
 
     protected function isProviderSupported($provider)
     {
-        return in_array($provider, config('auth.social.providers'));
+        return in_array($provider, ['facebook', 'google', 'twitter']);
     }
 
     protected function generateToken($user)

@@ -26,8 +26,10 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
 
     $router->post('/oauth/social', 'API\SocialAuthController@authenticate');
 
-    $router->apiResource('/users', 'API\UsersController');
 
+    Route::group(['middleware' => 'auth:api'], function () use ($router) {
+        $router->apiResource('/users', 'API\UsersController');
+    });
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
