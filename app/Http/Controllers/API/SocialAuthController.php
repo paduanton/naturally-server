@@ -7,6 +7,7 @@ use App\Services\SocialNetworksProvider;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\SocialNetWorks;
+use Carbon\Carbon;
 use Exception;
 use App\Users;
 
@@ -15,7 +16,7 @@ class SocialAuthController extends Controller
 
     protected $socialProvider;
 
-   
+
     public function __construct(SocialNetworksProvider $social)
     {
         $this->socialProvider = $social;
@@ -23,45 +24,50 @@ class SocialAuthController extends Controller
 
     public function authenticate(Request $request)
     {
-        
+
         $provider = $request['provider'];
-        $accessToken = $request['access_token'];
+        $providerAccessToken = $request['access_token'];
         
+        if (!$provider) {
+            throw OAuthServerException::invalidRequest('provider');
+        }
+
+        if (!$providerAccessToken) {
+            throw OAuthServerException::invalidRequest('access_token');
+        }
+
+        if (!$this->isProviderSupported($provider)) {
+            throw OAuthServerException::invalidRequest('provider', 'Invalid provider');
+        }
+
         try {
-            $socialResponse = $this->socialProvider->getUserEntityByAccessToken($provider, $accessToken);
+            $user = $this->socialProvider->getUserEntityByAccessToken($provider, $providerAccessToken);
+            $accessToken = $this->generateToken($user);
 
-            return response($socialResponse);
+            return response()->json($accessToken);
+        } catch (Exception $exception) {
+            throw OAuthServerException::invalidCredentials();
+            abort(500);
+        }
 
-        } catch (Exception $exception) {}
-
-        // $user = $this->socialUserProvider->getUserEntityByAccessToken(
-        //     $provider,
-        //     $accessToken
-        // );
-
-        // if ($user instanceof UserEntityInterface === false) {
-        //     $this->getEmitter()->emit(new RequestEvent(RequestEvent::USER_AUTHENTICATION_FAILED, $request));
-
-        //     throw OAuthServerException::invalidCredentials();
-        // }
-
-        // if (is_null($provider)) {
-        //     throw OAuthServerException::invalidRequest('provider');
-        // }
-
-        // if (! $this->isProviderSupported($provider)) {
-        //     throw OAuthServerException::invalidRequest('provider', 'Invalid provider');
-        // }
-
-        // $accessToken = $this->getRequestParameter('access_token', $request);
-
-        // if (is_null($accessToken)) {
-        //     throw OAuthServerException::invalidRequest('access_token');
-        // }
     }
 
     protected function isProviderSupported($provider)
     {
         return in_array($provider, config('auth.social.providers'));
+    }
+
+    protected function generateToken($user)
+    {
+        $token = $user->createToken('Personal Access Token');
+        $accessToken = $token->accessToken;
+
+        return [
+            'access_token' => $accessToken,
+            'token_type' => 'Bearer',
+            'expires_at' => Carbon::parse(
+                $token->token->expires_at
+            )->toDateTimeString()
+        ];
     }
 }

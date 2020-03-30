@@ -6,7 +6,6 @@ use App\Users;
 use Exception;
 use App\SocialNetWorks;
 use Laravel\Socialite\Facades\Socialite;
-use Laravel\Passport\Bridge\User as UserEntity;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use App\Services\Interfaces\SocialNetworksProviderInterface;
 
@@ -15,12 +14,8 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
 {
     protected $userRepository;
 
-   
-    public function __construct()
-    {
-    }
 
-   
+
     public function getUserEntityByAccessToken($provider, $accessToken)
     {
         $user = $this->getUserFromSocialProvider($provider, $accessToken);
@@ -32,12 +27,12 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
         return $user;
     }
 
-    
+
     protected function getUserFromSocialProvider($provider, $accessToken)
     {
         try {
             $userFromProvider = Socialite::driver($provider)->fields([
-                'first_name', 
+                'first_name',
                 'last_name',
                 'email'
             ])->userFromToken($accessToken);
@@ -46,7 +41,7 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
                 'Authentication error, invalid access token',
                 $errorCode = 400,
                 'invalid_request'
-            );            
+            );
         }
 
         return $this->findOrCreateSocialUser($userFromProvider, $provider);
@@ -71,7 +66,7 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
 
             $socialNetwork = new SocialNetWorks();
             $socialNetwork->provider_name = $provider;
-            $socialNetwork->provider_id = $providerId; 
+            $socialNetwork->provider_id = $providerId;
             $socialNetwork->nickname = $nickname;
             $socialNetwork->profile_url = $profileUrl;
             $socialNetwork->picture_url = $pictureUrl;
@@ -95,5 +90,4 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
             return $user;
         }
     }
-
 }
