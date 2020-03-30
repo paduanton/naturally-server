@@ -3,9 +3,9 @@
 namespace App\Services;
 
 use App\Users;
+use Exception;
 use App\SocialNetWorks;
 use Laravel\Socialite\Facades\Socialite;
-use Laravel\Socialite\Two\User as ProviderUser;
 use Laravel\Passport\Bridge\User as UserEntity;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use App\Services\Interfaces\SocialNetworksProviderInterface;
@@ -36,8 +36,12 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
     protected function getUserFromSocialProvider($provider, $accessToken)
     {
         try {
-            $userFromProvider = Socialite::driver($provider)->userFromToken($accessToken);
-        } catch (\Exception $ex) {
+            $userFromProvider = Socialite::driver($provider)->fields([
+                'first_name', 
+                'last_name',
+                'email'
+            ])->userFromToken($accessToken);
+        } catch (Exception $exception) {
             throw new OAuthServerException(
                 'Authentication error, invalid access token',
                 $errorCode = 400,
@@ -50,23 +54,26 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
 
     protected function findOrCreateSocialUser($providerUser, $provider)
     {
-        // $socialAccount = SocialNetWorks::where('provider_name', $provider)
-        //     ->where('provider_id', $providerUser->getId())
-        //     ->first();
+        $socialAccount = SocialNetWorks::where('provider_name', $provider)
+            ->where('provider_id', $providerUser->getId())
+            ->first();
 
-        // if ($socialAccount) {
-        //     return $socialAccount->users;
-        // } else {
-            
+        if ($socialAccount) {
+            return $socialAccount->users;
+        } else {
+            $firstName = $providerUser->user['first_name'];
+            $lastName = $providerUser->user['last_name'];
             $email = $providerUser->getEmail();
-            $name = $providerUser->getName();
+            $nickname = $providerUser->getNickname();
             $pictureUrl = $providerUser->avatar_original;
             $providerId = $providerUser->getId();
+            $profileUrl = $providerUser->profileUrl;
 
             $socialNetwork = new SocialNetWorks();
             $socialNetwork->provider_name = $provider;
             $socialNetwork->provider_id = $providerId; 
-            $socialNetwork->username = $name;
+            $socialNetwork->nickname = $nickname;
+            $socialNetwork->profile_url = $profileUrl;
             $socialNetwork->picture_url = $pictureUrl;
 
             if ($email) {
@@ -75,17 +82,18 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
 
             if (!$user) {
                 $user = Users::create([
-                    'name' => $name,
-                    'last_name' => $name,
-                    'username' => $name,
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'nickname' => $nickname,
                     'email' => $email,
                     'picture_url' => $pictureUrl
                 ]);
             }
+
             $user->social_networks()->save($socialNetwork);
-            var_dump($user);
+
             return $user;
         }
-    // }
+    }
 
 }

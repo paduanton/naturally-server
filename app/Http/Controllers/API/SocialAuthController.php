@@ -30,8 +30,8 @@ class SocialAuthController extends Controller
         try {
             $socialResponse = $this->socialProvider->getUserEntityByAccessToken($provider, $accessToken);
 
-            return response(['message' => $socialResponse]);
-            
+            return response($socialResponse);
+
         } catch (Exception $exception) {}
 
         // $user = $this->socialUserProvider->getUserEntityByAccessToken(
