@@ -21,7 +21,7 @@ class AuthController extends Controller
         ]);
 
         if ($validatedData->fails()) {
-            return response()->json(['error' => $validatedData->errors()]);
+            return response()->json(['error' => $validatedData->errors()], 400);
         }
 
         $request['password'] = Hash::make($request['password']);
@@ -45,7 +45,7 @@ class AuthController extends Controller
         ]);
 
         if ($validatedData->fails()) {
-            return response()->json(['error' => $validatedData->errors()]);
+            return response()->json(['error' => $validatedData->errors()], 400);
         }
 
         $credentials = request(['email', 'password']);
@@ -67,12 +67,12 @@ class AuthController extends Controller
 
         if ($token) {
             return response()->json([
-                'mensagem' => 'Logout successfully'
+                'message' => 'Logout successfully'
             ], 200);
         }
 
         return response()->json([
-            'mensagem' => "couldn't logout"
+            'message' => "couldn't logout"
         ], 409);
     }
 
