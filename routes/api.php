@@ -23,18 +23,18 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         return ['naturally-api-v1', date(DATE_ISO8601), env('APP_ENV')];
     });
 
-
     $router->post('/oauth/social', 'API\SocialAuthController@authenticate');
-    $router->post('/signup', 'API\AuthController@signup');
     $router->post('/login', 'API\AuthController@login');
+    $router->post('/signup', 'API\AuthController@signup');
 
     Route::group(['middleware' => 'auth:api'], function () use ($router) {
         $router->get('/logout', 'API\AuthController@logout');
 
         $router->apiResource('/users', 'API\UsersController');
+        $router->get('/users', function (Request $request) {
+            return $request->user();
+        });
     });
 });
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+
