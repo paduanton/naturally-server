@@ -6,10 +6,8 @@ use League\OAuth2\Server\Exception\OAuthServerException;
 use App\Services\SocialNetworksProvider;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\SocialNetWorks;
 use Carbon\Carbon;
 use Exception;
-use App\Users;
 
 class SocialAuthController extends Controller
 {

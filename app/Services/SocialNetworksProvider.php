@@ -71,20 +71,15 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
             $socialNetwork->profile_url = $profileUrl;
             $socialNetwork->picture_url = $pictureUrl;
 
-            if ($email) {
-                $user = Users::where('email', $email)->first();
-            }
+            $userData = [
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'nickname' => $nickname,
+                'email' => $email,
+                'picture_url' => $pictureUrl
+            ];
 
-            if (!$user) {
-                $user = Users::create([
-                    'first_name' => $firstName,
-                    'last_name' => $lastName,
-                    'nickname' => $nickname,
-                    'email' => $email,
-                    'picture_url' => $pictureUrl
-                ]);
-            }
-
+            $user = Users::firstOrCreate(['email' => $email], $userData);
             $user->social_networks()->save($socialNetwork);
 
             return $user;
