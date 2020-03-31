@@ -14,15 +14,14 @@ class AuthController extends Controller
 
     public function signup(Request $request)
     {
-        $validatedData = $this->validate($request, [
+        $this->validate($request, [
             'first_name' => 'required',
+            'last_name' => 'nullable|date',
             'email' => 'email|required|unique:users',
-            'password' => 'required|confirmed'
+            'password' => 'required|confirmed',
+            'birthday' => 'nullable|date',
+            'picture_url' => 'nullable|url'
         ]);
-
-        if ($validatedData->fails()) {
-            return response()->json(['error' => $validatedData->errors()], 400);
-        }
 
         $request['password'] = Hash::make($request['password']);
         $user = Users::create($request->all());
@@ -32,28 +31,24 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            'message' => "Couldn't sign user up"
+            'message' => "couldn't sign user up"
         ], 400);
     }
 
 
     public function login(Request $request)
     {
-        $validatedData = $this->validate($request, [
+        $this->validate($request, [
             'email' => 'email|required',
             'password' => 'required'
         ]);
-
-        if ($validatedData->fails()) {
-            return response()->json(['error' => $validatedData->errors()], 400);
-        }
 
         $credentials = request(['email', 'password']);
 
         if (!Auth::attempt($credentials)) {
             return response()->json([
                 'error' => 'Unauthorized',
-                'mensagem' => "Invalid credentials",
+                'message' => "Invalid credentials",
             ], 401);
         }
 
