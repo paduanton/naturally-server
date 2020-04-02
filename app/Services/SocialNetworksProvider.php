@@ -14,8 +14,6 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
 {
     protected $userRepository;
 
-
-
     public function getUserEntityByAccessToken($provider, $accessToken)
     {
         $user = $this->getUserFromSocialProvider($provider, $accessToken);
@@ -26,7 +24,6 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
 
         return $user;
     }
-
 
     protected function getUserFromSocialProvider($provider, $accessToken)
     {
@@ -85,4 +82,5 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
             return $user;
         }
     }
+    
 }
