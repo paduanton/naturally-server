@@ -15,14 +15,15 @@ class AuthController extends Controller
     public function signup(Request $request)
     {
         $this->validate($request, [
-            'first_name' => 'required',
-            'last_name' => 'nullable|date',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
             'email' => 'email|required|unique:users',
-            'password' => 'required|confirmed',
+            'password' => 'required|confirmed|string',
             'birthday' => 'nullable|date',
             'picture_url' => 'nullable|url'
         ]);
-
+        
+        $request['nickname'] = $this->generateNickname($request['first_name'], $request['last_name']);
         $request['password'] = Hash::make($request['password']);
         $user = Users::create($request->all());
 
@@ -39,7 +40,7 @@ class AuthController extends Controller
     {
         $this->validate($request, [
             'email' => 'email|required',
-            'password' => 'required'
+            'password' => 'required|string'
         ]);
 
         $credentials = request(['email', 'password']);
@@ -68,6 +69,26 @@ class AuthController extends Controller
         return response()->json([
             'message' => "couldn't logout"
         ], 409);
+    }
+
+    protected function generateNickname($firstName, $lastName)
+    {
+        $firstName = strtolower($firstName);
+        $lastName = strtolower($lastName);
+        $nickname = $firstName . "." . $lastName;
+
+        $nickname = iconv('UTF-8','ASCII//TRANSLIT', $nickname);
+
+        $user = Users::where('nickname', $nickname)->first();
+
+        while ($user) {
+            $randomNumber = mt_rand();
+            $nickname = $nickname . $randomNumber;
+
+            $user = Users::where('nickname', $nickname)->first();
+        }
+
+        return $nickname;
     }
 
     protected function generateToken($user)

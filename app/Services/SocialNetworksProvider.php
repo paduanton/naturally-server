@@ -68,6 +68,10 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
             $socialNetwork->profile_url = $profileUrl;
             $socialNetwork->picture_url = $pictureUrl;
 
+            if (!$nickname) {
+                $nickname = $this->generateNickname($firstName, $lastName);
+            }
+            
             $userData = [
                 'first_name' => $firstName,
                 'last_name' => $lastName,
@@ -82,5 +86,24 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
             return $user;
         }
     }
-    
+
+    protected function generateNickname($firstName, $lastName)
+    {
+        $firstName = strtolower($firstName);
+        $lastName = strtolower($lastName);
+        $nickname = $firstName . "." . $lastName;
+
+        $nickname = iconv('UTF-8','ASCII//TRANSLIT', $nickname);
+
+        $user = Users::where('nickname', $nickname)->first();
+
+        while ($user) {
+            $randomNumber = mt_rand();
+            $nickname = $nickname . $randomNumber;
+
+            $user = Users::where('nickname', $nickname)->first();
+        }
+
+        return $nickname;
+    }
 }
