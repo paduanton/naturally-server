@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
-use App\Users;
-use Illuminate\Http\Request;
-use App\Http\Resources\Users as UsersResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Resources\Users as UsersResource;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Users;
 
 class UsersController extends Controller
 {
@@ -15,10 +16,9 @@ class UsersController extends Controller
     {
         if (Users::all()->isEmpty()) {
             throw new ModelNotFoundException;
-        } 
+        }
 
         return UsersResource::collection(Users::all());
-        
     }
 
     public function show($id)
@@ -28,27 +28,36 @@ class UsersController extends Controller
         }
 
         return new UsersResource(Users::find($id));
-    
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Users  $users
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Users $users)
+    public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'first_name' => 'nullable|string',
+            'last_name' => 'nullable|string',
+            'nickname' => 'nullable|string|unique:users',
+            'email' => 'email|nullable|unique:users',
+            'password' => 'nullable|confirmed|string',
+            'birthday' => 'nullable|date',
+            'picture_url' => 'nullable|url'
+        ]);
+
+        if ($request['password']) {
+            $request['password'] = Hash::make($request['password']);
+            unset($request['password_confirmation']);
+        }
+
+        $update = Users::where('id', $id)->update($request->all());
+
+        if ($update) {
+            return response()->json([], 204);
+        }
+
+        return response()->json([
+            'message' => 'could not update users data',
+        ], 400);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Users  $users
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Users $users)
     {
         //
