@@ -14,7 +14,6 @@ class SocialAuthController extends Controller
 
     protected $socialProvider;
 
-
     public function __construct(SocialNetworksProvider $social)
     {
         $this->socialProvider = $social;
@@ -50,7 +49,7 @@ class SocialAuthController extends Controller
 
     protected function isProviderSupported($provider)
     {
-        return in_array($provider, ['facebook', 'google', 'twitter']);
+        return in_array($provider, ['facebook']);
     }
 
     protected function generateToken($user)

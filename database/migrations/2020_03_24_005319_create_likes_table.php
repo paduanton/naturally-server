@@ -13,6 +13,7 @@ class CreateLikesTable extends Migration
             $table->id();
             $table->foreignId('users_id');
             $table->foreignId('recipes_id');
+            $table->boolean('is_liked');
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);
             $table->foreign('users_id')->references('id')->on('users');

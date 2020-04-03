@@ -1,0 +1,28 @@
+version: "3.3"
+
+networks:
+  naturally:
+    driver: bridge
+
+services:
+  db:
+    container_name: naturallydb
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+    image: mysql:5.7
+    networks:
+      - naturally
+    ports:
+      - 3306:3306
+    restart: always
+    volumes:
+      - ./storage/database:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: naturallymyadmin
+    networks:
+      - naturally
+    ports:
+      - 8181:80
