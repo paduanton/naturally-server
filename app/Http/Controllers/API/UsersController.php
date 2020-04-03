@@ -58,8 +58,17 @@ class UsersController extends Controller
         ], 400);
     }
 
-    public function destroy(Users $users)
+    public function destroy(Request $request, $id)
     {
-        //
+        $logout = $request->user()->token()->revoke();
+        $delete = Users::find($id)->delete();
+
+        if ($delete && $logout) {
+            return response()->json([], 204);
+        }
+
+        return response()->json([
+            'message' => 'could not delete users data',
+        ], 400);
     }
 }
