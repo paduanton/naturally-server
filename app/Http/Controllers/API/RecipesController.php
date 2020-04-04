@@ -2,64 +2,56 @@
 
 namespace App\Http\Controllers\API;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Resources\RecipesResource;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Recipes;
 
 class RecipesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //
+        if (Recipes::all()->isEmpty()) {
+            throw new ModelNotFoundException;
+        }
+
+        return RecipesResource::collection(Recipes::all());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    public function show($id)
+    {
+        if (!Recipes::find($id)) {
+            throw new ModelNotFoundException;
+        }
+
+        return new RecipesResource(Recipes::find($id));
+    }
+
+    public function getRecipesByUsersId($usersId)
+    {
+        $usersRecipes = Recipes::where('users_id', $usersId)->get();
+
+        if ($usersRecipes->isEmpty()) {
+            throw new ModelNotFoundException;
+        }
+
+        return RecipesResource::collection($usersRecipes);
+    }
+
     public function store(Request $request)
     {
-        //
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Recipes  $recipes
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Recipes $recipes)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Recipes  $recipes
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Recipes $recipes)
     {
-        //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Recipes  $recipes
-     * @return \Illuminate\Http\Response
-     */
+
     public function destroy(Recipes $recipes)
     {
-        //
     }
 }

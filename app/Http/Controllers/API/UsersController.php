@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Http\Resources\Users as UsersResource;
+use App\Http\Resources\UsersResource;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;

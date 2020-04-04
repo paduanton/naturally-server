@@ -15,12 +15,13 @@ class CreateRecipesTable extends Migration
             $table->string('title');
             $table->string('description');
             $table->timeTz('cooking_time', 0);
-            $table->string('notes')->nullable();
             $table->enum('category', ['vegan', 'chinese', 'italian', 'mexican']); 
             $table->enum('meal_type', ['breakfast', 'dessert', 'dinner', 'lunch']); 
             $table->string('video_url')->nullable();
             $table->double('yields');
-            $table->enum('complexity', ['easy', 'normal', 'hard'])->nullable(); 
+            $table->tinyInteger('cost');
+            $table->tinyInteger('complexity');
+            $table->string('notes')->nullable();
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);
             $table->foreign('users_id')->references('id')->on('users');

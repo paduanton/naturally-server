@@ -93,6 +93,7 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
         $lastName = strtolower($lastName);
         $nickname = $firstName . "." . $lastName;
 
+        $nickname = str_replace(" ", "", $nickname);
         $nickname = iconv('UTF-8','ASCII//TRANSLIT', $nickname);
 
         $user = Users::where('nickname', $nickname)->first();

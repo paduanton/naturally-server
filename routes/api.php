@@ -24,7 +24,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
             return $request->user();
         });
 
-        $router->get('/users/{id}/recipes', 'API\RecipesController@getRecipesByUsersId');
+        $router->get('/users/{usersId}/recipes', 'API\RecipesController@getRecipesByUsersId');
         $router->apiResource('/recipes', 'API\RecipesController');
     });
 });
