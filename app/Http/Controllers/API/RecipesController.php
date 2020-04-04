@@ -12,13 +12,27 @@ use App\Recipes;
 class RecipesController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        if (Recipes::all()->isEmpty()) {
+        $recipes = [];
+        $category = $request->query('category');
+        $mealType = $request->query('mealType');
+
+        if ($category && $mealType) {
+            $recipes = Recipes::where('category', $category)->where('meal_type', $mealType)->get();
+        } elseif ($category) {
+            $recipes = Recipes::where('category', $category)->get();
+        } elseif ($mealType) {
+            $recipes = Recipes::where('meal_type', $mealType)->get();
+        } else {
+            $recipes = Recipes::all();
+        }
+
+        if ($recipes->isEmpty()) {
             throw new ModelNotFoundException;
         }
 
-        return RecipesResource::collection(Recipes::all());
+        return RecipesResource::collection($recipes);
     }
 
     public function show($id)
@@ -30,9 +44,21 @@ class RecipesController extends Controller
         return new RecipesResource(Recipes::find($id));
     }
 
-    public function getRecipesByUsersId($usersId)
+    public function getRecipesByUsersId(Request $request, $usersId)
     {
-        $usersRecipes = Recipes::where('users_id', $usersId)->get();
+        $usersRecipes = Recipes::where('users_id', $usersId);
+        $category = $request->query('category');
+        $mealType = $request->query('mealType');
+        
+        if ($category && $mealType) {
+            $usersRecipes = $usersRecipes->where('category', $category)->where('meal_type', $mealType)->get();
+        } elseif ($category) {
+            $usersRecipes = $usersRecipes->where('category', $category)->get();
+        } elseif ($mealType) {
+            $usersRecipes = $usersRecipes->where('meal_type', $mealType)->get();
+        } else {
+            $usersRecipes = $usersRecipes->get();
+        }
 
         if ($usersRecipes->isEmpty()) {
             throw new ModelNotFoundException;
