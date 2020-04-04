@@ -24,7 +24,16 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
             return $request->user();
         });
 
+        $router->get('/recipes', 'API\RecipesController@index');
+        $router->get('/recipes/{id}', 'API\RecipesController@show');
         $router->get('/users/{usersId}/recipes', 'API\RecipesController@getRecipesByUsersId');
-        $router->apiResource('/recipes', 'API\RecipesController');
+        $router->post('/users/{usersId}/recipes', 'API\RecipesController@store');
+        $router->put('/users/{usersId}/recipes/{id}', 'API\RecipesController@update');
+        $router->delete('/users/{usersId}/recipes/{id}', 'API\RecipesController@destroy');
+
     });
+});
+
+Route::fallback(function () {
+    return ['no route matched', date(DATE_ISO8601), env('APP_ENV')];
 });

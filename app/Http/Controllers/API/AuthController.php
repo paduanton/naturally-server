@@ -20,7 +20,7 @@ class AuthController extends Controller
             'email' => 'email|required|unique:users',
             'password' => 'required|confirmed|string',
             'birthday' => 'nullable|date',
-            'picture_url' => 'nullable|url'
+            'picture_url' => 'nullable|active_url'
         ]);
         
         $request['nickname'] = $this->generateNickname($request['first_name'], $request['last_name']);

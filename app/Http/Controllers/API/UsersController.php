@@ -39,7 +39,7 @@ class UsersController extends Controller
             'email' => 'email|nullable|unique:users',
             'password' => 'nullable|confirmed|string',
             'birthday' => 'nullable|date',
-            'picture_url' => 'nullable|url'
+            'picture_url' => 'nullable|active_url'
         ]);
 
         if ($request['password']) {
@@ -50,12 +50,12 @@ class UsersController extends Controller
         $update = Users::where('id', $id)->update($request->all());
 
         if ($update) {
-            return response()->json([], 204);
+            return new UsersResource(Users::find($id));
         }
 
         return response()->json([
             'message' => 'could not update users data',
-        ], 400);
+        ], 409);
     }
 
     public function destroy(Request $request, $id)
