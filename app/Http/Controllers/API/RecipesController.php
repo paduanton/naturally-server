@@ -120,20 +120,12 @@ class RecipesController extends Controller
             'notes' => 'nullable|string'
         ]);
 
-        $recipes = Recipes::find($id);
-        $users = Users::find($usersId);
+        $checkIds = $this->isUsersAndRecipesExistents($usersId, $id);
 
-        if (!$users) {
+        if(!$checkIds) {
             return response()->json([
                 'message' => 'The given data was invalid.',
-                'error' => 'The selected users id is invalid.'
-            ], 404);
-        }
-
-        if (!$recipes) {
-            return response()->json([
-                'message' => 'The given data was invalid.',
-                'error' => 'The selected recipes id is invalid.'
+                'error' => 'One of the selected url id params are invalid.'
             ], 404);
         }
 
@@ -157,20 +149,12 @@ class RecipesController extends Controller
 
     public function destroy($usersId, $id)
     {
-        $recipes = Recipes::find($id);
-        $users = Users::find($usersId);
+        $checkIds = $this->isUsersAndRecipesExistents($usersId, $id);
 
-        if (!$users) {
+        if(!$checkIds) {
             return response()->json([
                 'message' => 'The given data was invalid.',
-                'error' => 'The selected users id is invalid.'
-            ], 404);
-        }
-
-        if (!$recipes) {
-            return response()->json([
-                'message' => 'The given data was invalid.',
-                'error' => 'The selected recipes id is invalid.'
+                'error' => 'One of the selected url id params are invalid.'
             ], 404);
         }
 
@@ -185,23 +169,17 @@ class RecipesController extends Controller
         ], 400);
     }
 
-    protected function isUsersAndRecipesExistents($usersId, $recipesId)
+    protected function isUsersAndRecipesExistents($usersId, $recipesId = null)
     {
         $recipes = Recipes::find($recipesId);
         $users = Users::find($usersId);
 
         if (!$users) {
-            return response()->json([
-                'message' => 'The given data was invalid.',
-                'error' => 'The selected users id is invalid.'
-            ], 404);
+            return false;
         }
 
         if (!$recipes) {
-            return response()->json([
-                'message' => 'The given data was invalid.',
-                'error' => 'The selected recipes id is invalid.'
-            ], 404);
+            return false;
         }
 
         return true;
