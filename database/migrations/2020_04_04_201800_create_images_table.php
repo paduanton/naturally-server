@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRecipesPictures extends Migration
+class CreateImagesTable extends Migration
 {
    
     public function up()
@@ -14,10 +14,11 @@ class CreateRecipesPictures extends Migration
             $table->foreignId('users_id');
             $table->foreignId('recipes_id')->nullable();
             $table->enum('type', ['users_picture', 'recipes_picture']);
+            $table->boolean('thumbnail');
             $table->string('picture_url')->unique();
-            $table->enum('mime', ['png', 'jpg', 'jpeg', 'gif']);
-            $table->string('filename');
+            $table->string('filename')->unique();
             $table->string('original_filename');
+            $table->enum('mime', ['png', 'jpg', 'jpeg', 'gif']);
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);
             $table->foreign('users_id')->references('id')->on('users');

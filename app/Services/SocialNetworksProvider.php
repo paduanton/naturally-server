@@ -30,6 +30,7 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
         try {
             $userFromProvider = Socialite::driver($provider)->fields([
                 'first_name',
+                'middle_name',
                 'last_name',
                 'email'
             ])->userFromToken($accessToken);
@@ -52,39 +53,41 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
 
         if ($socialAccount) {
             return $socialAccount->users;
-        } else {
-            $firstName = $providerUser->user['first_name'];
-            $lastName = $providerUser->user['last_name'];
-            $email = $providerUser->getEmail();
-            $nickname = $providerUser->getNickname();
-            $pictureUrl = $providerUser->avatar_original;
-            $providerId = $providerUser->getId();
-            $profileUrl = $providerUser->profileUrl;
-
-            $socialNetwork = new SocialNetWorks();
-            $socialNetwork->provider_name = $provider;
-            $socialNetwork->provider_id = $providerId;
-            $socialNetwork->nickname = $nickname;
-            $socialNetwork->profile_url = $profileUrl;
-            $socialNetwork->picture_url = $pictureUrl;
-
-            if (!$nickname) {
-                $nickname = $this->generateNickname($firstName, $lastName);
-            }
-            
-            $userData = [
-                'first_name' => $firstName,
-                'last_name' => $lastName,
-                'nickname' => $nickname,
-                'email' => $email,
-                'picture_url' => $pictureUrl
-            ];
-
-            $user = Users::firstOrCreate(['email' => $email], $userData);
-            $user->social_networks()->save($socialNetwork);
-
-            return $user;
         }
+
+        $firstName = $providerUser->user['first_name'];
+        $middleName = $providerUser->user['middle_name'];
+        $lastName = $providerUser->user['last_name'];
+        $email = $providerUser->getEmail();
+        $nickname = $providerUser->getNickname();
+        $pictureUrl = $providerUser->avatar_original;
+        $providerId = $providerUser->getId();
+        $profileUrl = $providerUser->profileUrl;
+
+        $socialNetwork = new SocialNetWorks();
+        $socialNetwork->provider_name = $provider;
+        $socialNetwork->provider_id = $providerId;
+        $socialNetwork->nickname = $nickname;
+        $socialNetwork->profile_url = $profileUrl;
+        $socialNetwork->picture_url = $pictureUrl;
+
+        if (!$nickname) {
+            $nickname = $this->generateNickname($firstName, $lastName);
+        }
+
+        $userData = [
+            'first_name' => $firstName,
+            'middle_name' => $middleName,
+            'last_name' => $lastName,
+            'nickname' => $nickname,
+            'email' => $email,
+            'picture_url' => $pictureUrl
+        ];
+
+        $user = Users::firstOrCreate(['email' => $email], $userData);
+        $user->social_networks()->save($socialNetwork);
+
+        return $user;
     }
 
     protected function generateNickname($firstName, $lastName)
@@ -94,7 +97,7 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
         $nickname = $firstName . "." . $lastName;
 
         $nickname = str_replace(" ", "", $nickname);
-        $nickname = iconv('UTF-8','ASCII//TRANSLIT', $nickname);
+        $nickname = iconv('UTF-8', 'ASCII//TRANSLIT', $nickname);
 
         $user = Users::where('nickname', $nickname)->first();
 

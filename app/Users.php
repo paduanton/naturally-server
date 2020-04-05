@@ -15,11 +15,11 @@ class Users extends Authenticatable
     protected $table = 'users';
 
     protected $fillable = [
-        'first_name', 'last_name', 'nickname','email',
-         'password', 'birthday', 'picture_url'
+        'first_name', 'middle_name', 'last_name', 'nickname',
+        'email', 'password', 'birthday', 'picture_url'
     ];
 
-    
+
     protected $hidden = [
         'password', 'remember_token', 'deleted_at'
     ];
@@ -38,5 +38,4 @@ class Users extends Authenticatable
     {
         return $this->hasMany(SocialNetWorks::class);
     }
-
 }
