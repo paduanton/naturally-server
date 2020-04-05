@@ -53,9 +53,12 @@ class Handler extends ExceptionHandler
     {
 
         if ($exception instanceof ModelNotFoundException) {
-            abort(404, "Model not found in the server");
+            return response()->json([
+                'message' => 'There is no data',
+                'error' => 'Model not found in the server'
+            ], 404);
         }
-        
+
         return parent::render($request, $exception);
     }
 }

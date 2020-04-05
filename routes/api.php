@@ -31,9 +31,6 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->put('/users/{usersId}/recipes/{id}', 'API\RecipesController@update');
         $router->delete('/users/{usersId}/recipes/{id}', 'API\RecipesController@destroy');
 
+        $router->post('/upload/images', 'API\ImagesController@upload');
     });
-});
-
-Route::fallback(function () {
-    return ['no route matched', date(DATE_ISO8601), env('APP_ENV')];
 });

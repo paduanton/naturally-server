@@ -15,10 +15,7 @@ class UsersController extends Controller
     public function index()
     {
         if (Users::all()->isEmpty()) {
-            return response()->json([
-                'message' => 'No given data',
-                'error' => 'There is no users to show.'
-            ], 404);
+            throw new ModelNotFoundException;
         }
 
         return UsersResource::collection(Users::all());
@@ -27,10 +24,7 @@ class UsersController extends Controller
     public function show($id)
     {
         if (!Users::find($id)) {
-            return response()->json([
-                'message' => 'The given data was invalid.',
-                'error' => 'The selected users id is invalid.'
-            ], 404);
+            throw new ModelNotFoundException;
         }
 
         return new UsersResource(Users::find($id));
@@ -48,13 +42,8 @@ class UsersController extends Controller
             'picture_url' => 'nullable|active_url'
         ]);
 
-        $checkUser = $this->isUserExistent($id);
-
-        if (!$checkUser) {
-            return response()->json([
-                'message' => 'The given data was invalid.',
-                'error' => 'The selected users id is invalid.'
-            ], 404);
+        if (!Users::find($id)) {
+            throw new ModelNotFoundException;
         }
 
         if ($request['password']) {
@@ -75,13 +64,8 @@ class UsersController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $checkUser = $this->isUserExistent($id);
-
-        if (!$checkUser) {
-            return response()->json([
-                'message' => 'The given data was invalid.',
-                'error' => 'The selected users id is invalid.'
-            ], 404);
+        if (!Users::find($id)) {
+            throw new ModelNotFoundException;
         }
 
         $logout = $request->user()->token()->revoke();
@@ -94,16 +78,5 @@ class UsersController extends Controller
         return response()->json([
             'message' => 'could not delete users data',
         ], 400);
-    }
-
-    protected function isUserExistent($id)
-    {
-        $users = Users::find($id);
-
-        if (!$users) {
-            return false;
-        }
-
-        return true;
     }
 }

@@ -15,7 +15,8 @@
         "laravel/framework": "^7.0",
         "laravel/passport": "^8.4",
         "laravel/socialite": "^4.3",
-        "laravel/tinker": "^2.0"
+        "laravel/tinker": "^2.0",
+        "mehdi-fathi/eloquent-filter": "^1.6"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

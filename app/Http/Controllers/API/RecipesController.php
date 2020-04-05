@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\API;
 
+use eloquentFilter\QueryFilter\ModelFilters\ModelFilters;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Resources\RecipesResource;
-use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Recipes;
@@ -13,18 +13,12 @@ use App\Users;
 class RecipesController extends Controller
 {
 
-    public function index(Request $request)
+    public function index(ModelFilters $filters, Request $request)
     {
         $recipes = [];
-        $category = $request->query('category');
-        $mealType = $request->query('mealType');
 
-        if ($category && $mealType) {
-            $recipes = Recipes::where('category', $category)->where('meal_type', $mealType)->get();
-        } elseif ($category) {
-            $recipes = Recipes::where('category', $category)->get();
-        } elseif ($mealType) {
-            $recipes = Recipes::where('meal_type', $mealType)->get();
+        if ($filters->filters()) {
+            $recipes = Recipes::filter($filters)->get();
         } else {
             $recipes = Recipes::all();
         }
@@ -45,18 +39,12 @@ class RecipesController extends Controller
         return new RecipesResource(Recipes::find($id));
     }
 
-    public function getRecipesByUsersId(Request $request, $usersId)
+    public function getRecipesByUsersId(ModelFilters $filters, $usersId)
     {
         $usersRecipes = Recipes::where('users_id', $usersId);
-        $category = $request->query('category');
-        $mealType = $request->query('mealType');
 
-        if ($category && $mealType) {
-            $usersRecipes = $usersRecipes->where('category', $category)->where('meal_type', $mealType)->get();
-        } elseif ($category) {
-            $usersRecipes = $usersRecipes->where('category', $category)->get();
-        } elseif ($mealType) {
-            $usersRecipes = $usersRecipes->where('meal_type', $mealType)->get();
+        if ($filters->filters()) {
+            $usersRecipes = $usersRecipes->filter($filters)->get();
         } else {
             $usersRecipes = $usersRecipes->get();
         }
@@ -122,11 +110,8 @@ class RecipesController extends Controller
 
         $checkIds = $this->isUsersAndRecipesExistents($usersId, $id);
 
-        if(!$checkIds) {
-            return response()->json([
-                'message' => 'The given data was invalid.',
-                'error' => 'One of the selected url id params are invalid.'
-            ], 404);
+        if (!$checkIds) {
+            throw new ModelNotFoundException;
         }
 
         if ($request['users_id']) {
@@ -151,11 +136,8 @@ class RecipesController extends Controller
     {
         $checkIds = $this->isUsersAndRecipesExistents($usersId, $id);
 
-        if(!$checkIds) {
-            return response()->json([
-                'message' => 'The given data was invalid.',
-                'error' => 'One of the selected url id params are invalid.'
-            ], 404);
+        if (!$checkIds) {
+            throw new ModelNotFoundException;
         }
 
         $delete = Recipes::where('id', $id)->where('users_id', $usersId)->delete();
