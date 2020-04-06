@@ -15,6 +15,7 @@ class CreateRecipesImagesTable extends Migration
             $table->boolean('thumbnail');
             $table->string('picture_url')->unique();
             $table->string('filename')->unique();
+            $table->string('path')->unique();
             $table->enum('mime', ['image/png', 'image/jpg', 'image/jpeg', 'image/gif']);
             $table->string('original_filename');
             $table->enum('original_extension', ['png', 'jpg', 'jpeg', 'gif']);

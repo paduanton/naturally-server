@@ -7,6 +7,7 @@ use App\RecipesImages;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\RecipesImagesResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class RecipesImagesController extends Controller
@@ -19,10 +20,31 @@ class RecipesImagesController extends Controller
             'thumbnail' => 'required|boolean'
         ]);
 
+        $thumbnail = $request['thumbnail'];
         $recipe = Recipes::find($id);
 
         if (!$recipe) {
             throw new ModelNotFoundException;
+        }
+
+        if ($thumbnail) {
+            $recipeHasThumbnail = RecipesImages::where('thumbnail', $thumbnail)->first();
+
+            if($recipeHasThumbnail) {
+                return response()->json([
+                    'message' => 'The given data was invalid.',
+                    'error' => 'The selected recipes id already has a thumbnail image.'
+                ], 400);
+            }
+        }
+
+        $recipeHasImage = RecipesImages::where('recipes_id', $id)->first();
+
+        if(!$recipeHasImage && !$thumbnail) {
+            return response()->json([
+                'message' => 'The given data was invalid.',
+                'error' => 'The selected recipes id does not have a thumbnail image, please define a thumbnail.'
+            ], 400);
         }
 
         $basePath = 'uploads/recipes/images/';
@@ -35,13 +57,13 @@ class RecipesImagesController extends Controller
         $image->original_extension = $file->getClientOriginalExtension();
         $image->mime = $file->getClientMimeType();
 
-        $storeImage = $image->store($basePath, 'public');
+        $storeImage = $file->store($basePath, 'public');
 
         $image->filename = basename($storeImage);
-        $image->picture_url = $urlBasePath.$image->filename;
+        $image->path = $storeImage;
+        $image->picture_url = $urlBasePath . '/' . $image->filename;
+        $recipe->images()->save($image);
 
-        $database = $recipe->images()->save($image);
-        // create collection resource
+        return new RecipesImagesResource($image);
     }
-    
 }

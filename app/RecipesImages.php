@@ -12,7 +12,7 @@ class RecipesImages extends Model
     protected $table = 'recipes_images';
 
     protected $fillable = [
-        'thumbnail', 'picture_url', 'filename', 'mime', 'original_filename', 'original_extension'
+        'thumbnail', 'picture_url', 'filename', 'path', 'mime', 'original_filename', 'original_extension'
     ];
 
     public function recipes()

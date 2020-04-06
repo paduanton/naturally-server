@@ -74,10 +74,7 @@ class RecipesController extends Controller
         $user = Users::find($usersId);
 
         if (!$user) {
-            return response()->json([
-                'message' => 'The given data was invalid.',
-                'error' => 'The selected users id is invalid.'
-            ], 404);
+            throw new ModelNotFoundException;
         }
 
         $request['users_id'] = $usersId;
