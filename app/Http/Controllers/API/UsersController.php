@@ -34,6 +34,7 @@ class UsersController extends Controller
     {
         $this->validate($request, [
             'first_name' => 'nullable|string',
+            'middle_name' => 'nullable|string',
             'last_name' => 'nullable|string',
             'nickname' => 'nullable|string|unique:users',
             'email' => 'email|nullable|unique:users',

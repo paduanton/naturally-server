@@ -14,4 +14,9 @@ class RecipesImages extends Model
     protected $fillable = [
         'thumbnail', 'picture_url', 'filename', 'mime', 'original_filename', 'original_extension'
     ];
+
+    public function recipes()
+    {
+        return $this->belongsTo(Recipes::class);
+    }
 }

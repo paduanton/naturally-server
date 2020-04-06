@@ -29,4 +29,9 @@ class Recipes extends Model
     {
         return $this->belongsTo(Users::class);
     }
+
+    public function images()
+    {
+        return $this->hasMany(RecipesImages::class);
+    }
 }

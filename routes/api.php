@@ -31,6 +31,6 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->put('/users/{usersId}/recipes/{id}', 'API\RecipesController@update');
         $router->delete('/users/{usersId}/recipes/{id}', 'API\RecipesController@destroy');
 
-        $router->post('/upload/images', 'API\ImagesController@upload');
+        $router->post('/recipes/{id}/upload/', 'API\RecipesImagesController@upload');
     });
 });
