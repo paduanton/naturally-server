@@ -40,7 +40,6 @@ class UsersController extends Controller
             'email' => 'email|nullable|unique:users',
             'password' => 'nullable|confirmed|string',
             'birthday' => 'nullable|date',
-            'picture_url' => 'nullable|active_url'
         ]);
 
         if (!Users::find($id)) {
