@@ -23,7 +23,7 @@ class AuthController extends Controller
             'birthday' => 'nullable|date'
         ]);
         
-        $request['nickname'] = $this->generateNickname($request['first_name'], $request['last_name']);
+        $request['username'] = $this->generateUsername($request['first_name'], $request['last_name']);
         $request['password'] = Hash::make($request['password']);
         $user = Users::create($request->all());
 
@@ -71,25 +71,25 @@ class AuthController extends Controller
         ], 409);
     }
 
-    protected function generateNickname($firstName, $lastName)
+    protected function generateUsername($firstName, $lastName)
     {
         $firstName = strtolower($firstName);
         $lastName = strtolower($lastName);
-        $nickname = $firstName . "." . $lastName;
+        $username = $firstName . "." . $lastName;
 
-        $nickname = str_replace(" ", "", $nickname);
-        $nickname = iconv('UTF-8','ASCII//TRANSLIT', $nickname);
+        $username = str_replace(" ", "", $username);
+        $username = iconv('UTF-8','ASCII//TRANSLIT', $username);
 
-        $user = Users::where('nickname', $nickname)->first();
+        $user = Users::where('username', $username)->first();
 
         while ($user) {
             $randomNumber = mt_rand();
-            $nickname = $nickname . $randomNumber;
+            $username = $username . $randomNumber;
 
-            $user = Users::where('nickname', $nickname)->first();
+            $user = Users::where('username', $username)->first();
         }
 
-        return $nickname;
+        return $username;
     }
 
     protected function generateToken($user)

@@ -9,7 +9,7 @@ class SocialNetWorks extends Model
     protected $table = 'social_networks';
 
     protected $fillable = [
-        'provider_name', 'provider_id', 'nickname','profile_url', 'picture_url'
+        'provider_name', 'provider_id', 'username','profile_url', 'picture_url'
     ];
 
     public function users()

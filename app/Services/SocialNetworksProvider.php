@@ -59,7 +59,7 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
         $middleName = $providerUser->user['middle_name'];
         $lastName = $providerUser->user['last_name'];
         $email = $providerUser->getEmail();
-        $nickname = $providerUser->getNickname();
+        $username = $providerUser->getUsername();
         $pictureUrl = $providerUser->avatar_original;
         $providerId = $providerUser->getId();
         $profileUrl = $providerUser->profileUrl;
@@ -67,19 +67,19 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
         $socialNetwork = new SocialNetWorks();
         $socialNetwork->provider_name = $provider;
         $socialNetwork->provider_id = $providerId;
-        $socialNetwork->nickname = $nickname;
+        $socialNetwork->username = $username;
         $socialNetwork->profile_url = $profileUrl;
         $socialNetwork->picture_url = $pictureUrl;
 
-        if (!$nickname) {
-            $nickname = $this->generateNickname($firstName, $lastName);
+        if (!$username) {
+            $username = $this->generateUsername($firstName, $lastName);
         }
 
         $userData = [
             'first_name' => $firstName,
             'middle_name' => $middleName,
             'last_name' => $lastName,
-            'nickname' => $nickname,
+            'username' => $username,
             'email' => $email,
             'picture_url' => $pictureUrl
         ];
@@ -90,24 +90,24 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
         return $user;
     }
 
-    protected function generateNickname($firstName, $lastName)
+    protected function generateUsername($firstName, $lastName)
     {
         $firstName = strtolower($firstName);
         $lastName = strtolower($lastName);
-        $nickname = $firstName . "." . $lastName;
+        $username = $firstName . "." . $lastName;
 
-        $nickname = str_replace(" ", "", $nickname);
-        $nickname = iconv('UTF-8', 'ASCII//TRANSLIT', $nickname);
+        $username = str_replace(" ", "", $username);
+        $username = iconv('UTF-8', 'ASCII//TRANSLIT', $username);
 
-        $user = Users::where('nickname', $nickname)->first();
+        $user = Users::where('username', $username)->first();
 
         while ($user) {
             $randomNumber = mt_rand();
-            $nickname = $nickname . $randomNumber;
+            $username = $username . $randomNumber;
 
-            $user = Users::where('nickname', $nickname)->first();
+            $user = Users::where('username', $username)->first();
         }
 
-        return $nickname;
+        return $username;
     }
 }

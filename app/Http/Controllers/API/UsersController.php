@@ -33,7 +33,7 @@ class UsersController extends Controller
             'first_name' => 'nullable|string',
             'middle_name' => 'nullable|string',
             'last_name' => 'nullable|string',
-            'nickname' => 'nullable|string|unique:users',
+            'username' => 'nullable|string|unique:users',
             'email' => 'email|nullable|unique:users',
             'password' => 'nullable|confirmed|string',
             'birthday' => 'nullable|date',
