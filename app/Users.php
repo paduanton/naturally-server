@@ -38,4 +38,9 @@ class Users extends Authenticatable
     {
         return $this->hasMany(SocialNetWorks::class);
     }
+
+    public function images()
+    {
+        return $this->hasMany(Users::class);
+    }
 }

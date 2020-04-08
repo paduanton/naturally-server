@@ -32,15 +32,13 @@ class RecipesController extends Controller
 
     public function show($id)
     {
-        if (!Recipes::find($id)) {
-            throw new ModelNotFoundException;
-        }
-
-        return new RecipesResource(Recipes::find($id));
+        $recipe = Recipes::findOrFail($id);
+        return new RecipesResource($recipe);
     }
 
     public function getRecipesByUsersId(ModelFilters $filters, $usersId)
     {
+        $usersId = Users::findOrFail($usersId);
         $usersRecipes = Recipes::where('users_id', $usersId);
 
         if ($filters->filters()) {
@@ -71,11 +69,7 @@ class RecipesController extends Controller
             'notes' => 'nullable|string'
         ]);
 
-        $user = Users::find($usersId);
-
-        if (!$user) {
-            throw new ModelNotFoundException;
-        }
+        $usersId = Users::findOrFail($usersId);
 
         $request['users_id'] = $usersId;
         $recipes = Recipes::create($request->all());
@@ -104,12 +98,9 @@ class RecipesController extends Controller
             'complexity' => 'nullable|integer|between:1,5',
             'notes' => 'nullable|string'
         ]);
-
-        $checkIds = $this->isUsersAndRecipesExistents($usersId, $id);
-
-        if (!$checkIds) {
-            throw new ModelNotFoundException;
-        }
+        
+        $id = Recipes::findOrFail($id);
+        $usersId = Users::findOrFail($id);
 
         if ($request['users_id']) {
             return response()->json([
@@ -131,11 +122,9 @@ class RecipesController extends Controller
 
     public function destroy($usersId, $id)
     {
-        $checkIds = $this->isUsersAndRecipesExistents($usersId, $id);
+        $id = Recipes::findOrFail($id);
+        $usersId = Users::findOrFail($id);
 
-        if (!$checkIds) {
-            throw new ModelNotFoundException;
-        }
 
         $delete = Recipes::where('id', $id)->where('users_id', $usersId)->delete();
 
@@ -146,21 +135,5 @@ class RecipesController extends Controller
         return response()->json([
             'message' => 'could not delete recipes data',
         ], 400);
-    }
-
-    protected function isUsersAndRecipesExistents($usersId, $recipesId = null)
-    {
-        $recipes = Recipes::find($recipesId);
-        $users = Users::find($usersId);
-
-        if (!$users) {
-            return false;
-        }
-
-        if (!$recipes) {
-            return false;
-        }
-
-        return true;
     }
 }

@@ -21,11 +21,7 @@ class RecipesImagesController extends Controller
         ]);
 
         $thumbnail = $request['thumbnail'];
-        $recipe = Recipes::find($id);
-
-        if (!$recipe) {
-            throw new ModelNotFoundException;
-        }
+        $recipe = Recipes::findOrFail($id);
 
         if ($thumbnail) {
             $recipeHasThumbnail = RecipesImages::where('thumbnail', $thumbnail)->first();

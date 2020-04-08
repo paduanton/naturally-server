@@ -23,11 +23,8 @@ class UsersController extends Controller
 
     public function show($id)
     {
-        if (!Users::find($id)) {
-            throw new ModelNotFoundException;
-        }
-
-        return new UsersResource(Users::find($id));
+        $user = Users::findOrFail($id);
+        return new UsersResource($user);
     }
 
     public function update(Request $request, $id)
@@ -42,18 +39,16 @@ class UsersController extends Controller
             'birthday' => 'nullable|date',
         ]);
 
-        if (!Users::find($id)) {
-            throw new ModelNotFoundException;
-        }
+        Users::findOrFail($id);
 
         if ($request['password']) {
             $request['password'] = Hash::make($request['password']);
             unset($request['password_confirmation']);
         }
 
-        $update = Users::where('id', $id)->update($request->all());
+        $user = Users::where('id', $id)->update($request->all());
 
-        if ($update) {
+        if ($user) {
             return new UsersResource(Users::find($id));
         }
 
@@ -64,9 +59,7 @@ class UsersController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        if (!Users::find($id)) {
-            throw new ModelNotFoundException;
-        }
+        Users::findOrFail($id);
 
         $logout = $request->user()->token()->revoke();
         $delete = Users::find($id)->delete();
