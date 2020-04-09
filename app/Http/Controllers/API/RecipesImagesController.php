@@ -7,6 +7,7 @@ use App\RecipesImages;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\RecipesImagesResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -61,7 +62,7 @@ class RecipesImagesController extends Controller
         }
 
         $basePath = 'uploads/recipes/images';
-        $urlBasePath = url($basePath);
+        $urlBasePath = url('storage/' . $basePath);
         $file = $request->file('image');
 
         $image = new RecipesImages();
@@ -91,10 +92,10 @@ class RecipesImagesController extends Controller
             ]
         ]);
 
-        $recipe = RecipesImages::findOrFail($id);
+        $recipeImage = RecipesImages::findOrFail($id);
 
-        if ($recipe->thumbnail) {
-            return new RecipesImagesResource($recipe);
+        if ($recipeImage->thumbnail) {
+            return new RecipesImagesResource($recipeImage);
         }
 
         $currentThumbnailImage = RecipesImages::where('recipes_id', $recipesId)->where('thumbnail', true)->first();
@@ -114,9 +115,26 @@ class RecipesImagesController extends Controller
         ], 409);
     }
 
-    public function destroy($id) {
-        $recipe = Recipes::findOrFail($id);
+    public function destroy($id)
+    {
+        $recipeImage = RecipesImages::findOrFail($id);
 
-        // $delete = $recipe->delete();
+        if ($recipeImage->thumbnail) {
+            return response()->json([
+                'message' => 'it is not possible to delete a recipe thumbnail',
+            ], 400);
+        }
+
+
+        $deleteFile = Storage::delete('public/' . $recipeImage->path);
+        $delete = $recipeImage->delete();
+
+        if ($delete && $deleteFile) {
+            return response()->json([], 204);
+        }
+
+        return response()->json([
+            'message' => 'could not delete recipes image data',
+        ], 400);
     }
 }
