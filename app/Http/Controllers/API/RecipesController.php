@@ -38,7 +38,7 @@ class RecipesController extends Controller
 
     public function getRecipesByUsersId(ModelFilters $filters, $usersId)
     {
-        $usersId = Users::findOrFail($usersId);
+        Users::findOrFail($usersId);
         $usersRecipes = Recipes::where('users_id', $usersId);
 
         if ($filters->filters()) {
@@ -69,7 +69,7 @@ class RecipesController extends Controller
             'notes' => 'nullable|string'
         ]);
 
-        $usersId = Users::findOrFail($usersId);
+        Users::findOrFail($usersId);
 
         $request['users_id'] = $usersId;
         $recipes = Recipes::create($request->all());
@@ -84,7 +84,7 @@ class RecipesController extends Controller
     }
 
 
-    public function update(Request $request, $usersId, $id)
+    public function update(Request $request, $id)
     {
         $this->validate($request, [
             'title' => 'nullable|string',
@@ -99,16 +99,9 @@ class RecipesController extends Controller
             'notes' => 'nullable|string'
         ]);
         
-        $id = Recipes::findOrFail($id);
-        $usersId = Users::findOrFail($id);
+        Recipes::findOrFail($id);
 
-        if ($request['users_id']) {
-            return response()->json([
-                'message' => 'can not change users id of recipes',
-            ], 409);
-        }
-
-        $update = Recipes::where('id', $id)->where('users_id', $usersId)->update($request->all());
+        $update = Recipes::where('id', $id)->update($request->all());
 
         if ($update) {
             return new RecipesResource(Recipes::find($id));
@@ -120,13 +113,11 @@ class RecipesController extends Controller
     }
 
 
-    public function destroy($usersId, $id)
+    public function destroy($id)
     {
-        $id = Recipes::findOrFail($id);
-        $usersId = Users::findOrFail($id);
+        Recipes::findOrFail($id);
 
-
-        $delete = Recipes::where('id', $id)->where('users_id', $usersId)->delete();
+        $delete = Recipes::where('id', $id)->delete();
 
         if ($delete) {
             return response()->json([], 204);

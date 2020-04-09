@@ -5,13 +5,32 @@ namespace App\Http\Controllers\API;
 use App\Recipes;
 use App\RecipesImages;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\RecipesImagesResource;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class RecipesImagesController extends Controller
 {
+    public function index($recipesId)
+    {
+        Recipes::findOrFail($recipesId);
+        $recipesImages = RecipesImages::where('recipes_id', $recipesId)->get();
 
-    public function upload(Request $request, $id)
+        if ($recipesImages->isEmpty()) {
+            throw new ModelNotFoundException;
+        }
+
+        return RecipesImagesResource::collection($recipesImages);
+    }
+
+    public function show($id)
+    {
+        $image = RecipesImages::findOrFail($id);
+        return new RecipesImagesResource($image);
+    }
+
+    public function upload(Request $request, $recipesId)
     {
         $this->validate($request, [
             'image' => 'required|image|mimes:jpeg,png,jpg,gif',
@@ -19,29 +38,29 @@ class RecipesImagesController extends Controller
         ]);
 
         $thumbnail = $request['thumbnail'];
-        $recipe = Recipes::findOrFail($id);
+        $recipe = Recipes::findOrFail($recipesId);
 
         if ($thumbnail) {
-            $recipeHasThumbnail = RecipesImages::where('thumbnail', $thumbnail)->first();
+            $recipeHasThumbnail = RecipesImages::where('thumbnail', $thumbnail)->where('recipes_id', $recipesId)->first();
 
-            if($recipeHasThumbnail) {
+            if ($recipeHasThumbnail) {
                 return response()->json([
                     'message' => 'The given data was invalid.',
-                    'error' => 'The selected recipes id already has a thumbnail image.'
+                    'error' => 'The selected recipe already has a thumbnail image.'
                 ], 400);
             }
         }
 
-        $recipeHasImage = RecipesImages::where('recipes_id', $id)->first();
+        $recipeHasImage = RecipesImages::where('recipes_id', $recipesId)->first();
 
-        if(!$recipeHasImage && !$thumbnail) {
+        if (!$recipeHasImage && !$thumbnail) {
             return response()->json([
                 'message' => 'The given data was invalid.',
                 'error' => 'The selected recipes id does not have a thumbnail image, please define a thumbnail.'
             ], 400);
         }
 
-        $basePath = 'uploads/recipes/images/';
+        $basePath = 'uploads/recipes/images';
         $urlBasePath = url($basePath);
         $file = $request->file('image');
 
@@ -59,5 +78,45 @@ class RecipesImagesController extends Controller
         $recipe->images()->save($image);
 
         return new RecipesImagesResource($image);
+    }
+
+    public function update(Request $request, $recipesId, $id)
+    {
+        $this->validate($request, [
+            'thumbnail' => [
+                'required',
+                'boolean',
+                Rule::in([true, 1])
+
+            ]
+        ]);
+
+        $recipe = RecipesImages::findOrFail($id);
+
+        if ($recipe->thumbnail) {
+            return new RecipesImagesResource($recipe);
+        }
+
+        $currentThumbnailImage = RecipesImages::where('recipes_id', $recipesId)->where('thumbnail', true)->first();
+
+        if ($currentThumbnailImage) {
+            $currentThumbnailImage->update(['thumbnail' => false]);
+        }
+
+        $newThumbnailImage = RecipesImages::where('id', $id)->update(['thumbnail' => true]);
+
+        if ($newThumbnailImage) {
+            return new RecipesImagesResource(RecipesImages::find($id));
+        }
+
+        return response()->json([
+            'message' => 'could not update users data'
+        ], 409);
+    }
+
+    public function destroy($id) {
+        $recipe = Recipes::findOrFail($id);
+
+        // $delete = $recipe->delete();
     }
 }
