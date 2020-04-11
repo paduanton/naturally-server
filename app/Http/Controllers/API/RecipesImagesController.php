@@ -125,7 +125,6 @@ class RecipesImagesController extends Controller
             ], 400);
         }
 
-
         $deleteFile = Storage::delete('public/' . $recipeImage->path);
         $delete = $recipeImage->delete();
 

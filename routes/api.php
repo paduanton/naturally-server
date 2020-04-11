@@ -13,6 +13,14 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
     });
 
     /*
+        Unauthenticated Routes
+    */
+
+        // Recipes
+    $router->get('/search/recipes/{title}', 'API\RecipesController@search');
+    $router->get('/recipes/{id}', 'API\RecipesController@show');
+
+    /*
         Authentication Routes
     */
     $router->post('/oauth/social', 'API\SocialAuthController@authenticate');
@@ -25,15 +33,18 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         /*
             Users Routes
         */
+        
+        $router->get('/search/users/{name}', 'API\UsersController@search');
+        $router->get('/user/{username}', 'API\UsersController@getByUsername');
         $router->apiResource('/users', 'API\UsersController');
-        $router->get('/users', function (Request $request) {
+        $router->get('/user', function (Request $request) {
             return $request->user();
         });
 
         /*
             Recipes Routes
         */
-        
+
         $router->apiResource('/recipes', 'API\RecipesController');
         $router->get('/users/{usersId}/recipes', 'API\RecipesController@getRecipesByUsersId');
         $router->post('/users/{usersId}/recipes', 'API\RecipesController@store');
@@ -41,11 +52,15 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         /*
             RecipesImages Routes
         */
-        
+
         $router->apiResource('/recipes/images', 'API\RecipesImagesController');
         $router->get('/recipes/{recipesId}/images', 'API\RecipesImagesController@index');
         $router->post('/recipes/{recipesId}/images', 'API\RecipesImagesController@upload');
         $router->patch('/recipes/{recipesId}/images/{id}', 'API\RecipesImagesController@update');
+
+        /*
+            UsersImages Routes
+        */
 
         $router->post('/users/{id}/upload/', 'API\UsersImagesController@upload');
     });

@@ -27,6 +27,34 @@ class UsersController extends Controller
         return new UsersResource($user);
     }
 
+    public function getByUsername($username)
+    {
+        $user = Users::where('username', $username)->first();
+
+        if (!$user) {
+            throw new ModelNotFoundException;
+        }
+
+        return new UsersResource($user);
+    }
+
+    public function search($name)
+    {
+        
+        $users = Users::where('first_name', 'LIKE', "%{$name}%")
+            ->orWhere('middle_name', 'LIKE', "%{$name}%")
+            ->orWhere('last_name', 'LIKE', "%{$name}%")
+            ->orWhere('username', 'LIKE', "%{$name}%")
+            ->get();
+
+        if ($users->isEmpty()) {
+            throw new ModelNotFoundException;
+        }
+
+        return UsersResource::collection($users);
+    }
+
+
     public function update(Request $request, $id)
     {
         $this->validate($request, [
@@ -59,10 +87,10 @@ class UsersController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        Users::findOrFail($id);
+        $user = Users::findOrFail($id);
 
         $logout = $request->user()->token()->revoke();
-        $delete = Users::find($id)->delete();
+        $delete = $user->delete();
 
         if ($delete && $logout) {
             return response()->json([], 204);

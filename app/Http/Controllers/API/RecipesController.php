@@ -54,6 +54,17 @@ class RecipesController extends Controller
         return RecipesResource::collection($usersRecipes);
     }
 
+    public function search($title)
+    {
+        
+        $recipes = Recipes::where('title', 'LIKE', "%{$title}%")->get();
+
+        if ($recipes->isEmpty()) {
+            throw new ModelNotFoundException;
+        }
+
+        return RecipesResource::collection($recipes);
+    }
     public function store(Request $request, $usersId)
     {
         $this->validate($request, [
