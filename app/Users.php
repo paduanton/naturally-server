@@ -48,4 +48,10 @@ class Users extends Authenticatable
     {
         return $this->belongsToMany(Users::class, 'followers', 'users_id', 'following_users_id')->withTimestamps()->withPivot('id');
     }
+
+    public function followers()
+    {
+        return $this->belongsToMany(Users::class, 'followers', 'users_id', 'following_users_id')->withTimestamps()->withPivot('id');
+    }
+
 }
