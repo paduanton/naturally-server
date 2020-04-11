@@ -41,6 +41,11 @@ class Users extends Authenticatable
 
     public function images()
     {
-        return $this->hasMany(Users::class);
+        return $this->hasMany(UsersImages::class);
+    }
+
+    public function following()
+    {
+        return $this->belongsToMany(Users::class, 'followers', 'users_id', 'following_users_id')->withTimestamps()->withPivot('id');
     }
 }

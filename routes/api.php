@@ -68,5 +68,15 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->get('/users/{usersId}/images', 'API\UsersImagesController@index');
         $router->post('/users/{id}/images/', 'API\UsersImagesController@upload');
         $router->patch('/users/{usersId}/images/{id}', 'API\UsersImagesController@update');
+
+        /*
+            Followers Routes
+        */
+
+        $router->post('/users/{firstUsersId}/follow/{secondUsersId}', 'API\FollowingController@store');
+        $router->get('/users/{id}/followers', 'API\FollowingController@get');
+        $router->get('/users/{id}/following', 'API\FollowingController@index');
+        $router->get('/users/{firstUsersId}/unfollow/{secondUsersId}', 'API\FollowingController@index');
+
     });
 });

@@ -42,8 +42,7 @@ class SocialAuthController extends Controller
 
             return response()->json($accessToken);
         } catch (Exception $exception) {
-            // throw OAuthServerException::invalidCredentials();
-        throw $exception;
+            throw OAuthServerException::invalidCredentials();
         }
 
     }
