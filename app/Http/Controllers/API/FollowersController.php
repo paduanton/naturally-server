@@ -2,34 +2,38 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Followers;
 use App\Users;
-use App\Http\Controllers\Controller;
+use App\Followers;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class FollowersController extends Controller
 {
     
-    public function store($firstUsersId, $secondUsersId)
+    public function follow($firstUsersId, $secondUsersId)
     {
         $user = Users::find($firstUsersId);
         $secondUser = Users::find($secondUsersId);
         $user->following()->save($secondUser);
+
+        // $roleID = 1;
+        // $user->roles()->attach($roleID);
+    
     }
 
     
-    public function following(Followers $following)
+    public function getFollowers(Followers $following)
     {
         //
     }
 
-    public function followers(Followers $following)
+    public function getFollowing(Followers $following)
     {
         //
     }
 
-    public function destroy(Followers $following)
+    public function unfollow(Followers $following)
     {
-        //
+        // unfollowed_at
     }
 }
