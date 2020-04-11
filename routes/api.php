@@ -33,7 +33,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         /*
             Users Routes
         */
-        
+
         $router->get('/search/users/{name}', 'API\UsersController@search');
         $router->get('/user/{username}', 'API\UsersController@getByUsername');
         $router->apiResource('/users', 'API\UsersController');
@@ -61,7 +61,10 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         /*
             UsersImages Routes
         */
-
-        $router->post('/users/{id}/upload/', 'API\UsersImagesController@upload');
+        
+        $router->apiResource('/users/images', 'API\UsersImagesController');
+        $router->get('/users/{usersId}/images', 'API\UsersImagesController@index');
+        $router->post('/users/{id}/images/', 'API\UsersImagesController@upload');
+        $router->patch('/users/{usersId}/images/{id}', 'API\UsersImagesController@update');
     });
 });

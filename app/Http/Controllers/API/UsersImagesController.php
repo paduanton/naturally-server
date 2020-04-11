@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\UsersImagesResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class RecipesImagesController extends Controller
+class UsersImagesController extends Controller
 {
     public function index($usersId)
     {
