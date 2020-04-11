@@ -5,6 +5,9 @@ namespace App\Services;
 use App\Users;
 use Exception;
 use App\SocialNetWorks;
+use App\UsersImages;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
 use Laravel\Socialite\Facades\Socialite;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use App\Services\Interfaces\SocialNetworksProviderInterface;
@@ -59,17 +62,17 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
         $middleName = $providerUser->user['middle_name'];
         $lastName = $providerUser->user['last_name'];
         $email = $providerUser->getEmail();
-        $username = $providerUser->getUsername();
-        $pictureUrl = $providerUser->avatar_original;
+        $username = $providerUser->getNickname();
+        $pictureURL = $providerUser->avatar_original;
         $providerId = $providerUser->getId();
-        $profileUrl = $providerUser->profileUrl;
+        $profileURL = $providerUser->profileUrl;
 
         $socialNetwork = new SocialNetWorks();
         $socialNetwork->provider_name = $provider;
         $socialNetwork->provider_id = $providerId;
         $socialNetwork->username = $username;
-        $socialNetwork->profile_url = $profileUrl;
-        $socialNetwork->picture_url = $pictureUrl;
+        $socialNetwork->profile_url = $profileURL;
+        $socialNetwork->picture_url = $pictureURL;
 
         if (!$username) {
             $username = $this->generateUsername($firstName, $lastName);
@@ -81,13 +84,47 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
             'last_name' => $lastName,
             'username' => $username,
             'email' => $email,
-            'picture_url' => $pictureUrl
         ];
 
         $user = Users::firstOrCreate(['email' => $email], $userData);
         $user->social_networks()->save($socialNetwork);
+        $this->storeUsersPicture($pictureURL, $user);
 
         return $user;
+    }
+
+    protected function storeUsersPicture($pictureURL, $user)
+    {
+        $contents = file_get_contents($pictureURL);
+        $tempFile = tempnam(sys_get_temp_dir(), 'naturally');
+        file_put_contents($tempFile, $contents);
+        $file = new UploadedFile($tempFile, $tempFile);
+
+        $image = new UsersImages();
+        $image->original_filename = $file->getClientOriginalName();
+        $image->original_extension = 'jpeg';
+        $image->mime = $file->getClientMimeType();
+
+        $storeImage = $file->store('uploads/users/images', 'public');
+
+        $image->filename = basename($storeImage);
+        $image->path = $storeImage;
+        $image->picture_url = url('storage/' . $image->path);
+        $image->thumbnail = $this->getThumbnail($user);
+
+        $user->images()->save($image);
+        unlink($tempFile);
+    }
+
+    protected function getThumbnail($user)
+    {
+        $userHasThumbnail = UsersImages::where('thumbnail', true)->where('users_id', $user->id)->first();
+
+        if (!$userHasThumbnail) {
+            return true;
+        }
+
+        return false;
     }
 
     protected function generateUsername($firstName, $lastName)

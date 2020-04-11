@@ -53,7 +53,8 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
             RecipesImages Routes
         */
 
-        $router->apiResource('/recipes/images', 'API\RecipesImagesController');
+        $router->get('/images/{id}/recipes', 'API\RecipesImagesController@show');
+        $router->delete('/images/{id}/recipes', 'API\RecipesImagesController@destroy');
         $router->get('/recipes/{recipesId}/images', 'API\RecipesImagesController@index');
         $router->post('/recipes/{recipesId}/images', 'API\RecipesImagesController@upload');
         $router->patch('/recipes/{recipesId}/images/{id}', 'API\RecipesImagesController@update');
@@ -62,7 +63,8 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
             UsersImages Routes
         */
         
-        $router->apiResource('/users/images', 'API\UsersImagesController');
+        $router->get('/images/{id}/users', 'API\UsersImagesController@show');
+        $router->delete('/images/{id}/users', 'API\UsersImagesController@destroy');
         $router->get('/users/{usersId}/images', 'API\UsersImagesController@index');
         $router->post('/users/{id}/images/', 'API\UsersImagesController@upload');
         $router->patch('/users/{usersId}/images/{id}', 'API\UsersImagesController@update');
