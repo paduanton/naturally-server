@@ -76,7 +76,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->post('/users/{firstUsersId}/follow/{secondUsersId}', 'API\FollowersController@follow');
         $router->get('/users/{id}/followers', 'API\FollowersController@getFollowers');
         $router->get('/users/{id}/following', 'API\FollowersController@getFollowing');
-        $router->get('/users/{firstUsersId}/mutual/{secondUsersId}/followers', 'API\FollowersController@getMutualFollowers');
+        $router->get('/users/{firstUsersId}/mutual/{secondUsersId}/following', 'API\FollowersController@getMutualFollowing');
         $router->delete('/users/{firstUsersId}/unfollow/{secondUsersId}', 'API\FollowersController@unfollow');
 
     });

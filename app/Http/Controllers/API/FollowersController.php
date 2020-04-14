@@ -22,7 +22,7 @@ class FollowersController extends Controller
     {
         // select following_users_id from followers where users_id = :id
 
-        $user = Users::find($id);
+        $user = Users::find($id); // hidden pivot
 
         return response()->json($user->following, 200);
     }
@@ -38,7 +38,7 @@ class FollowersController extends Controller
 
     }
 
-    public function getMutualFollowers($firstUsersId, $secondUsersId)
+    public function getMutualFollowing($firstUsersId, $secondUsersId)
     {
         //
     }
