@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use Exception;
 use App\Users;
 use Carbon\Carbon;
 use App\Followers;
@@ -46,23 +47,28 @@ class FollowersController extends Controller
         $user = Users::findOrFail($firstUsersId);
         $followedUser = Users::findOrFail($secondUsersId);
 
-        $relationshipBetweenUsers = $this->isFollowingRelationshipEstablished($firstUsersId, $secondUsersId);
+        if ($firstUsersId === $secondUsersId) {
+            return response()->json(['message' => 'a user can not follow itself'], 400);
+        }
 
-        if($relationshipBetweenUsers) {
-            return response()->json($relationshipBetweenUsers, 200);
+        $usersHaveRelationship = $this->isFollowingRelationshipEstablished($firstUsersId, $secondUsersId);
+
+        if ($usersHaveRelationship) {
+            return response()->json($usersHaveRelationship, 200);
         }
 
         $usersHistory = $this->hasBeenFollowedBefore($firstUsersId, $secondUsersId);
 
-        if($usersHistory){
+        if ($usersHistory) {
             $usersHistory->restore();
-            $usersHistory->update(['followed_at' => Carbon::now()]);
-            return response()->json($usersHistory, 201);
+            $follower = Followers::where('id', $usersHistory->id)->update(['followed_at' => Carbon::now()]);
+
+            return response()->json(Followers::find($usersHistory->id), 201);
         }
 
         $follower = new Followers();
-        $follower->users_id = $user;
-        $follower->following_users_id = $followedUser;
+        $follower->users_id = $user->id;
+        $follower->following_users_id = $followedUser->id;
         $follower->followed_at = Carbon::now();
         $follower->save();
 
@@ -76,20 +82,20 @@ class FollowersController extends Controller
 
     protected function hasBeenFollowedBefore($firstUsersId, $secondUsersId)
     {
-        $follower = Followers::where('users_id', $firstUsersId)->where('following_users_id', $secondUsersId)->trashed();
+        $follower = Followers::onlyTrashed()->where('users_id', $firstUsersId)->where('following_users_id', $secondUsersId)->first();
 
-        if(!$follower) {
-            return false;
+        if ($follower) {
+            return $follower;
         }
 
-        return $follower;
+        return false;
     }
 
     protected function isFollowingRelationshipEstablished($firstUsersId, $secondUsersId)
     {
         $relationship = Followers::where('users_id', $firstUsersId)->where('following_users_id', $secondUsersId)->first();
 
-        if(!$relationship) {
+        if (!$relationship) {
             return false;
         }
 
