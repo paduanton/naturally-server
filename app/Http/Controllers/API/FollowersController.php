@@ -3,39 +3,37 @@
 namespace App\Http\Controllers\API;
 
 use App\Users;
+use Carbon\Carbon;
 use App\Followers;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UsersResource;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class FollowersController extends Controller
 {
 
     public function getFollowers($id)
     {
-        // select users_id from followers where following_users_id = :id
-        $user = Users::find($id);
+        $user = Users::findOrFail($id);
+        $userFollowers = $user->followers;
 
-        return response()->json($user->followers, 200);
+        if ($userFollowers->isEmpty()) {
+            throw new ModelNotFoundException;
+        }
+
+        return UsersResource::collection($userFollowers);
     }
 
     public function getFollowing($id)
     {
-        // select following_users_id from followers where users_id = :id
+        $user = Users::findOrFail($id);
+        $whomUserIsFollowing = $user->following;
 
-        $user = Users::find($id); // hidden pivot
+        if ($whomUserIsFollowing->isEmpty()) {
+            throw new ModelNotFoundException;
+        }
 
-        return response()->json($user->following, 200);
-    }
-
-    public function follow($firstUsersId, $secondUsersId)
-    {
-        $user = Users::find($firstUsersId);
-        $secondUser = Users::find($secondUsersId);
-        $user->following()->save($secondUser);
-
-        // $roleID = 1;
-        // $user->roles()->attach($roleID);
-
+        return UsersResource::collection($whomUserIsFollowing);
     }
 
     public function getMutualFollowing($firstUsersId, $secondUsersId)
@@ -43,8 +41,58 @@ class FollowersController extends Controller
         //
     }
 
+    public function follow($firstUsersId, $secondUsersId)
+    {
+        $user = Users::findOrFail($firstUsersId);
+        $followedUser = Users::findOrFail($secondUsersId);
+
+        $relationshipBetweenUsers = $this->isFollowingRelationshipEstablished($firstUsersId, $secondUsersId);
+
+        if($relationshipBetweenUsers) {
+            return response()->json($relationshipBetweenUsers, 200);
+        }
+
+        $usersHistory = $this->hasBeenFollowedBefore($firstUsersId, $secondUsersId);
+
+        if($usersHistory){
+            $usersHistory->restore();
+            $usersHistory->update(['followed_at' => Carbon::now()]);
+            return response()->json($usersHistory, 201);
+        }
+
+        $follower = new Followers();
+        $follower->users_id = $user;
+        $follower->following_users_id = $followedUser;
+        $follower->followed_at = Carbon::now();
+        $follower->save();
+
+        return response()->json($follower, 201);
+    }
+
     public function unfollow($firstUsersId, $secondUsersId)
     {
         // unfollowed_at
+    }
+
+    protected function hasBeenFollowedBefore($firstUsersId, $secondUsersId)
+    {
+        $follower = Followers::where('users_id', $firstUsersId)->where('following_users_id', $secondUsersId)->trashed();
+
+        if(!$follower) {
+            return false;
+        }
+
+        return $follower;
+    }
+
+    protected function isFollowingRelationshipEstablished($firstUsersId, $secondUsersId)
+    {
+        $relationship = Followers::where('users_id', $firstUsersId)->where('following_users_id', $secondUsersId)->first();
+
+        if(!$relationship) {
+            return false;
+        }
+
+        return $relationship;
     }
 }

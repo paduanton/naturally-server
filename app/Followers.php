@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Followers extends Model
 {
@@ -11,6 +12,9 @@ class Followers extends Model
 
         - The combination users_id and following_users_id is unique
     */
+
+    use SoftDeletes;
+
     protected $table = 'followers';
 
     protected $fillable = [
@@ -18,15 +22,4 @@ class Followers extends Model
     ];
 
     const DELETED_AT = 'unfollowed_at';
-
-
-    public function following()
-    {
-        return $this->belongsTo(Users::class, 'users_id');
-    }
-
-    public function followers()
-    {
-        return $this->belongsTo(Users::class, 'following_users_id');
-    }
 }

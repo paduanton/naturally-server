@@ -21,7 +21,7 @@ class Users extends Authenticatable
 
 
     protected $hidden = [
-        'password', 'remember_token', 'deleted_at',
+        'password', 'remember_token', 'deleted_at', 'pivot'
     ];
 
 
