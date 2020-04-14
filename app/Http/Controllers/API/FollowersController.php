@@ -51,19 +51,21 @@ class FollowersController extends Controller
             return response()->json(['message' => 'a user can not follow itself'], 400);
         }
 
-        $usersHaveRelationship = $this->isFollowingRelationshipEstablished($firstUsersId, $secondUsersId);
+        $usersRelationship = $this->isFollowingRelationshipEstablished($firstUsersId, $secondUsersId);
 
-        if ($usersHaveRelationship) {
-            return response()->json($usersHaveRelationship, 200);
+        if ($usersRelationship) {
+            return response()->json($usersRelationship, 200);
         }
 
         $usersHistory = $this->hasBeenFollowedBefore($firstUsersId, $secondUsersId);
 
         if ($usersHistory) {
             $usersHistory->restore();
+            
             $follower = Followers::where('id', $usersHistory->id)->update(['followed_at' => Carbon::now()]);
+            $follower = Followers::find($usersHistory->id);
 
-            return response()->json(Followers::find($usersHistory->id), 201);
+            return response()->json($follower, 201);
         }
 
         $follower = new Followers();
