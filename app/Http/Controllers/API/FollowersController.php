@@ -9,7 +9,24 @@ use App\Http\Controllers\Controller;
 
 class FollowersController extends Controller
 {
-    
+
+    public function getFollowers($id)
+    {
+        // select users_id from followers where following_users_id = :id
+        $user = Users::find($id);
+
+        return response()->json($user->followers, 200);
+    }
+
+    public function getFollowing($id)
+    {
+        // select following_users_id from followers where users_id = :id
+
+        $user = Users::find($id);
+
+        return response()->json($user->following, 200);
+    }
+
     public function follow($firstUsersId, $secondUsersId)
     {
         $user = Users::find($firstUsersId);
@@ -18,21 +35,15 @@ class FollowersController extends Controller
 
         // $roleID = 1;
         // $user->roles()->attach($roleID);
-    
+
     }
 
-    
-    public function getFollowers(Followers $following)
+    public function getMutualFollowers($firstUsersId, $secondUsersId)
     {
         //
     }
 
-    public function getFollowing(Followers $following)
-    {
-        //
-    }
-
-    public function unfollow(Followers $following)
+    public function unfollow($firstUsersId, $secondUsersId)
     {
         // unfollowed_at
     }

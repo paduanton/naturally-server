@@ -21,7 +21,7 @@ class Users extends Authenticatable
 
 
     protected $hidden = [
-        'password', 'remember_token', 'deleted_at'
+        'password', 'remember_token', 'deleted_at', 'pivot'
     ];
 
 
@@ -44,14 +44,14 @@ class Users extends Authenticatable
         return $this->hasMany(UsersImages::class);
     }
 
-    public function following()
-    {
-        return $this->belongsToMany(Users::class, 'followers', 'users_id', 'following_users_id')->withTimestamps()->withPivot('id');
-    }
-
     public function followers()
     {
-        return $this->belongsToMany(Users::class, 'followers', 'users_id', 'following_users_id')->withTimestamps()->withPivot('id');
+        return $this->belongsToMany(Users::class, 'followers', 'following_users_id');
+    }
+
+    public function following()
+    {
+        return $this->belongsToMany(Users::class, 'followers', 'users_id')->withPivot('id');
     }
 
 }
