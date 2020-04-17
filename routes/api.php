@@ -28,7 +28,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
     $router->post('/signup', 'API\AuthController@signup');
 
     Route::group(['middleware' => 'auth:api'], function () use ($router) {
-        $router->get('/logout', 'API\AuthController@logout');
+        $router->post('/logout', 'API\AuthController@logout');
 
         /*
             Users Routes

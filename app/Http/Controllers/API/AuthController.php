@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Users;
@@ -22,7 +23,7 @@ class AuthController extends Controller
             'password' => 'required|confirmed|string',
             'birthday' => 'nullable|date'
         ]);
-        
+
         $request['username'] = $this->generateUsername($request['first_name'], $request['last_name']);
         $request['password'] = Hash::make($request['password']);
         $user = Users::create($request->all());
@@ -39,13 +40,17 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $this->validate($request, [
-            'email' => 'email|required',
-            'password' => 'required|string'
+            'email' => 'email|required_without:username',
+            'username' => 'string|required_without:email',
+            'password' => 'required|string',
+            'remember_me' => 'nullable|boolean'
         ]);
+        
+        $remember = $request['remember_me'];
+        unset($request['remember_me']);
 
-        $credentials = request(['email', 'password']);
-
-        if (!Auth::attempt($credentials)) {
+        $credentials = $request->all();
+        if (!Auth::attempt($credentials, $remember)) {
             return response()->json([
                 'error' => 'Unauthorized',
                 'message' => "Invalid credentials",
@@ -78,7 +83,7 @@ class AuthController extends Controller
         $username = $firstName . "." . $lastName;
 
         $username = str_replace(" ", "", $username);
-        $username = iconv('UTF-8','ASCII//TRANSLIT', $username);
+        $username = iconv('UTF-8', 'ASCII//TRANSLIT', $username);
 
         $user = Users::where('username', $username)->firstOrFail();
 

@@ -42,7 +42,7 @@ class RecipesImagesController extends Controller
         $recipe = Recipes::findOrFail($recipesId);
 
         if ($thumbnail) {
-            $recipeHasThumbnail = RecipesImages::where('thumbnail', $thumbnail)->where('recipes_id', $recipesId)->firstOrFail();
+            $recipeHasThumbnail = RecipesImages::where('thumbnail', $thumbnail)->where('recipes_id', $recipesId)->first();
 
             if ($recipeHasThumbnail) {
                 return response()->json([
@@ -52,7 +52,7 @@ class RecipesImagesController extends Controller
             }
         }
 
-        $recipeHasImage = RecipesImages::where('recipes_id', $recipesId)->firstOrFail();
+        $recipeHasImage = RecipesImages::where('recipes_id', $recipesId)->first();
 
         if (!$recipeHasImage && !$thumbnail) {
             return response()->json([
@@ -88,7 +88,6 @@ class RecipesImagesController extends Controller
                 'required',
                 'boolean',
                 Rule::in([true, 1])
-
             ]
         ]);
 
@@ -98,7 +97,7 @@ class RecipesImagesController extends Controller
             return new RecipesImagesResource($recipeImage);
         }
 
-        $currentThumbnailImage = RecipesImages::where('recipes_id', $recipesId)->where('thumbnail', true)->firstOrFail();
+        $currentThumbnailImage = RecipesImages::where('recipes_id', $recipesId)->where('thumbnail', true)->first();
 
         if ($currentThumbnailImage) {
             $currentThumbnailImage->update(['thumbnail' => false]);

@@ -38,11 +38,11 @@ class UsersImagesController extends Controller
             'thumbnail' => 'required|boolean'
         ]);
 
-        $thumbnail = $request['thumbnail'];
         $user = Users::findOrFail($usersId);
+        $thumbnail = $request['thumbnail'];
 
         if ($thumbnail) {
-            $userHasThumbnail = UsersImages::where('thumbnail', $thumbnail)->where('users_id', $usersId)->firstOrFail();
+            $userHasThumbnail = UsersImages::where('thumbnail', $thumbnail)->where('users_id', $usersId)->first();
 
             if ($userHasThumbnail) {
                 return response()->json([
@@ -52,7 +52,7 @@ class UsersImagesController extends Controller
             }
         }
 
-        $userHasImage = UsersImages::where('users_id', $usersId)->firstOrFail();
+        $userHasImage = UsersImages::where('users_id', $usersId)->first();
 
         if (!$userHasImage && !$thumbnail) {
             return response()->json([
@@ -97,7 +97,7 @@ class UsersImagesController extends Controller
             return new UsersImagesResource($userImage);
         }
 
-        $currentThumbnailImage = UsersImages::where('users_id', $usersId)->where('thumbnail', true)->firstOrFail();
+        $currentThumbnailImage = UsersImages::where('users_id', $usersId)->where('thumbnail', true)->first();
 
         if ($currentThumbnailImage) {
             $currentThumbnailImage->update(['thumbnail' => false]);
