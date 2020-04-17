@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Users;
@@ -45,11 +44,11 @@ class AuthController extends Controller
             'password' => 'required|string',
             'remember_me' => 'nullable|boolean'
         ]);
-        
-        $remember = $request['remember_me'];
-        unset($request['remember_me']);
 
-        $credentials = $request->all();
+        $remember = $request['remember_me'];
+        $login = isset($request['username']) ? 'username' : 'email';
+
+        $credentials = request([$login, 'password']);
         if (!Auth::attempt($credentials, $remember)) {
             return response()->json([
                 'error' => 'Unauthorized',

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use App\Services\SocialNetworksProvider;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Exception;
@@ -21,35 +23,30 @@ class SocialAuthController extends Controller
 
     public function authenticate(Request $request)
     {
+        $this->validate($request, [
+            'access_token' => 'required|string',
+            'remember_me' => 'nullable|boolean',
+            'provider' => [
+                'required',
+                'string',
+                Rule::in(['facebook', 'twitter'])
+            ]
+        ]);
+
         $provider = $request['provider'];
         $providerAccessToken = $request['access_token'];
+        $remember = $request['remember_me'];
         
-        if (!$provider) {
-            throw OAuthServerException::invalidRequest('provider');
-        }
-
-        if (!$providerAccessToken) {
-            throw OAuthServerException::invalidRequest('access_token');
-        }
-
-        if (!$this->isProviderSupported($provider)) {
-            throw OAuthServerException::invalidRequest('provider', 'Invalid provider');
-        }
-
         try {
             $user = $this->socialProvider->getUserEntityByAccessToken($provider, $providerAccessToken);
             $accessToken = $this->generateToken($user);
 
+            Auth::login($user, $remember);
+
             return response()->json($accessToken);
         } catch (Exception $exception) {
-            throw OAuthServerException::invalidCredentials();
+            throw OAuthServerException::invalidCredentials($exception);
         }
-
-    }
-
-    protected function isProviderSupported($provider)
-    {
-        return in_array($provider, ['facebook']);
     }
 
     protected function generateToken($user)
