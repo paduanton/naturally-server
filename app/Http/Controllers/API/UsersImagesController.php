@@ -87,7 +87,7 @@ class UsersImagesController extends Controller
             'thumbnail' => [
                 'required',
                 'boolean',
-                Rule::in([true, 1])
+                Rule::in([true, 1, "1"])
             ]
         ]);
 

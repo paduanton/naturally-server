@@ -17,9 +17,9 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
 {
     protected $userRepository;
 
-    public function getUserEntityByAccessToken($provider, $accessToken)
+    public function getUserEntityByAccessToken($provider, $accessToken, $accessTokenSecret)
     {
-        $user = $this->getUserFromSocialProvider($provider, $accessToken);
+        $user = $this->getUserFromSocialProvider($provider, $accessToken, $accessTokenSecret);
 
         if (!$user) {
             return null;
@@ -28,23 +28,29 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
         return $user;
     }
 
-    protected function getUserFromSocialProvider($provider, $accessToken)
+    protected function getUserFromSocialProvider($provider, $accessToken, $accessTokenSecret)
     {
         try {
-            $userFromProvider = Socialite::driver($provider)->fields([
-                'first_name',
-                'middle_name',
-                'last_name',
-                'email'
-            ])->userFromToken($accessToken);
+            if ($provider === 'twitter' && $accessTokenSecret) {
+                $userFromProvider = Socialite::driver($provider)->userFromTokenAndSecret($accessToken, $accessTokenSecret);
+            } else {
+                $userFromProvider = Socialite::driver($provider)->stateless()->fields([
+                    'first_name',
+                    'middle_name',
+                    'last_name',
+                    'email'
+                ])->userFromToken($accessToken);
+            }
         } catch (Exception $exception) {
-            throw new OAuthServerException(
-                'Authentication error, invalid access token',
-                $errorCode = 400,
-                'invalid_request'
-            );
+            // throw new OAuthServerException(
+            //     'Authentication error, invalid access token',
+            //     $errorCode = 401,
+            //     'invalid_request'
+            // );
+            throw $exception;
         }
 
+        var_dump($userFromProvider);
         return $this->findOrCreateSocialUser($userFromProvider, $provider);
     }
 

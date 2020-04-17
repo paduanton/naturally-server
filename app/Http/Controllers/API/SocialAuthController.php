@@ -30,22 +30,25 @@ class SocialAuthController extends Controller
                 'required',
                 'string',
                 Rule::in(['facebook', 'twitter'])
-            ]
+            ],
+            'access_token_secret' => 'string|required_if:provider,twitter'
         ]);
 
         $provider = $request['provider'];
-        $providerAccessToken = $request['access_token'];
         $remember = $request['remember_me'];
-        
+        $providerAccessToken = $request['access_token'];
+        $providerAccessTokenSecret = isset($request['access_token_secret']) && $provider === 'twitter' ? $request['access_token_secret'] : null;
+
         try {
-            $user = $this->socialProvider->getUserEntityByAccessToken($provider, $providerAccessToken);
+            $user = $this->socialProvider->getUserEntityByAccessToken($provider, $providerAccessToken, $providerAccessTokenSecret);
             $accessToken = $this->generateToken($user);
 
             Auth::login($user, $remember);
 
             return response()->json($accessToken);
         } catch (Exception $exception) {
-            throw OAuthServerException::invalidCredentials($exception);
+            throw $exception;
+            // throw OAuthServerException::invalidCredentials($exception);
         }
     }
 

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Followers extends Model
 {
     /*
-        - User 'users_id' is following user 'following_users_id'
+        - The user 'users_id' is following the user 'following_users_id'
 
         - The combination users_id and following_users_id is unique
     */
