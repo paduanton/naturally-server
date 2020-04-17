@@ -42,7 +42,7 @@ class UsersImagesController extends Controller
         $user = Users::findOrFail($usersId);
 
         if ($thumbnail) {
-            $userHasThumbnail = UsersImages::where('thumbnail', $thumbnail)->where('users_id', $usersId)->first();
+            $userHasThumbnail = UsersImages::where('thumbnail', $thumbnail)->where('users_id', $usersId)->firstOrFail();
 
             if ($userHasThumbnail) {
                 return response()->json([
@@ -52,7 +52,7 @@ class UsersImagesController extends Controller
             }
         }
 
-        $userHasImage = UsersImages::where('users_id', $usersId)->first();
+        $userHasImage = UsersImages::where('users_id', $usersId)->firstOrFail();
 
         if (!$userHasImage && !$thumbnail) {
             return response()->json([
@@ -97,7 +97,7 @@ class UsersImagesController extends Controller
             return new UsersImagesResource($userImage);
         }
 
-        $currentThumbnailImage = UsersImages::where('users_id', $usersId)->where('thumbnail', true)->first();
+        $currentThumbnailImage = UsersImages::where('users_id', $usersId)->where('thumbnail', true)->firstOrFail();
 
         if ($currentThumbnailImage) {
             $currentThumbnailImage->update(['thumbnail' => false]);
@@ -110,7 +110,7 @@ class UsersImagesController extends Controller
         }
 
         return response()->json([
-            'message' => 'could not update users data'
+            'message' => 'could not update users image data'
         ], 409);
     }
 

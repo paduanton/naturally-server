@@ -29,7 +29,7 @@ class UsersController extends Controller
 
     public function getByUsername($username)
     {
-        $user = Users::where('username', $username)->first();
+        $user = Users::where('username', $username)->firstOrFail();
 
         if (!$user) {
             throw new ModelNotFoundException;

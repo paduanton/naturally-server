@@ -42,7 +42,7 @@ class RecipesImagesController extends Controller
         $recipe = Recipes::findOrFail($recipesId);
 
         if ($thumbnail) {
-            $recipeHasThumbnail = RecipesImages::where('thumbnail', $thumbnail)->where('recipes_id', $recipesId)->first();
+            $recipeHasThumbnail = RecipesImages::where('thumbnail', $thumbnail)->where('recipes_id', $recipesId)->firstOrFail();
 
             if ($recipeHasThumbnail) {
                 return response()->json([
@@ -52,7 +52,7 @@ class RecipesImagesController extends Controller
             }
         }
 
-        $recipeHasImage = RecipesImages::where('recipes_id', $recipesId)->first();
+        $recipeHasImage = RecipesImages::where('recipes_id', $recipesId)->firstOrFail();
 
         if (!$recipeHasImage && !$thumbnail) {
             return response()->json([
@@ -98,7 +98,7 @@ class RecipesImagesController extends Controller
             return new RecipesImagesResource($recipeImage);
         }
 
-        $currentThumbnailImage = RecipesImages::where('recipes_id', $recipesId)->where('thumbnail', true)->first();
+        $currentThumbnailImage = RecipesImages::where('recipes_id', $recipesId)->where('thumbnail', true)->firstOrFail();
 
         if ($currentThumbnailImage) {
             $currentThumbnailImage->update(['thumbnail' => false]);
@@ -111,7 +111,7 @@ class RecipesImagesController extends Controller
         }
 
         return response()->json([
-            'message' => 'could not update users data'
+            'message' => 'could not update recipe image data'
         ], 409);
     }
 

@@ -6,6 +6,7 @@ use Exception;
 use App\Users;
 use Carbon\Carbon;
 use App\Followers;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UsersResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -39,7 +40,42 @@ class FollowersController extends Controller
 
     public function getMutualFollowing($firstUsersId, $secondUsersId)
     {
-        //
+        $firstUser = Users::findOrFail($firstUsersId);
+        $secondUser = Users::findOrFail($secondUsersId);
+
+        $mutualFollowing = DB::table('users')
+            ->join('followers as firstUserFollowing', 'users.id', '=', 'firstUserFollowing.following_users_id')
+            ->where('firstUserFollowing.users_id', $firstUser->id)
+            ->join('followers as secondUsersFollowing', 'users.id', '=', 'secondUsersFollowing.following_users_id')
+            ->where('secondUsersFollowing.users_id', $secondUser->id)
+            ->select('users.*')
+            ->get();
+
+        if ($mutualFollowing->isEmpty()) {
+            throw new ModelNotFoundException;
+        }
+
+        return UsersResource::collection($mutualFollowing);
+    }
+
+    public function getMutualFollowers($firstUsersId, $secondUsersId)
+    {
+        $firstUser = Users::findOrFail($firstUsersId);
+        $secondUser = Users::findOrFail($secondUsersId);
+
+        $mutualFollowing = DB::table('users')
+            ->join('followers as firstUserFollowers', 'users.id', '=', 'firstUserFollowers.users_id')
+            ->where('firstUserFollowers.following_users_id', $firstUser->id)
+            ->join('followers as secondUsersFollowers', 'users.id', '=', 'secondUsersFollowers.users_id')
+            ->where('secondUsersFollowers.following_users_id', $secondUser->id)
+            ->select('users.*')
+            ->get();
+
+        if ($mutualFollowing->isEmpty()) {
+            throw new ModelNotFoundException;
+        }
+
+        return UsersResource::collection($mutualFollowing);
     }
 
     public function follow($firstUsersId, $secondUsersId)
@@ -61,7 +97,7 @@ class FollowersController extends Controller
 
         if ($usersHistory) {
             $usersHistory->restore();
-            
+
             $follower = Followers::where('id', $usersHistory->id)->update(['followed_at' => Carbon::now()]);
             $follower = Followers::find($usersHistory->id);
 
@@ -79,7 +115,19 @@ class FollowersController extends Controller
 
     public function unfollow($firstUsersId, $secondUsersId)
     {
-        // unfollowed_at
+        $user = Users::findOrFail($firstUsersId);
+        $followedUser = Users::findOrFail($secondUsersId);
+
+        $followRelationship = Followers::where('users_id', $user->id)->where('following_users_id', $followedUser->id)->firstOrFail();
+        $delete = $followRelationship->delete();
+
+        if ($delete) {
+            return response()->json([], 204);
+        }
+
+        return response()->json([
+            'message' => 'could not delete follower data',
+        ], 400);
     }
 
     protected function hasBeenFollowedBefore($firstUsersId, $secondUsersId)

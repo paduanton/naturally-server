@@ -80,13 +80,13 @@ class AuthController extends Controller
         $username = str_replace(" ", "", $username);
         $username = iconv('UTF-8','ASCII//TRANSLIT', $username);
 
-        $user = Users::where('username', $username)->first();
+        $user = Users::where('username', $username)->firstOrFail();
 
         while ($user) {
             $randomNumber = mt_rand();
             $username = $username . $randomNumber;
 
-            $user = Users::where('username', $username)->first();
+            $user = Users::where('username', $username)->firstOrFail();
         }
 
         return $username;
