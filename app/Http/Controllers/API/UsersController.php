@@ -41,9 +41,7 @@ class UsersController extends Controller
     public function search($name)
     {
         
-        $users = Users::where('first_name', 'LIKE', "%{$name}%")
-            ->orWhere('middle_name', 'LIKE', "%{$name}%")
-            ->orWhere('last_name', 'LIKE', "%{$name}%")
+        $users = Users::where('name', 'LIKE', "%{$name}%")
             ->orWhere('username', 'LIKE', "%{$name}%")
             ->get();
 
@@ -58,9 +56,7 @@ class UsersController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'first_name' => 'nullable|string',
-            'middle_name' => 'nullable|string',
-            'last_name' => 'nullable|string',
+            'name' => 'nullable|string',
             'username' => 'nullable|string|unique:users',
             'email' => 'email|nullable|unique:users',
             'password' => 'nullable|confirmed|string',

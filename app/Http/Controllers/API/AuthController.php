@@ -15,15 +15,13 @@ class AuthController extends Controller
     public function signup(Request $request)
     {
         $this->validate($request, [
-            'first_name' => 'required|string',
-            'middle_name' => 'nullable|string',
-            'last_name' => 'required|string',
+            'name' => 'required|string',
             'email' => 'email|required|unique:users',
             'password' => 'required|confirmed|string',
             'birthday' => 'nullable|date'
         ]);
 
-        $request['username'] = $this->generateUsername($request['first_name'], $request['last_name']);
+        $request['username'] = $this->generateUsername($request['name']);
         $request['password'] = Hash::make($request['password']);
         $user = Users::create($request->all());
 
@@ -75,22 +73,30 @@ class AuthController extends Controller
         ], 409);
     }
 
-    protected function generateUsername($firstName, $lastName)
+    protected function generateUsername($name)
     {
+        $firstName = strtok($name, ' ');
         $firstName = strtolower($firstName);
+
+        $lastName = strrchr($name, ' ');
         $lastName = strtolower($lastName);
-        $username = $firstName . "." . $lastName;
+
+        if (!$lastName) {
+            $username = $firstName;
+        } else {
+            $username = $firstName . "." . $lastName;
+        }
 
         $username = str_replace(" ", "", $username);
         $username = iconv('UTF-8', 'ASCII//TRANSLIT', $username);
 
-        $user = Users::where('username', $username)->firstOrFail();
+        $user = Users::where('username', $username)->first();
 
         while ($user) {
             $randomNumber = mt_rand();
             $username = $username . $randomNumber;
 
-            $user = Users::where('username', $username)->firstOrFail();
+            $user = Users::where('username', $username)->first();
         }
 
         return $username;

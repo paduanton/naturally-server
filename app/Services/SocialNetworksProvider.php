@@ -2,56 +2,67 @@
 
 namespace App\Services;
 
-use App\Users;
 use Exception;
-use App\SocialNetWorks;
+use App\Users;
 use App\UsersImages;
-use Illuminate\Support\Facades\Storage;
+use App\SocialNetWorks;
 use Illuminate\Http\UploadedFile;
 use Laravel\Socialite\Facades\Socialite;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use App\Services\Interfaces\SocialNetworksProviderInterface;
+use Laravel\Socialite\Contracts\Provider;
+use League\OAuth1\Client\Server\Twitter;
 
 class SocialNetworksProvider implements SocialNetworksProviderInterface
-
 {
-    protected $userRepository;
 
-    public function getUserEntityByAccessToken($provider, $accessToken, $accessTokenSecret)
-    {
-        $user = $this->getUserFromSocialProvider($provider, $accessToken, $accessTokenSecret);
-
-        if (!$user) {
-            return null;
-        }
-
-        return $user;
-    }
-
-    protected function getUserFromSocialProvider($provider, $accessToken, $accessTokenSecret)
+    public function getUserFromSocialProvider($provider, $accessToken, $accessTokenSecret): Users
     {
         try {
-            if ($provider === 'twitter' && $accessTokenSecret) {
-                $userFromProvider = Socialite::driver($provider)->userFromTokenAndSecret($accessToken, $accessTokenSecret);
-            } else {
-                $userFromProvider = Socialite::driver($provider)->stateless()->fields([
-                    'first_name',
-                    'middle_name',
-                    'last_name',
-                    'email'
-                ])->userFromToken($accessToken);
+            if ($this->isOAuth1ProviderSupported($provider) && $accessTokenSecret) {
+                $userFromProvider = $this->getUserEntityByAccessTokenAndSecret($provider, $accessToken, $accessTokenSecret);
+            } else if ($this->isOAuth2ProviderSupported($provider)) {
+                $userFromProvider = $this->getUserEntityByAccessToken($provider, $accessToken);
             }
         } catch (Exception $exception) {
-            // throw new OAuthServerException(
-            //     'Authentication error, invalid access token',
-            //     $errorCode = 401,
-            //     'invalid_request'
-            // );
             throw $exception;
         }
 
-        var_dump($userFromProvider);
         return $this->findOrCreateSocialUser($userFromProvider, $provider);
+    }
+
+    public function getUserEntityByAccessToken($provider, $accessToken)
+    {
+        try {
+            $userFromOAuth2 = Socialite::driver($provider)->stateless()->userFromToken($accessToken);
+        } catch (OAuthServerException $exception) {
+            throw OAuthServerException::invalidCredentials();
+        } catch (Exception $exception) {
+            throw $exception;
+        }
+
+        return $userFromOAuth2;
+    }
+
+    public function getUserEntityByAccessTokenAndSecret($provider, $accessToken, $accessTokenSecret)
+    {
+        try {
+            $userFromOAuth1 = Socialite::driver($provider)->userFromTokenAndSecret($accessToken, $accessTokenSecret);
+        } catch (Exception $exception) {
+            throw $exception;
+        }
+
+        return $userFromOAuth1;
+    }
+
+    public function isOAuth2ProviderSupported($provider)
+    {
+        return in_array($provider, ['facebook', 'google']);
+    }
+
+    public function isOAuth1ProviderSupported($provider)
+    {
+        return in_array($provider, ['twitter']);
     }
 
     protected function findOrCreateSocialUser($providerUser, $provider)
@@ -64,14 +75,12 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
             return $socialAccount->users;
         }
 
-        $firstName = $providerUser->user['first_name'];
-        $middleName = $providerUser->user['middle_name'];
-        $lastName = $providerUser->user['last_name'];
+        $name = $providerUser->getName();
         $email = $providerUser->getEmail();
         $username = $providerUser->getNickname();
-        $pictureURL = $providerUser->avatar_original;
         $providerId = $providerUser->getId();
-        $profileURL = $providerUser->profileUrl;
+        $pictureURL = $this->getAvatar($providerUser, $provider);
+        $profileURL = $this->getProfileURL($providerUser, $provider);
 
         $socialNetwork = new SocialNetWorks();
         $socialNetwork->provider_name = $provider;
@@ -81,13 +90,11 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
         $socialNetwork->picture_url = $pictureURL;
 
         if (!$username) {
-            $username = $this->generateUsername($firstName, $lastName);
+            $username = $this->generateUsername($name);
         }
 
         $userData = [
-            'first_name' => $firstName,
-            'middle_name' => $middleName,
-            'last_name' => $lastName,
+            'name' => $name,
             'username' => $username,
             'email' => $email,
         ];
@@ -97,6 +104,33 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
         $this->storeUsersPicture($pictureURL, $user);
 
         return $user;
+    }
+
+    protected function getAvatar($providerUser, $provider)
+    {
+        if ($provider === 'google') {
+            $avatar = $providerUser->getAvatar() . "0";
+        } else if ($provider === 'facebook') {
+            $avatar = $providerUser->avatar_original;
+        } elseif ($provider === 'twitter') {
+            $avatar = str_replace('_normal', '', $providerUser->getAvatar());
+            $avatar = str_replace('http', 'https', $avatar);
+        }
+
+        return $avatar;
+    }
+
+    protected function getProfileURL($providerUser, $provider)
+    {
+        if ($provider === 'twitter') {
+            $profileURL = "https://twitter.com/{$providerUser->getNickname()}";
+        } else if ($provider === 'facebook') {
+            $profileURL = "https://facebook.com/{$providerUser->getId()}";
+        } else {
+            $profileURL = null;
+        }
+
+        return $profileURL;
     }
 
     protected function storeUsersPicture($pictureURL, $user)
@@ -116,13 +150,13 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
         $image->filename = basename($storeImage);
         $image->path = $storeImage;
         $image->picture_url = url('storage/' . $image->path);
-        $image->thumbnail = $this->getThumbnail($user);
+        $image->thumbnail = $this->setThumbnail($user);
 
         $user->images()->save($image);
         unlink($tempFile);
     }
 
-    protected function getThumbnail($user)
+    protected function setThumbnail($user)
     {
         $userHasThumbnail = UsersImages::where('thumbnail', true)->where('users_id', $user->id)->first();
 
@@ -133,11 +167,19 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
         return false;
     }
 
-    protected function generateUsername($firstName, $lastName)
+    protected function generateUsername($name)
     {
+        $firstName = strtok($name, ' ');
         $firstName = strtolower($firstName);
+        
+        $lastName = strrchr($name, ' ');
         $lastName = strtolower($lastName);
-        $username = $firstName . "." . $lastName;
+
+        if(!$lastName) {
+            $username = $firstName;
+        } else {
+            $username = $firstName . "." . $lastName;
+        }
 
         $username = str_replace(" ", "", $username);
         $username = iconv('UTF-8', 'ASCII//TRANSLIT', $username);

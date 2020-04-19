@@ -17,12 +17,14 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
     */
 
         // Recipes
+
     $router->get('/search/recipes/{title}', 'API\RecipesController@search');
     $router->get('/recipes/{id}', 'API\RecipesController@show');
 
     /*
         Authentication Routes
     */
+
     $router->post('/oauth/social', 'API\SocialAuthController@authenticate');
     $router->post('/login', 'API\AuthController@login');
     $router->post('/signup', 'API\AuthController@signup');

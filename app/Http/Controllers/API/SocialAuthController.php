@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use League\OAuth2\Server\Exception\OAuthServerException;
 use App\Services\SocialNetworksProvider;
+use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -40,16 +41,48 @@ class SocialAuthController extends Controller
         $providerAccessTokenSecret = isset($request['access_token_secret']) && $provider === 'twitter' ? $request['access_token_secret'] : null;
 
         try {
-            $user = $this->socialProvider->getUserEntityByAccessToken($provider, $providerAccessToken, $providerAccessTokenSecret);
+            $user = $this->socialProvider->getUserFromSocialProvider($provider, $providerAccessToken, $providerAccessTokenSecret);
             $accessToken = $this->generateToken($user);
 
             Auth::login($user, $remember);
 
-            return response()->json($accessToken);
+        } catch (OAuthServerException $exception) {
+            throw OAuthServerException::invalidCredentials();
         } catch (Exception $exception) {
             throw $exception;
-            // throw OAuthServerException::invalidCredentials($exception);
         }
+
+        return response()->json($accessToken);
+    }
+
+    public function handleProviderCallback($provider)
+    {
+        try {
+            $userFromProvider = Socialite::driver($provider)->user();
+
+            $providerAccessToken = $userFromProvider->token;
+            $providerAccessTokenSecret = $userFromProvider->tokenSecret;
+        } catch (Exception $exception) {
+            throw $exception;
+        } finally {
+            return response()->json([
+                'provider' => $provider,
+                'access_token' => $providerAccessToken,
+                'access_token_secret' => $providerAccessTokenSecret
+            ]);
+        }
+    }
+
+    public function redirectToProvider($provider)
+    {
+        if (!$this->socialProvider->isOAuth1ProviderSupported($provider)) {
+            return response()->json([
+                'error' => 'invalid provider',
+                'message' => "the social provider {$provider} is not supported",
+            ], 400);
+        }
+
+        return Socialite::driver($provider)->redirect();
     }
 
     protected function generateToken($user)
