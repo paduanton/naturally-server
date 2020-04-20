@@ -10,8 +10,6 @@ use Illuminate\Http\UploadedFile;
 use Laravel\Socialite\Facades\Socialite;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use App\Services\Interfaces\SocialNetworksProviderInterface;
-use Laravel\Socialite\Contracts\Provider;
-use League\OAuth1\Client\Server\Twitter;
 
 class SocialNetworksProvider implements SocialNetworksProviderInterface
 {
@@ -36,7 +34,7 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
         try {
             $userFromOAuth2 = Socialite::driver($provider)->stateless()->userFromToken($accessToken);
         } catch (OAuthServerException $exception) {
-            throw OAuthServerException::invalidCredentials();
+            throw $exception;
         } catch (Exception $exception) {
             throw $exception;
         }
@@ -81,7 +79,7 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
         $providerId = $providerUser->getId();
         $pictureURL = $this->getAvatar($providerUser, $provider);
         $profileURL = $this->getProfileURL($providerUser, $provider);
-
+        
         $socialNetwork = new SocialNetWorks();
         $socialNetwork->provider_name = $provider;
         $socialNetwork->provider_id = $providerId;
@@ -109,7 +107,7 @@ class SocialNetworksProvider implements SocialNetworksProviderInterface
     protected function getAvatar($providerUser, $provider)
     {
         if ($provider === 'google') {
-            $avatar = $providerUser->getAvatar() . "0";
+            $avatar = $providerUser->getAvatar();
         } else if ($provider === 'facebook') {
             $avatar = $providerUser->avatar_original;
         } elseif ($provider === 'twitter') {

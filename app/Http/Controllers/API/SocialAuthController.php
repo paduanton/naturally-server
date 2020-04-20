@@ -30,7 +30,7 @@ class SocialAuthController extends Controller
             'provider' => [
                 'required',
                 'string',
-                Rule::in(['facebook', 'twitter'])
+                Rule::in(['facebook', 'twitter', 'google'])
             ],
             'access_token_secret' => 'string|required_if:provider,twitter'
         ]);
@@ -47,7 +47,7 @@ class SocialAuthController extends Controller
             Auth::login($user, $remember);
 
         } catch (OAuthServerException $exception) {
-            throw OAuthServerException::invalidCredentials();
+            throw $exception;
         } catch (Exception $exception) {
             throw $exception;
         }
