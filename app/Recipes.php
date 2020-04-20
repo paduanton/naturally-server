@@ -14,7 +14,7 @@ class Recipes extends Model
 
     protected $fillable = [
         'users_id', 'title', 'description', 'cooking_time', 'category',
-        'meal_type', 'video_url', 'yields', 'cost', 'complexity', 'notes'
+        'meal_type', 'youtube_video_url', 'yields', 'cost', 'complexity', 'notes'
     ];
 
     protected $hidden = [

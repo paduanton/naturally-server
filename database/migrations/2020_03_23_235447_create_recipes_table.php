@@ -17,7 +17,7 @@ class CreateRecipesTable extends Migration
             $table->timeTz('cooking_time', 0);
             $table->enum('category', ['vegan', 'chinese', 'italian', 'mexican']); 
             $table->enum('meal_type', ['breakfast', 'dessert', 'dinner', 'lunch']); 
-            $table->string('video_url')->nullable();
+            $table->string('youtube_video_url')->nullable();
             $table->double('yields');
             $table->tinyInteger('cost');
             $table->tinyInteger('complexity');

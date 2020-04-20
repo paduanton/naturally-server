@@ -17,7 +17,7 @@ class RecipesResource extends JsonResource
             'cooking_time' => $this->cooking_time,
             'category' => $this->category,
             'meal_type' => $this->meal_type,
-            'video_url' => $this->video_url,
+            'youtube_video_url' => $this->youtube_video_url,
             'yields' => $this->yields,
             'cost' => $this->cost,
             'complexity' => $this->complexity,
