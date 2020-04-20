@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use League\OAuth2\Server\Exception\OAuthServerException;
-use App\Services\SocialNetworksProvider;
+use App\Services\SocialNetworkService;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +17,7 @@ class SocialAuthController extends Controller
 
     protected $socialProvider;
 
-    public function __construct(SocialNetworksProvider $social)
+    public function __construct(SocialNetworkService $social)
     {
         $this->socialProvider = $social;
     }
@@ -45,7 +45,6 @@ class SocialAuthController extends Controller
             $accessToken = $this->generateToken($user);
 
             Auth::login($user, $remember);
-
         } catch (OAuthServerException $exception) {
             throw $exception;
         } catch (Exception $exception) {
@@ -57,6 +56,10 @@ class SocialAuthController extends Controller
 
     public function handleProviderCallback($provider)
     {
+        if(!$this->socialProvider->isOAuth1ProviderSupported($provider)) {
+            throw OAuthServerException::invalidCredentials();
+        }
+
         try {
             $userFromProvider = Socialite::driver($provider)->user();
 
@@ -65,11 +68,14 @@ class SocialAuthController extends Controller
         } catch (Exception $exception) {
             throw $exception;
         } finally {
+            return redirect()->away("http://frontend.naturally.com/provider/{$provider}/token/{$providerAccessToken}/secret/{$providerAccessTokenSecret}/callback"); // frontend callback
+            /*
             return response()->json([
                 'provider' => $provider,
                 'access_token' => $providerAccessToken,
                 'access_token_secret' => $providerAccessTokenSecret
             ]);
+            */
         }
     }
 

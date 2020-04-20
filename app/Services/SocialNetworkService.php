@@ -9,9 +9,9 @@ use App\SocialNetWorks;
 use Illuminate\Http\UploadedFile;
 use Laravel\Socialite\Facades\Socialite;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use App\Services\Interfaces\SocialNetworksProviderInterface;
+use App\Services\Interfaces\SocialNetworkServiceInterface;
 
-class SocialNetworksProvider implements SocialNetworksProviderInterface
+class SocialNetworkService implements SocialNetworkServiceInterface
 {
 
     public function getUserFromSocialProvider($provider, $accessToken, $accessTokenSecret): Users
