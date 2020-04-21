@@ -31,6 +31,14 @@ class ProfileImagesController extends Controller
         return new ProfileImagesResource($image);
     }
 
+    public function getThumbnail($usersId)
+    {
+        Users::findOrFail($usersId);
+        $userThumbnail = ProfileImages::where('users_id', $usersId)->where('thumbnail', true)->firstOrFail();
+
+        return new ProfileImagesResource($userThumbnail);
+    }
+
     public function upload(Request $request, $usersId)
     {
         $this->validate($request, [

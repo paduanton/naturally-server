@@ -9,7 +9,7 @@ class CreateDirectionsTable extends Migration
     
     public function up()
     {
-        Schema::create('directions', function (Blueprint $table) {
+        Schema::create('instructions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('recipes_id');
             $table->string('description');
