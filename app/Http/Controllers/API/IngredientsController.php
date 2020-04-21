@@ -31,7 +31,7 @@ class IngredientsController extends Controller
     public function getIngredientsByRecipesId($recipesId)
     {
         Recipes::findOrFail($recipesId);
-        $recipeIngredients = Recipes::where('users_id', $recipesId);
+        $recipeIngredients = Ingredients::where('recipes_id', $recipesId)->get();
 
         if ($recipeIngredients->isEmpty()) {
             throw new ModelNotFoundException;
@@ -64,8 +64,8 @@ class IngredientsController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'measure' => 'required|string',
-            'description' => 'required|string'
+            'measure' => 'nullable|string',
+            'description' => 'nullable|string'
         ]);
 
         Ingredients::findOrFail($id);
