@@ -9,7 +9,7 @@ class ProfileImages extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'users_images';
+    protected $table = 'profile_images';
 
     protected $fillable = [
         'thumbnail', 'picture_url', 'filename', 'path', 'mime', 'original_filename', 'original_extension'
