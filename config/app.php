@@ -2,6 +2,8 @@
 
 return [
 
+    'default_user_picture' => env('DEFAULT_USER_PICTURE', 'http://localhost:8000/storage/uploads/users/images/default-picture.png'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Name

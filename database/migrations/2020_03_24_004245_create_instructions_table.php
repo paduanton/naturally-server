@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDirectionsTable extends Migration
+class CreateInstructionsTable extends Migration
 {
     
     public function up()
@@ -22,6 +22,6 @@ class CreateDirectionsTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('directions');
+        Schema::dropIfExists('instructions');
     }
 }

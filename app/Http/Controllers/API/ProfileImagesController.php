@@ -34,7 +34,14 @@ class ProfileImagesController extends Controller
     public function getThumbnail($usersId)
     {
         Users::findOrFail($usersId);
-        $userThumbnail = ProfileImages::where('users_id', $usersId)->where('thumbnail', true)->firstOrFail();
+        $userThumbnail = ProfileImages::where('users_id', $usersId)->where('thumbnail', true)->first();
+
+        if(!$userThumbnail) {
+            return response()->json([
+                'thumbnail' => false,
+                'picture_url' => config('app.default_user_picture')
+            ], 200);
+        }
 
         return new ProfileImagesResource($userThumbnail);
     }

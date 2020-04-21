@@ -85,6 +85,10 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
     $router->post('/users/{firstUsersId}/follow/{secondUsersId}', 'API\FollowersController@follow');
     $router->delete('/users/{firstUsersId}/unfollow/{secondUsersId}', 'API\FollowersController@unfollow');
 
+    /*
+        Ingredients Routes
+    */
+
   });
 
 });
