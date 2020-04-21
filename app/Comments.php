@@ -19,5 +19,16 @@ class Comments extends Model
         'deleted_at'
     ];
 
-    
+    public function replies()
+    {
+        return $this->hasMany(Comments::class, 'parent_comments_id');
+    }
+
+    public function reply()
+    {
+        return $this->belongsTo(Comments::class);
+    }
+
+    // parent_comment_id is id of the comment being replied to.
+    // Replies have parentcommentid set to the parent comment they belong. Parent comments don't have it (null)
 }

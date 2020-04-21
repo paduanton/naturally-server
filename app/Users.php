@@ -51,4 +51,9 @@ class Users extends Authenticatable
         return $this->belongsToMany(Users::class, 'followers', 'users_id', 'following_users_id');
     }
 
+    public function recipes_comments()
+    {
+        return $this->belongsToMany(Recipes::class, 'comments', 'users_id', 'recipes_id');
+    }
+
 }
