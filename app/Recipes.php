@@ -34,4 +34,9 @@ class Recipes extends Model
     {
         return $this->hasMany(RecipesImages::class);
     }
+
+    public function ingredients()
+    {
+        return $this->hasMany(Ingredients::class);
+    }
 }

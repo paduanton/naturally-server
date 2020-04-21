@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateInstructionsTable extends Migration
 {
-    
+
     public function up()
     {
         Schema::create('instructions', function (Blueprint $table) {
