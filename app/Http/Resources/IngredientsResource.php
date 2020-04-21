@@ -6,14 +6,16 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class IngredientsResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
+
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'recipes_id' => $this->recipes_id,
+            'measure' => $this->measure,
+            'description' => $this->description,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at
+        ];
     }
 }

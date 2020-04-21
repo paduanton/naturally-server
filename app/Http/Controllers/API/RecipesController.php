@@ -119,7 +119,7 @@ class RecipesController extends Controller
         }
 
         return response()->json([
-            'message' => 'could not update users data',
+            'message' => 'could not update recipes data',
         ], 409);
     }
 

@@ -88,10 +88,10 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         /*
             Ingredients Routes
         */
-        
-        $router->apiResource('/recipes', 'API\RecipesController');
-        $router->get('/users/{usersId}/recipes', 'API\RecipesController@getRecipesByUsersId');
-        $router->post('/users/{usersId}/recipes', 'API\RecipesController@store');
+
+        $router->apiResource('/ingredients', 'API\RecipesController');
+        $router->get('/recipes/{recipesId}/ingredients', 'API\IngredientsController@getIngredientsByRecipesId');
+        $router->post('/recipes/{recipesId}/ingredients', 'API\IngredientsController@store');
 
     });
 });

@@ -14,11 +14,12 @@ class UsersController extends Controller
 
     public function index()
     {
-        if (Users::all()->isEmpty()) {
+        $users = Users::all();
+        if ($users->isEmpty()) {
             throw new ModelNotFoundException;
         }
 
-        return UsersResource::collection(Users::all());
+        return UsersResource::collection($users);
     }
 
     public function show($id)
