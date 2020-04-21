@@ -12,8 +12,8 @@ class CreateInstructionsTable extends Migration
         Schema::create('instructions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('recipes_id');
-            $table->string('description');
             $table->tinyInteger('order');
+            $table->string('description');
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);
             $table->foreign('recipes_id')->references('id')->on('recipes');

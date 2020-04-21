@@ -39,4 +39,10 @@ class Recipes extends Model
     {
         return $this->hasMany(Ingredients::class);
     }
+
+    public function instructions()
+    {
+        return $this->hasMany(Instructions::class);
+    }
+  
 }
