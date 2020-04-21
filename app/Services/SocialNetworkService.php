@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Exception;
 use App\Users;
-use App\UsersImages;
+use App\ProfileImages;
 use App\SocialNetWorks;
 use Illuminate\Http\UploadedFile;
 use Laravel\Socialite\Facades\Socialite;
@@ -79,7 +79,7 @@ class SocialNetworkService implements SocialNetworkServiceInterface
         $providerId = $providerUser->getId();
         $pictureURL = $this->getAvatar($providerUser, $provider);
         $profileURL = $this->getProfileURL($providerUser, $provider);
-        
+
         $socialNetwork = new SocialNetWorks();
         $socialNetwork->provider_name = $provider;
         $socialNetwork->provider_id = $providerId;
@@ -88,7 +88,9 @@ class SocialNetworkService implements SocialNetworkServiceInterface
         $socialNetwork->picture_url = $pictureURL;
 
         if (!$username) {
-            $username = $this->generateUsername($name);
+            $username = $this->getOrgenerateUsername($name);
+        } else {
+            $username = $this->getOrgenerateUsername($username, $provider);
         }
 
         $userData = [
@@ -138,7 +140,7 @@ class SocialNetworkService implements SocialNetworkServiceInterface
         file_put_contents($tempFile, $contents);
         $file = new UploadedFile($tempFile, $tempFile);
 
-        $image = new UsersImages();
+        $image = new ProfileImages();
         $image->original_filename = $file->getClientOriginalName();
         $image->original_extension = 'jpeg';
         $image->mime = $file->getClientMimeType();
@@ -156,7 +158,7 @@ class SocialNetworkService implements SocialNetworkServiceInterface
 
     protected function setThumbnail($user)
     {
-        $userHasThumbnail = UsersImages::where('thumbnail', true)->where('users_id', $user->id)->first();
+        $userHasThumbnail = ProfileImages::where('thumbnail', true)->where('users_id', $user->id)->first();
 
         if (!$userHasThumbnail) {
             return true;
@@ -165,22 +167,26 @@ class SocialNetworkService implements SocialNetworkServiceInterface
         return false;
     }
 
-    protected function generateUsername($name)
+    protected function getOrgenerateUsername($name, $provider = null)
     {
-        $firstName = strtok($name, ' ');
-        $firstName = strtolower($firstName);
-        
-        $lastName = strrchr($name, ' ');
-        $lastName = strtolower($lastName);
-
-        if(!$lastName) {
-            $username = $firstName;
+        if ($provider) {
+            $username = $name;
         } else {
-            $username = $firstName . "." . $lastName;
-        }
+            $firstName = strtok($name, ' ');
+            $firstName = strtolower($firstName);
 
-        $username = str_replace(" ", "", $username);
-        $username = iconv('UTF-8', 'ASCII//TRANSLIT', $username);
+            $lastName = strrchr($name, ' ');
+            $lastName = strtolower($lastName);
+
+            if (!$lastName) {
+                $username = $firstName;
+            } else {
+                $username = $firstName . "." . $lastName;
+            }
+
+            $username = str_replace(" ", "", $username);
+            $username = iconv('UTF-8', 'ASCII//TRANSLIT', $username);
+        }
 
         $user = Users::where('username', $username)->first();
 

@@ -4,12 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUsersImagesTable extends Migration
+class CreateProfileImagesTable extends Migration
 {
     
     public function up()
     {
-        Schema::create('users_images', function (Blueprint $table) {
+        Schema::create('profile_images', function (Blueprint $table) {
             $table->id();
             $table->foreignId('users_id');
             $table->boolean('thumbnail');
@@ -27,6 +27,6 @@ class CreateUsersImagesTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('users_images');
+        Schema::dropIfExists('profile_images');
     }
 }

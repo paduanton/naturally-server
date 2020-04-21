@@ -3,32 +3,32 @@
 namespace App\Http\Controllers\API;
 
 use App\Users;
-use App\UsersImages;
+use App\ProfileImages;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Resources\UsersImagesResource;
+use App\Http\Resources\ProfileImagesResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class UsersImagesController extends Controller
+class ProfileImagesController extends Controller
 {
     public function index($usersId)
     {
         Users::findOrFail($usersId);
-        $usersImages = UsersImages::where('users_id', $usersId)->get();
+        $usersImages = ProfileImages::where('users_id', $usersId)->get();
 
         if ($usersImages->isEmpty()) {
             throw new ModelNotFoundException;
         }
 
-        return UsersImagesResource::collection($usersImages);
+        return ProfileImagesResource::collection($usersImages);
     }
 
     public function show($id)
     {
-        $image = UsersImages::findOrFail($id);
-        return new UsersImagesResource($image);
+        $image = ProfileImages::findOrFail($id);
+        return new ProfileImagesResource($image);
     }
 
     public function upload(Request $request, $usersId)
@@ -42,7 +42,7 @@ class UsersImagesController extends Controller
         $thumbnail = $request['thumbnail'];
 
         if ($thumbnail) {
-            $userHasThumbnail = UsersImages::where('thumbnail', $thumbnail)->where('users_id', $usersId)->first();
+            $userHasThumbnail = ProfileImages::where('thumbnail', $thumbnail)->where('users_id', $usersId)->first();
 
             if ($userHasThumbnail) {
                 return response()->json([
@@ -52,7 +52,7 @@ class UsersImagesController extends Controller
             }
         }
 
-        $userHasImage = UsersImages::where('users_id', $usersId)->first();
+        $userHasImage = ProfileImages::where('users_id', $usersId)->first();
 
         if (!$userHasImage && !$thumbnail) {
             return response()->json([
@@ -65,7 +65,7 @@ class UsersImagesController extends Controller
         $urlBasePath = url('storage/' . $basePath);
         $file = $request->file('image');
 
-        $image = new UsersImages();
+        $image = new ProfileImages();
         $image->thumbnail = $request['thumbnail'];
         $image->original_filename = $file->getClientOriginalName();
         $image->original_extension = $file->getClientOriginalExtension();
@@ -78,7 +78,7 @@ class UsersImagesController extends Controller
         $image->picture_url = $urlBasePath . '/' . $image->filename;
         $user->images()->save($image);
 
-        return new UsersImagesResource($image);
+        return new ProfileImagesResource($image);
     }
 
     public function update(Request $request, $usersId, $id)
@@ -91,22 +91,22 @@ class UsersImagesController extends Controller
             ]
         ]);
 
-        $userImage = UsersImages::findOrFail($id);
+        $userImage = ProfileImages::findOrFail($id);
 
         if ($userImage->thumbnail) {
-            return new UsersImagesResource($userImage);
+            return new ProfileImagesResource($userImage);
         }
 
-        $currentThumbnailImage = UsersImages::where('users_id', $usersId)->where('thumbnail', true)->first();
+        $currentThumbnailImage = ProfileImages::where('users_id', $usersId)->where('thumbnail', true)->first();
 
         if ($currentThumbnailImage) {
             $currentThumbnailImage->update(['thumbnail' => false]);
         }
 
-        $newThumbnailImage = UsersImages::where('id', $id)->update(['thumbnail' => true]);
+        $newThumbnailImage = ProfileImages::where('id', $id)->update(['thumbnail' => true]);
 
         if ($newThumbnailImage) {
-            return new UsersImagesResource(UsersImages::find($id));
+            return new ProfileImagesResource(ProfileImages::find($id));
         }
 
         return response()->json([
@@ -116,7 +116,7 @@ class UsersImagesController extends Controller
 
     public function destroy($id)
     {
-        $userImage = UsersImages::findOrFail($id);
+        $userImage = ProfileImages::findOrFail($id);
 
         if ($userImage->thumbnail) {
             return response()->json([

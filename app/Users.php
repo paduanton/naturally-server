@@ -38,7 +38,7 @@ class Users extends Authenticatable
 
     public function images()
     {
-        return $this->hasMany(UsersImages::class);
+        return $this->hasMany(ProfileImages::class);
     }
 
     public function followers()

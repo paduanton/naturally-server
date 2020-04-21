@@ -12,8 +12,7 @@ class CreateIngredientsTable extends Migration
         Schema::create('ingredients', function (Blueprint $table) {
             $table->id();
             $table->foreignId('recipes_id');
-            $table->double('amount');
-            // $table->enum('measurement_unit', ['lb', 'oz', 'ounce', 'gal', 'qt', 'inch', 'foot', 'yard']); ?
+            $table->string('measure');
             $table->string('description');
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);
