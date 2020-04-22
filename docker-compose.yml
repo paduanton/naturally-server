@@ -26,3 +26,27 @@ services:
       - naturally
     ports:
       - 8181:80
+
+  nginx-server:
+    container_name: naturallyserver
+    build: ./docker/nginx
+    restart: always
+    ports:
+      - "8000:80"
+    volumes: 
+      - ./:/var/www
+    depends_on: 
+      - php-fpm
+    networks:
+      - naturally
+
+  php-fpm:
+    container_name: naturallyweb
+    restart: always
+    build: .
+    volumes: 
+      - ./:/var/www/
+    depends_on: 
+      - db
+    networks:
+      - naturally
