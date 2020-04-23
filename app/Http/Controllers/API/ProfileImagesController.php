@@ -13,6 +13,14 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ProfileImagesController extends Controller
 {
+    
+    protected $defaultUserPicture;
+
+    public function __construct()
+    {
+        $this->defaultUserPicture = config('app.default_user_picture');
+    }
+    
     public function index($usersId)
     {
         Users::findOrFail($usersId);
@@ -39,7 +47,7 @@ class ProfileImagesController extends Controller
         if(!$userThumbnail) {
             return response()->json([
                 'thumbnail' => false,
-                'picture_url' => config('app.default_user_picture')
+                'picture_url' => $this->defaultUserPicture
             ], 200);
         }
 

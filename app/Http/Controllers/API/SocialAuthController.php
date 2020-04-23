@@ -16,10 +16,12 @@ class SocialAuthController extends Controller
 {
 
     protected $socialProvider;
-
+    protected $frontendURL;
+    
     public function __construct(SocialNetworkService $social)
     {
         $this->socialProvider = $social;
+        $this->frontendURL = config('app.frontend_url');
     }
 
     public function authenticate(Request $request)
@@ -56,7 +58,7 @@ class SocialAuthController extends Controller
 
     public function handleProviderCallback($provider)
     {
-        if(!$this->socialProvider->isOAuth1ProviderSupported($provider)) {
+        if (!$this->socialProvider->isOAuth1ProviderSupported($provider)) {
             throw OAuthServerException::invalidCredentials();
         }
 
@@ -68,7 +70,7 @@ class SocialAuthController extends Controller
         } catch (Exception $exception) {
             throw $exception;
         } finally {
-            return redirect()->away("http://frontend.naturally.com/provider/{$provider}/token/{$providerAccessToken}/secret/{$providerAccessTokenSecret}/callback"); // frontend callback
+            return redirect()->away($this->frontendURL . "/provider/{$provider}/token/{$providerAccessToken}/secret/{$providerAccessTokenSecret}/callback"); // frontend callback
             /*
             return response()->json([
                 'provider' => $provider,

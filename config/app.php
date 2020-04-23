@@ -2,7 +2,9 @@
 
 return [
 
-    'default_user_picture' => env('DEFAULT_USER_PICTURE', 'http://localhost:8000/storage/uploads/users/images/default-picture.png'),
+    'frontend_url' => env('FRONTEND_APP_URL', 'http://naturally.cooking'),
+
+    'default_user_picture' => env('DEFAULT_USER_PICTURE', 'http://naturally.cooking/storage/uploads/users/images/default-picture.png'),
 
     /*
     |--------------------------------------------------------------------------
