@@ -6,9 +6,9 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Users;
-
 class AuthController extends Controller
 {
 
@@ -76,10 +76,7 @@ class AuthController extends Controller
     protected function generateUsername($name)
     {
         $firstName = strtok($name, ' ');
-        $firstName = strtolower($firstName);
-
         $lastName = strrchr($name, ' ');
-        $lastName = strtolower($lastName);
 
         if (!$lastName) {
             $username = $firstName;
@@ -88,7 +85,13 @@ class AuthController extends Controller
         }
 
         $username = str_replace(" ", "", $username);
-        $username = iconv('UTF-8', 'ASCII//TRANSLIT', $username);
+        $username = Str::ascii($username);
+        $username = strtolower($username);
+        $username = preg_replace("/[^A-Za-z.]/", '', $username);
+
+        if(!$username) {
+            $username = 'user' .mt_rand(); 
+        }
 
         $user = Users::where('username', $username)->first();
 
@@ -101,7 +104,6 @@ class AuthController extends Controller
 
         return $username;
     }
-
     protected function generateToken($user)
     {
         $token = $user->createToken('Personal Access Token');

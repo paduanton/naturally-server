@@ -6,6 +6,7 @@ use Exception;
 use App\Users;
 use App\ProfileImages;
 use App\SocialNetWorks;
+use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
 use Laravel\Socialite\Facades\Socialite;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -173,10 +174,7 @@ class SocialNetworkService implements SocialNetworkServiceInterface
             $username = $name;
         } else {
             $firstName = strtok($name, ' ');
-            $firstName = strtolower($firstName);
-
             $lastName = strrchr($name, ' ');
-            $lastName = strtolower($lastName);
 
             if (!$lastName) {
                 $username = $firstName;
@@ -184,8 +182,13 @@ class SocialNetworkService implements SocialNetworkServiceInterface
                 $username = $firstName . "." . $lastName;
             }
 
-            $username = str_replace(" ", "", $username);
-            $username = iconv('UTF-8', 'ASCII//TRANSLIT', $username);
+            $username = Str::ascii($username);
+            $username = strtolower($username);
+            $username = preg_replace("/[^A-Za-z.]/", '', $username);
+
+            if(!$username) {
+                $username = 'user' .mt_rand(); 
+            }
         }
 
         $user = Users::where('username', $username)->first();
