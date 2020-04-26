@@ -92,6 +92,14 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->apiResource('/ingredients', 'API\IngredientsController');
         $router->get('/recipes/{recipesId}/ingredients', 'API\IngredientsController@getIngredientsByRecipesId');
         $router->post('/recipes/{recipesId}/ingredients', 'API\IngredientsController@store');
+        
+        /*
+            Instructions Routes
+        */
+
+        $router->apiResource('/instructions', 'API\InstructionsController');
+        $router->get('/recipes/{recipesId}/instructions', 'API\InstructionsController@getInstructionsByRecipesId');
+        $router->post('/recipes/{recipesId}/instructions', 'API\InstructionsController@store');
 
     });
 });

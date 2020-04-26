@@ -12,7 +12,7 @@ class InstructionsResource extends JsonResource
         return [
             'id' => $this->id,
             'recipes_id' => $this->recipes_id,
-            'order' => $this->measure,
+            'order' => $this->order,
             'description' => $this->description,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at
