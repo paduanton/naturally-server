@@ -18,12 +18,16 @@ class AuthController extends Controller
             'name' => 'required|string',
             'email' => 'email|required|unique:users',
             'password' => 'required|confirmed|string',
-            'birthday' => 'nullable|date'
+            'birthday' => 'nullable|date',
+            'remember_me' => 'nullable|boolean',
         ]);
 
+        $remember = $request['remember_me'];
         $request['username'] = $this->generateUsername($request['name']);
         $request['password'] = Hash::make($request['password']);
         $user = Users::create($request->all());
+        
+        Auth::login($user, $remember);
 
         if ($user) {
             return response()->json($this->generateToken($user), 201);

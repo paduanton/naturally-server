@@ -101,5 +101,12 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->get('/recipes/{recipesId}/instructions', 'API\InstructionsController@getInstructionsByRecipesId');
         $router->post('/recipes/{recipesId}/instructions', 'API\InstructionsController@store');
 
+        /*
+            SocialNetworks Routes
+        */
+
+        $router->apiResource('/social', 'API\SocialNetworksController');
+        $router->get('/users/{usersId}/social', 'API\SocialNetworksController@getSocialByUsersId');
+
     });
 });
