@@ -25,8 +25,8 @@ class CommentsController extends Controller
 
     public function show($id)
     {
-        $instruction = Comments::findOrFail($id);
-        return new CommentsResource($instruction);
+        $comment = Comments::findOrFail($id);
+        return new CommentsResource($comment);
     }
    
     public function getCommentsByRecipesId($recipesId)
