@@ -28,7 +28,7 @@ class SocialNetworksController extends Controller
         return new SocialNetworksResource($socialNetworks);
     }
    
-    public function getSocialByUsersId($usersId)
+    public function getSocialNetworksByUsersId($usersId)
     {
         $user = Users::findOrFail($usersId);
         $userSocialNetworks = $user->social_networks;
@@ -81,6 +81,13 @@ class SocialNetworksController extends Controller
     public function destroy($id)
     {
         $socialNetwork = SocialNetWorks::findOrFail($id);
+
+        if($socialNetwork->users->password === null){
+            return response()->json([
+                'error' => 'user does not have password',
+                'message' => 'please define a password to delete a social account',
+            ], 400);
+        }
 
         $delete = $socialNetwork->delete();
 

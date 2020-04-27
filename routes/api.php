@@ -106,7 +106,15 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         */
 
         $router->apiResource('/social', 'API\SocialNetworksController');
-        $router->get('/users/{usersId}/social', 'API\SocialNetworksController@getSocialByUsersId');
+        $router->get('/users/{usersId}/social', 'API\SocialNetworksController@getSocialNetworksByUsersId');
+
+        /*
+            Comments Routes
+        */
+
+        $router->apiResource('/comments', 'API\CommentsController');
+        $router->get('/recipes/{recipesId}/comments', 'API\CommentsController@getCommentsByRecipesId');
+        $router->post('/users/{usersId}/recipes/{recipesId}/comments', 'API\CommentsController@store');
 
     });
 });
