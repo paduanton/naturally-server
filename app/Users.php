@@ -31,7 +31,7 @@ class Users extends Authenticatable
         return $this->hasMany(Recipes::class);
     }
 
-    public function social_networks()
+    public function social_network_accounts()
     {
         return $this->hasMany(SocialNetworkAccounts::class);
     }

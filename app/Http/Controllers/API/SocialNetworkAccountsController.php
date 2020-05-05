@@ -31,13 +31,13 @@ class SocialNetworkAccountsController extends Controller
     public function getSocialNetworksByUsersId($usersId)
     {
         $user = Users::findOrFail($usersId);
-        $userSocialNetworks = $user->social_networks;
+        $userSocialNetworkAccounts = $user->social_network_accounts;
 
-        if ($userSocialNetworks->isEmpty()) {
+        if ($userSocialNetworkAccounts->isEmpty()) {
             throw new ModelNotFoundException;
         }
 
-        return SocialNetworkAccountsResource::collection($userSocialNetworks);
+        return SocialNetworkAccountsResource::collection($userSocialNetworkAccounts);
     }
 
     public function update(Request $request, $id)
