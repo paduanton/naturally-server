@@ -33,7 +33,7 @@ class Users extends Authenticatable
 
     public function social_networks()
     {
-        return $this->hasMany(SocialNetWorks::class);
+        return $this->hasMany(SocialNetworkAccounts::class);
     }
 
     public function images()

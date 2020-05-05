@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use League\OAuth2\Server\Exception\OAuthServerException;
-use App\Services\SocialNetworkService;
+use App\Services\SocialNetworkAccountService;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +18,7 @@ class SocialAuthController extends Controller
     protected $socialProvider;
     protected $frontendURL;
     
-    public function __construct(SocialNetworkService $social)
+    public function __construct(SocialNetworkAccountService $social)
     {
         $this->socialProvider = $social;
         $this->frontendURL = config('app.frontend_url');

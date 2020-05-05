@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Users;
 use App\Recipes;
 use App\Comments;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CommentsResource;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CommentsController extends Controller
 {
- 
+
     public function index()
     {
         $comments = Comments::all();
@@ -28,7 +29,7 @@ class CommentsController extends Controller
         $comment = Comments::findOrFail($id);
         return new CommentsResource($comment);
     }
-   
+
     public function getCommentsByRecipesId($recipesId)
     {
         $recipe = Recipes::findOrFail($recipesId);
@@ -47,14 +48,14 @@ class CommentsController extends Controller
             'description' => 'required|string',
             'parent_comments_id' => 'nullable|integer|exists:App\Comments,id'
         ]);
-        
+
         Users::findOrFail($usersId);
         Recipes::findOrFail($recipesId);
-        
-        if(isset($request['parent_comments_id'])) {
-            $comment = Comments::findOrFail($request['parent_comments_id']);
 
-            if($comment->parent_comments_id) {
+        if (isset($request['parent_comments_id'])) {
+            $comment = Comments::find($request['parent_comments_id']);
+
+            if (isset($comment->parent_comments_id)) {
                 return response()->json([
                     'error' => 'invalid reply',
                     'message' => 'a reply cannot have another reply'
@@ -69,7 +70,7 @@ class CommentsController extends Controller
             'parent_comments_id' => isset($request['parent_comments_id']) ? $request['parent_comments_id'] : null
         ];
 
-        $comment = Comments::create($comment);        
+        $comment = Comments::create($comment);
 
         if ($comment) {
             return new CommentsResource($comment);
@@ -83,31 +84,32 @@ class CommentsController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'description' => 'nullable|string'
+            'description' => 'required|string'
         ]);
 
-        $instruction = Comments::findOrFail($id);
+        $comment = Comments::findOrFail($id);
         
-        $recipeHasInstructionOrder = Comments::where('recipes_id', $instruction->recipes_id)->where('order', $request['order'])->first();
+        $now = Carbon::now();
+        $createdAt = $comment->created_at;
         
-        if($recipeHasInstructionOrder) {
+        $diferenceBetweenDates = $createdAt->diffInSeconds($now);
+        
+        if($diferenceBetweenDates > 300){ // 300s = 5 minutes
             return response()->json([
-                'error' => 'duplicate order value',
-                'message' => "order {$request['order']} already exist"
-            ], 400);
+                'message' => 'it is not possible to update a comment created more than 5 minutes ago',
+            ], 409);
         }
 
-        $update = Comments::where('id', $id)->update($request->all());
+        $update = Comments::where('id', $id)->update(['description' => $request['description']]);
 
         if ($update) {
             return new CommentsResource(Comments::find($id));
         }
 
         return response()->json([
-            'message' => 'could not update instructions data',
+            'message' => 'could not update comments data',
         ], 409);
     }
-
 
     public function destroy($id)
     {

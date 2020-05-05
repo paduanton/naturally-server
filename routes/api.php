@@ -18,7 +18,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
 
         // Recipes
 
-    $router->get('/search/recipes/{title}', 'API\RecipesController@search');
+    $router->get('/recipes/{title}/search', 'API\RecipesController@search');
     $router->get('/recipes/{id}', 'API\RecipesController@show');
 
     /*
@@ -36,7 +36,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
             Users Routes
         */
 
-        $router->get('/search/users/{name}', 'API\UsersController@search');
+        $router->get('/users/{name}/search', 'API\UsersController@search');
         $router->get('/user/{username}', 'API\UsersController@getByUsername');
         $router->apiResource('/users', 'API\UsersController');
         $router->get('/user', function (Request $request) {
@@ -102,11 +102,11 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->post('/recipes/{recipesId}/instructions', 'API\InstructionsController@store');
 
         /*
-            SocialNetworks Routes
+            SocialNetworkAccounts Routes
         */
 
-        $router->apiResource('/social', 'API\SocialNetworksController');
-        $router->get('/users/{usersId}/social', 'API\SocialNetworksController@getSocialNetworksByUsersId');
+        $router->apiResource('/social', 'API\SocialNetworkAccountsController');
+        $router->get('/users/{usersId}/social', 'API\SocialNetworkAccountsController@getSocialNetworksByUsersId');
 
         /*
             Comments Routes

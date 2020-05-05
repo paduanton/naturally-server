@@ -46,8 +46,6 @@ services:
     build: ./docker/php-fpm
     volumes: 
       - ./:/var/www/
-    # command: >
-    #   sh -c "./bootstrap.sh"
     depends_on: 
       - db
     networks:

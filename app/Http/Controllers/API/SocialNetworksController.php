@@ -3,29 +3,29 @@
 namespace App\Http\Controllers\API;
 
 use App\Users;
-use App\SocialNetWorks;
+use App\SocialNetworkAccounts;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\SocialNetworksResource;
+use App\Http\Resources\SocialNetworkAccountsResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class SocialNetworksController extends Controller
+class SocialNetworkAccountsController extends Controller
 {
  
     public function index()
     {
-        $socialNetworks = SocialNetWorks::all();
-        if ($socialNetworks->isEmpty()) {
+        $socialNetworkAccounts = SocialNetworkAccounts::all();
+        if ($socialNetworkAccounts->isEmpty()) {
             throw new ModelNotFoundException();
         }
 
-        return SocialNetworksResource::collection($socialNetworks);
+        return SocialNetworkAccountsResource::collection($socialNetworkAccounts);
     }
 
     public function show($id)
     {
-        $socialNetworks = SocialNetWorks::findOrFail($id);
-        return new SocialNetworksResource($socialNetworks);
+        $socialNetworkAccounts = SocialNetworkAccounts::findOrFail($id);
+        return new SocialNetworkAccountsResource($socialNetworkAccounts);
     }
    
     public function getSocialNetworksByUsersId($usersId)
@@ -37,7 +37,7 @@ class SocialNetworksController extends Controller
             throw new ModelNotFoundException;
         }
 
-        return SocialNetworksResource::collection($userSocialNetworks);
+        return SocialNetworkAccountsResource::collection($userSocialNetworks);
     }
 
     public function update(Request $request, $id)
@@ -47,10 +47,10 @@ class SocialNetworksController extends Controller
             'username' => 'nullable|string'
         ]);
 
-        $socialNetwork = SocialNetWorks::findOrFail($id);
+        $socialNetworkAccount = SocialNetworkAccounts::findOrFail($id);
         
         if($request['profile_url']) {
-            if($socialNetwork->profile_url) {
+            if($socialNetworkAccount->profile_url) {
                 return response()->json([
                     'error' => 'field already has a value',
                     'message' => "sign in with another social network to register this profile link"
@@ -59,7 +59,7 @@ class SocialNetworksController extends Controller
         }
 
         if($request['username']) {
-            if($socialNetwork->username) {
+            if($socialNetworkAccount->username) {
                 return response()->json([
                     'error' => 'field already has a value',
                     'message' => "sign in with another social network to register this username"
@@ -67,10 +67,10 @@ class SocialNetworksController extends Controller
             }
         }        
 
-        $update = SocialNetWorks::where('id', $id)->update($request->all());
+        $update = SocialNetworkAccounts::where('id', $id)->update($request->all());
 
         if ($update) {
-            return new SocialNetWorksResource(SocialNetWorks::find($id));
+            return new SocialNetworkAccountsResource(SocialNetworkAccounts::find($id));
         }
 
         return response()->json([
@@ -80,16 +80,16 @@ class SocialNetworksController extends Controller
 
     public function destroy($id)
     {
-        $socialNetwork = SocialNetWorks::findOrFail($id);
+        $socialNetworkAccount = SocialNetworkAccounts::findOrFail($id);
 
-        if($socialNetwork->users->password === null){
+        if($socialNetworkAccount->users->password === null){
             return response()->json([
                 'error' => 'user does not have password',
                 'message' => 'please define a password to delete a social account',
             ], 400);
         }
 
-        $delete = $socialNetwork->delete();
+        $delete = $socialNetworkAccount->delete();
 
         if ($delete) {
             return response()->json([], 204);

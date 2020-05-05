@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\API;
 
-use Exception;
 use App\Users;
 use Carbon\Carbon;
 use App\Followers;

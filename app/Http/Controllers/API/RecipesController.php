@@ -65,6 +65,7 @@ class RecipesController extends Controller
 
         return RecipesResource::collection($recipes);
     }
+
     public function store(Request $request, $usersId)
     {
         $this->validate($request, [
@@ -94,7 +95,6 @@ class RecipesController extends Controller
         ], 400);
     }
 
-
     public function update(Request $request, $id)
     {
         $this->validate($request, [
@@ -122,7 +122,6 @@ class RecipesController extends Controller
             'message' => 'could not update recipes data',
         ], 409);
     }
-
 
     public function destroy($id)
     {

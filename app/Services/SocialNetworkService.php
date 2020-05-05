@@ -5,14 +5,14 @@ namespace App\Services;
 use Exception;
 use App\Users;
 use App\ProfileImages;
-use App\SocialNetWorks;
+use App\SocialNetworkAccounts;
 use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
 use Laravel\Socialite\Facades\Socialite;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use App\Services\Interfaces\SocialNetworkServiceInterface;
+use App\Services\Interfaces\SocialNetworkAccountsInterface;
 
-class SocialNetworkService implements SocialNetworkServiceInterface
+class SocialNetworkAccountService implements SocialNetworkAccountsInterface
 {
 
     public function getUserFromSocialProvider($provider, $accessToken, $accessTokenSecret): Users
@@ -66,7 +66,7 @@ class SocialNetworkService implements SocialNetworkServiceInterface
 
     protected function findOrCreateSocialUser($providerUser, $provider)
     {
-        $socialAccount = SocialNetWorks::where('provider_name', $provider)
+        $socialAccount = SocialNetworkAccounts::where('provider_name', $provider)
             ->where('provider_id', $providerUser->getId())
             ->first();
 
@@ -81,12 +81,12 @@ class SocialNetworkService implements SocialNetworkServiceInterface
         $pictureURL = $this->getAvatar($providerUser, $provider);
         $profileURL = $this->getProfileURL($providerUser, $provider);
 
-        $socialNetwork = new SocialNetWorks();
-        $socialNetwork->provider_name = $provider;
-        $socialNetwork->provider_id = $providerId;
-        $socialNetwork->username = $username;
-        $socialNetwork->profile_url = $profileURL;
-        $socialNetwork->picture_url = $pictureURL;
+        $socialNetworkAccount = new SocialNetworkAccounts();
+        $socialNetworkAccount->provider_name = $provider;
+        $socialNetworkAccount->provider_id = $providerId;
+        $socialNetworkAccount->username = $username;
+        $socialNetworkAccount->profile_url = $profileURL;
+        $socialNetworkAccount->picture_url = $pictureURL;
 
         if (!$username) {
             $username = $this->getOrgenerateUsername($name);
@@ -101,7 +101,7 @@ class SocialNetworkService implements SocialNetworkServiceInterface
         ];
 
         $user = Users::firstOrCreate(['email' => $email], $userData);
-        $user->social_networks()->save($socialNetwork);
+        $user->social_networks()->save($socialNetworkAccount);
         $this->storeUsersPicture($pictureURL, $user);
 
         return $user;

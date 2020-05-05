@@ -2,7 +2,7 @@
 
 namespace App\Services\Interfaces;
 
-interface SocialNetworkServiceInterface
+interface SocialNetworkAccountsInterface
 {
     public function getUserEntityByAccessToken($provider, $accessToken);
     public function getUserEntityByAccessTokenAndSecret($provider, $accessToken, $accessTokenSecret);

@@ -45,8 +45,8 @@ class Recipes extends Model
         return $this->hasMany(Instructions::class);
     }
     
-    public function users_comments()
+    public function comments()
     {
-        return $this->belongsToMany(Users::class, 'comments', 'recipes_id','users_id');
+        return $this->hasMany(Comments::class);
     }
 }
