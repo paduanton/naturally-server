@@ -4,25 +4,20 @@ do
   sleep 10
 done
 
-if [ $APP_ENV = "local" ];
-then
+composer install
+php artisan key:generate
+php artisan config:cache
 
-  CONTAINER_ALREADY_STARTED="CONTAINER_ALREADY_STARTED_PLACEHOLDER"
-  if [ ! -e ./storage/$CONTAINER_ALREADY_STARTED ]; then
-    touch ./storage/$CONTAINER_ALREADY_STARTED
-    echo "** First container startup **"
-    composer install
-    php artisan migrate
-    echo "APP_KEY=" >> .env
-    php artisan key:generate
-    php artisan passport:install
-    chown 1000.1000 storage/*
-    chmod 775 /var/www/storage/logs
-    php artisan storage:link
-  fi
-fi
+php artisan migrate:fresh
+php artisan passport:install
+chmod 775 /var/www/storage/logs
+chown -R root:www-data /var/www/storage
+php artisan storage:link
 
 php artisan config:cache
 php artisan cache:clear
-php artisan optimize:clear
-php artisan route:cache
+
+chmod -R gu+w storage
+chmod -R guo+w storage
+
+php artisan cache:clear
