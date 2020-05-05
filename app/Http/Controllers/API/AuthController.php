@@ -5,10 +5,12 @@ namespace App\Http\Controllers\API;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Users;
+
 class AuthController extends Controller
 {
 
@@ -26,11 +28,11 @@ class AuthController extends Controller
         $request['username'] = $this->generateUsername($request['name']);
         $request['password'] = Hash::make($request['password']);
         $user = Users::create($request->all());
-        
+
         Auth::login($user, $remember);
 
         if ($user) {
-            return response()->json($this->generateToken($user), 201);
+            return response()->json($this->generateAccessToken($user), 201);
         }
 
         return response()->json([
@@ -59,7 +61,7 @@ class AuthController extends Controller
         }
 
         $user = $request->user();
-        return response()->json($this->generateToken($user));
+        return response()->json($this->generateAccessToken($user));
     }
 
     public function logout(Request $request)
@@ -75,6 +77,39 @@ class AuthController extends Controller
         return response()->json([
             'message' => "couldn't logout"
         ], 409);
+    }
+
+    protected function refreshToken(Request $request)
+    {
+        // $client = DB::table('oauth_clients')
+        //     ->where('password_client', true)
+        //     ->first();
+
+        // $data = [
+        //     'grant_type' => 'refresh_token',
+        //     'refresh_token' => $request->refresh_token,
+        //     'client_id' => $client->id,
+        //     'client_secret' => $client->secret,
+        //     'scope' => ''
+        // ];
+        // $request = Request::create('/oauth/token', 'POST', $data);
+        // var_dump($request);
+        // $content = json_decode(app()->handle($request)->getContent());
+
+        // return response()->json([
+        //     'error' => false,
+        //     'data' => [
+        //         'meta' => [
+        //             'token' => $content->access_token,
+        //             'refresh_token' => $content->refresh_token,
+        //             'type' => 'Bearer'
+        //         ]
+        //     ]
+        // ], 200);
+    }
+
+    protected function generateRefreshToken($accessToken)
+    {
     }
 
     protected function generateUsername($name)
@@ -93,8 +128,8 @@ class AuthController extends Controller
         $username = strtolower($username);
         $username = preg_replace("/[^A-Za-z.]/", '', $username);
 
-        if(!$username) {
-            $username = 'user' .mt_rand(); 
+        if (!$username) {
+            $username = 'user' . mt_rand();
         }
 
         $user = Users::where('username', $username)->first();
@@ -108,7 +143,8 @@ class AuthController extends Controller
 
         return $username;
     }
-    protected function generateToken($user)
+
+    protected function generateAccessToken($user)
     {
         $token = $user->createToken('Personal Access Token');
         $accessToken = $token->accessToken;

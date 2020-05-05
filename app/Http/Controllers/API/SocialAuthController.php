@@ -44,7 +44,7 @@ class SocialAuthController extends Controller
 
         try {
             $user = $this->socialProvider->getUserFromSocialProvider($provider, $providerAccessToken, $providerAccessTokenSecret);
-            $accessToken = $this->generateToken($user);
+            $accessToken = $this->generateAccessToken($user);
 
             Auth::login($user, $remember);
         } catch (OAuthServerException $exception) {
@@ -93,7 +93,7 @@ class SocialAuthController extends Controller
         return Socialite::driver($provider)->redirect();
     }
 
-    protected function generateToken($user)
+    protected function generateAccessToken($user)
     {
         $token = $user->createToken('Personal Access Token');
         $accessToken = $token->accessToken;
