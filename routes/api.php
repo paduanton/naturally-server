@@ -30,7 +30,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
     $router->post('/signup', 'API\AuthController@signup');
 
     Route::group(['middleware' => 'auth:api'], function () use ($router) {
-        $router->post('/refresh/token', 'API\AuthController@refreshToken');
+        $router->post('/oauth/refresh', 'API\AuthController@refreshToken');
         $router->post('/logout', 'API\AuthController@logout');
 
         /*

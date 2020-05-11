@@ -81,35 +81,11 @@ class AuthController extends Controller
 
     protected function refreshToken(Request $request)
     {
-        // $client = DB::table('oauth_clients')
-        //     ->where('password_client', true)
-        //     ->first();
-
-        // $data = [
-        //     'grant_type' => 'refresh_token',
-        //     'refresh_token' => $request->refresh_token,
-        //     'client_id' => $client->id,
-        //     'client_secret' => $client->secret,
-        //     'scope' => ''
-        // ];
-        // $request = Request::create('/oauth/token', 'POST', $data);
-        // var_dump($request);
-        // $content = json_decode(app()->handle($request)->getContent());
-
-        // return response()->json([
-        //     'error' => false,
-        //     'data' => [
-        //         'meta' => [
-        //             'token' => $content->access_token,
-        //             'refresh_token' => $content->refresh_token,
-        //             'type' => 'Bearer'
-        //         ]
-        //     ]
-        // ], 200);
     }
 
-    protected function generateRefreshToken($accessToken)
+    protected function generateRefreshToken($tokenId, $userId)
     {
+        return md5(mt_rand() . microtime()) . Str::uuid() . Str::random(50);
     }
 
     protected function generateUsername($name)
@@ -154,7 +130,8 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
             'expires_at' => Carbon::parse(
                 $token->token->expires_at
-            )->toDateTimeString()
+            )->toDateTimeString(),
+            'refresh_token' => $this->generateRefreshToken($token->token->id, $token->token->user_id)
         ];
     }
 }
