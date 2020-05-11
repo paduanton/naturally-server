@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use League\OAuth2\Server\Exception\OAuthServerException;
 use App\Services\SocialNetworkAccountService;
+use App\Http\Controllers\API\AuthController;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -17,10 +18,12 @@ class SocialAuthController extends Controller
 
     protected $socialProvider;
     protected $frontendURL;
-    
-    public function __construct(SocialNetworkAccountService $social)
+    protected $authController;
+
+    public function __construct(SocialNetworkAccountService $social, AuthController $authController)
     {
         $this->socialProvider = $social;
+        $this->authController = $authController;
         $this->frontendURL = config('app.frontend_url');
     }
 
@@ -44,7 +47,7 @@ class SocialAuthController extends Controller
 
         try {
             $user = $this->socialProvider->getUserFromSocialProvider($provider, $providerAccessToken, $providerAccessTokenSecret);
-            $accessToken = $this->generateAccessToken($user);
+            $accessToken = $this->authController->generateAccessToken($user);
 
             Auth::login($user, $remember);
         } catch (OAuthServerException $exception) {
@@ -93,17 +96,4 @@ class SocialAuthController extends Controller
         return Socialite::driver($provider)->redirect();
     }
 
-    protected function generateAccessToken($user)
-    {
-        $token = $user->createToken('Personal Access Token');
-        $accessToken = $token->accessToken;
-
-        return [
-            'access_token' => $accessToken,
-            'token_type' => 'Bearer',
-            'expires_at' => Carbon::parse(
-                $token->token->expires_at
-            )->toDateTimeString()
-        ];
-    }
 }

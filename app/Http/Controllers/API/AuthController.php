@@ -10,6 +10,8 @@ use Illuminate\Support\Str;
 use App\OAuthRefreshTokens;
 use Carbon\Carbon;
 use App\Users;
+use Exception;
+use PhpParser\Node\Stmt\TryCatch;
 
 class AuthController extends Controller
 {
@@ -79,37 +81,59 @@ class AuthController extends Controller
         ], 409);
     }
 
-    protected function refreshToken(Request $request)
+    public function refreshToken(Request $request)
     {
+        $this->validate($request, [
+            'refresh_token' => 'nullable|integer|exists:App\OAuthRefreshTokens,id'
+        ]);
+
+
     }
 
-    protected function generateRefreshToken($tokenId)
-    {   
-        $uniqueHash = md5(mt_rand() . microtime() . uniqid()); 
+    protected function generateRefreshToken($tokenId, $expiresAt)
+    {
+        try {
+            $uniqueHash = md5(mt_rand() . microtime() . uniqid());
 
-        $refreshToken = new OAuthRefreshTokens();
-        $refreshToken->id = $uniqueHash; 
-        $refreshToken->access_token_id = $tokenId;
-        $refreshToken->token = $uniqueHash . '?' . Str::uuid() . Str::random(50);
-        $refreshToken->revoked = false;
-        $refreshToken->expires_at = Carbon::now()->addYear();
-
-        $findByToken = OAuthRefreshTokens::where('token', $refreshToken->token)->first();
-        $findById = OAuthRefreshTokens::find($refreshToken->id);
-
-        while ($findById || $findByToken) {
-            $uniqueHash = md5(mt_rand() . microtime() . uniqid()); 
-
+            $refreshToken = new OAuthRefreshTokens();
             $refreshToken->id = $uniqueHash;
-            $refreshToken->token = $uniqueHash . '?' . Str::uuid() . Str::random(50);
+            $refreshToken->access_token_id = $tokenId;
+            $refreshToken->token = $uniqueHash . '?' . Str::uuid() . Str::random(690);
+            $refreshToken->revoked = false;
+            $refreshToken->expires_at = $expiresAt;
 
-            $findById = OAuthRefreshTokens::find($refreshToken->id);
             $findByToken = OAuthRefreshTokens::where('token', $refreshToken->token)->first();
-        }
-        
-        $refreshToken->save();
+            $findById = OAuthRefreshTokens::find($refreshToken->id);
 
-        return $refreshToken->token;
+            while ($findById || $findByToken) {
+                $uniqueHash = md5(mt_rand() . microtime() . uniqid());
+
+                $refreshToken->id = $uniqueHash;
+                $refreshToken->token = $uniqueHash . '?' . Str::uuid() . Str::random(690);
+
+                $findById = OAuthRefreshTokens::find($refreshToken->id);
+                $findByToken = OAuthRefreshTokens::where('token', $refreshToken->token)->first();
+            }
+
+            $refreshToken->save();
+        } catch (Exception $exception) {
+            return false;
+        } finally {
+            return $refreshToken->token;
+        }
+    }
+    public function generateAccessToken($user)
+    {
+        $token = $user->createToken('Personal Access Token');
+        $accessToken = $token->accessToken;
+        $expiresAt = Carbon::parse($token->token->expires_at)->toDateTimeString();
+
+        return [
+            'token_type' => 'Bearer',
+            'expires_in' => $expiresAt,
+            'access_token' => $accessToken,
+            'refresh_token' => $this->generateRefreshToken($token->token->id, $expiresAt),
+        ];
     }
 
     protected function generateUsername($name)
@@ -144,18 +168,4 @@ class AuthController extends Controller
         return $username;
     }
 
-    protected function generateAccessToken($user)
-    {
-        $token = $user->createToken('Personal Access Token');
-        $accessToken = $token->accessToken;
-
-        return [
-            'access_token' => $accessToken,
-            'token_type' => 'Bearer',
-            'expires_at' => Carbon::parse(
-                $token->token->expires_at
-            )->toDateTimeString(),
-            'refresh_token' => $this->generateRefreshToken($token->token->id)
-        ];
-    }
 }

@@ -10,7 +10,7 @@ class AddColumnRefreshTokensTable extends Migration
     public function up()
     {
         Schema::table('oauth_refresh_tokens', function (Blueprint $table) {
-            $table->string('token')->unique()->after('access_token_id');
+            $table->string('token', 1100)->after('access_token_id');
         });
     }
 
