@@ -5,9 +5,9 @@ namespace App\Http\Controllers\API;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\OAuthRefreshTokens;
 use Carbon\Carbon;
 use App\Users;
 
@@ -83,9 +83,33 @@ class AuthController extends Controller
     {
     }
 
-    protected function generateRefreshToken($tokenId, $userId)
-    {
-        return md5(mt_rand() . microtime()) . Str::uuid() . Str::random(50);
+    protected function generateRefreshToken($tokenId)
+    {   
+        $uniqueHash = md5(mt_rand() . microtime() . uniqid()); 
+
+        $refreshToken = new OAuthRefreshTokens();
+        $refreshToken->id = $uniqueHash; 
+        $refreshToken->access_token_id = $tokenId;
+        $refreshToken->token = $uniqueHash . '?' . Str::uuid() . Str::random(50);
+        $refreshToken->revoked = false;
+        $refreshToken->expires_at = Carbon::now()->addYear();
+
+        $findByToken = OAuthRefreshTokens::where('token', $refreshToken->token)->first();
+        $findById = OAuthRefreshTokens::find($refreshToken->id);
+
+        while ($findById || $findByToken) {
+            $uniqueHash = md5(mt_rand() . microtime() . uniqid()); 
+
+            $refreshToken->id = $uniqueHash;
+            $refreshToken->token = $uniqueHash . '?' . Str::uuid() . Str::random(50);
+
+            $findById = OAuthRefreshTokens::find($refreshToken->id);
+            $findByToken = OAuthRefreshTokens::where('token', $refreshToken->token)->first();
+        }
+        
+        $refreshToken->save();
+
+        return $refreshToken->token;
     }
 
     protected function generateUsername($name)
@@ -131,7 +155,7 @@ class AuthController extends Controller
             'expires_at' => Carbon::parse(
                 $token->token->expires_at
             )->toDateTimeString(),
-            'refresh_token' => $this->generateRefreshToken($token->token->id, $token->token->user_id)
+            'refresh_token' => $this->generateRefreshToken($token->token->id)
         ];
     }
 }
