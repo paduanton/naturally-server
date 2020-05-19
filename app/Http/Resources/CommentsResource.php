@@ -15,8 +15,8 @@ class CommentsResource extends JsonResource
             'recipes_id' => $this->recipes_id,
             'parent_comments_id' => $this->parent_comments_id,
             'description' => $this->description,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at->toDateTimeString(),
+            'updated_at' => $this->updated_at->toDateTimeString(),
             'replies' => $this->replies
         ];
     }

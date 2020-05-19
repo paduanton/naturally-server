@@ -17,8 +17,8 @@ class SocialNetworkAccountsResource extends JsonResource
             'nickname' => $this->nickname,
             'profile_url' => $this->profile_url,
             'picture_url' => $this->picture_url,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
+            'created_at' => $this->created_at->toDateTimeString(),
+            'updated_at' => $this->updated_at->toDateTimeString()
         ];
     }
 }

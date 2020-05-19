@@ -14,4 +14,13 @@ class OAuthRefreshTokens extends Model
 
     public $timestamps = false;
     
+    public function users()
+    {
+        return $this->belongsTo(Users::class);
+    }
+
+    public function access_token()
+    {
+        return $this->belongsTo(OAuthAccessTokens::class);
+    }
 }

@@ -14,8 +14,8 @@ class IngredientsResource extends JsonResource
             'recipes_id' => $this->recipes_id,
             'measure' => $this->measure,
             'description' => $this->description,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
+            'created_at' => $this->created_at->toDateTimeString(),
+            'updated_at' => $this->updated_at->toDateTimeString()
         ];
     }
 }

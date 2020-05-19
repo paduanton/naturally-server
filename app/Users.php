@@ -56,4 +56,8 @@ class Users extends Authenticatable
         return $this->belongsToMany(Recipes::class, 'comments', 'users_id', 'recipes_id');
     }
 
+    public function access_tokens()
+    {
+        return $this->hasMany(OAuthAccessTokens::class);
+    }
 }

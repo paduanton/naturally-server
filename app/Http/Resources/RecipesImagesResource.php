@@ -18,8 +18,8 @@ class RecipesImagesResource extends JsonResource
             'mime' => $this->mime,
             'original_filename' => $this->original_filename,
             'original_extension' => $this->original_extension,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
+            'created_at' => $this->created_at->toDateTimeString(),
+            'updated_at' => $this->updated_at->toDateTimeString()
         ];
     }
 }

@@ -89,9 +89,9 @@ class SocialNetworkAccountService implements SocialNetworkAccountsInterface
         $socialNetworkAccount->picture_url = $pictureURL;
 
         if (!$username) {
-            $username = $this->getOrgenerateUsername($name);
+            $username = $this->getOrGenerateUsername($name);
         } else {
-            $username = $this->getOrgenerateUsername($username, $provider);
+            $username = $this->getOrGenerateUsername($username, $provider);
         }
 
         $userData = [
@@ -168,7 +168,7 @@ class SocialNetworkAccountService implements SocialNetworkAccountsInterface
         return false;
     }
 
-    protected function getOrgenerateUsername($name, $provider = null)
+    protected function getOrGenerateUsername($name, $provider = null)
     {
         if ($provider) {
             $username = $name;
@@ -186,8 +186,8 @@ class SocialNetworkAccountService implements SocialNetworkAccountsInterface
             $username = strtolower($username);
             $username = preg_replace("/[^A-Za-z.]/", '', $username);
 
-            if(!$username) {
-                $username = 'user' .mt_rand(); 
+            if (!$username) {
+                $username = 'user' . mt_rand();
             }
         }
 
@@ -195,9 +195,13 @@ class SocialNetworkAccountService implements SocialNetworkAccountsInterface
 
         while ($user) {
             $randomNumber = mt_rand();
-            $username = $username . $randomNumber;
+            $newUsername = $username . $randomNumber;
 
-            $user = Users::where('username', $username)->first();
+            $user = Users::where('username', $newUsername)->first();
+        }
+
+        if (isset($newUsername)) {
+            return $newUsername;
         }
 
         return $username;

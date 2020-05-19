@@ -22,8 +22,8 @@ class RecipesResource extends JsonResource
             'cost' => $this->cost,
             'complexity' => $this->complexity,
             'notes' => $this->notes,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
+            'created_at' => $this->created_at->toDateTimeString(),
+            'updated_at' => $this->updated_at->toDateTimeString()
         ];
     }
 }
