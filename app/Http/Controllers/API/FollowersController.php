@@ -125,7 +125,7 @@ class FollowersController extends Controller
         $follower = new Followers();
         $follower->users_id = $user->id;
         $follower->following_users_id = $followedUser->id;
-        $follower->followed_at = Carbon::now();
+        $follower->followed_at = Carbon::now()->toDateString();
         $follower->save();
 
         return response()->json($follower, 201);

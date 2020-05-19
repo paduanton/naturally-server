@@ -89,7 +89,7 @@ class AuthController extends Controller
         $parseToken = explode("?", $request['refresh_token']);
         $refreshTokenId = $parseToken[0];
         $authenticatedUser = Auth::user();
-        
+
         $refreshToken = OAuthRefreshTokens::find($refreshTokenId);
         $accessToken = $refreshToken->access_token;
         $user = $accessToken->users;
@@ -97,7 +97,7 @@ class AuthController extends Controller
         $refreshTokenExpiration = Carbon::parse($refreshToken->expires_at);
         $now = Carbon::now();
 
-        if($now->greaterThan($refreshTokenExpiration)) {
+        if ($now->greaterThan($refreshTokenExpiration)) {
             return response()->json([
                 'error' => 'invalid token',
                 'message' => "refresh token has been expired"
@@ -117,7 +117,7 @@ class AuthController extends Controller
                 'message' => "access token does not match the referenced refresh token"
             ], 400);
         }
-        
+
         $request->user()->token()->revoke();
         return $this->generateAccessToken($authenticatedUser);
     }
@@ -154,6 +154,7 @@ class AuthController extends Controller
             return $refreshToken->token;
         }
     }
+
     public function generateAccessToken($user)
     {
         $token = $user->createToken('Personal Access Token');
