@@ -18,4 +18,14 @@ class Likes extends Model
     protected $hidden = [
         'deleted_at'
     ];
+
+    public function users()
+    {
+        return $this->belongsTo(Users::class);
+    }
+    
+    public function recipes()
+    {
+        return $this->belongsTo(Recipes::class);
+    }
 }

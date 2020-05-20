@@ -5,10 +5,10 @@ namespace App\Http\Controllers\API;
 use App\Users;
 use App\Recipes;
 use App\Likes;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\LikesResource;
+use App\Http\Resources\UsersLikesResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class LikesController extends Controller
@@ -28,6 +28,17 @@ class LikesController extends Controller
     {
         $likes = Likes::findOrFail($id);
         return new LikesResource($likes);
+    }
+
+    public function getLikesByUserId($userId) {
+        Users::findOrFail($userId);
+        $likes = Likes::where('users_id', $userId)->get();
+
+        if ($likes->isEmpty()) {
+            throw new ModelNotFoundException;
+        }
+
+        return UsersLikesResource::collection($likes);
     }
 
     public function getLikesByRecipesId($recipesId)
@@ -83,9 +94,7 @@ class LikesController extends Controller
             'is_liked' => 'required|boolean',
         ]);
 
-
         $like = Likes::where('id', $id)->first();
-                
         $update = $like->update(['is_liked' => $request['is_liked']]);
 
         if ($update) {
@@ -100,7 +109,6 @@ class LikesController extends Controller
     public function destroy($id)
     {
         $like = Likes::where('id', $id)->first();
-
         $delete = $like->delete();
 
         if ($delete) {

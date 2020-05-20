@@ -123,6 +123,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         */
 
         $router->apiResource('/likes', 'API\LikesController');
+        $router->get('/user/{userId}/likes', 'API\LikesController@getLikesByUserId');
         $router->get('/recipes/{recipesId}/likes', 'API\LikesController@getLikesByRecipesId');
         $router->post('/users/{usersId}/recipes/{recipesId}/likes', 'API\LikesController@store');
 
