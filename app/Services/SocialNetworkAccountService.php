@@ -71,7 +71,7 @@ class SocialNetworkAccountService implements SocialNetworkAccountsInterface
             ->first();
 
         if ($socialAccount) {
-            return $socialAccount->users;
+            return $socialAccount->user;
         }
 
         $name = $providerUser->getName();
@@ -182,6 +182,7 @@ class SocialNetworkAccountService implements SocialNetworkAccountsInterface
                 $username = $firstName . "." . $lastName;
             }
 
+            $username = str_replace(" ", "", $username);
             $username = Str::ascii($username);
             $username = strtolower($username);
             $username = preg_replace("/[^A-Za-z.]/", '', $username);

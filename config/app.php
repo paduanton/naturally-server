@@ -71,7 +71,7 @@ return [
     |
     */
 
-    'timezone' => 'America/Recife',
+    'timezone' => env('APP_TIMEZONE', 'UTC'),
 
     /*
     |--------------------------------------------------------------------------

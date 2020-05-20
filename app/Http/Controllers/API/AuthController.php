@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\OAuthRefreshTokens;
+use App\OAuthAccessTokens;
 use Carbon\Carbon;
 use App\Users;
 use Exception;
@@ -67,9 +68,15 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $token = $request->user()->token()->revoke();
+        $accessToken = $request->user()->token();
+        $accessTokenId = $request->user()->token()->id;
+        $accessTokenModel = OAuthAccessTokens::findOrFail($accessTokenId);
 
-        if ($token) {
+        $revokeAccessToken = $accessToken->revoke();
+
+        if ($revokeAccessToken) {
+            $this->revokeRefreshToken($accessTokenModel->refresh_token->token);
+
             return response()->json([
                 'message' => 'Logout successfully'
             ], 200);
@@ -78,6 +85,15 @@ class AuthController extends Controller
         return response()->json([
             'message' => "couldn't logout"
         ], 409);
+    }
+
+    public function getRefreshTokenInfo($token)
+    {
+        $parseToken = explode("?", $token);
+        $refreshTokenId = $parseToken[0];
+
+        $refreshToken = OAuthRefreshTokens::findOrFail($refreshTokenId);
+        return response()->json($refreshToken);
     }
 
     public function refreshToken(Request $request)
@@ -92,12 +108,21 @@ class AuthController extends Controller
 
         $refreshToken = OAuthRefreshTokens::find($refreshTokenId);
         $accessToken = $refreshToken->access_token;
-        $user = $accessToken->users;
+        $user = $accessToken->user;
 
         $refreshTokenExpiration = Carbon::parse($refreshToken->expires_at);
         $now = Carbon::now();
 
+        if($refreshToken->revoked) {
+            return response()->json([
+                'error' => 'invalid token',
+                'message' => "refresh token has been revoked already"
+            ], 400);
+        }
+
         if ($now->greaterThan($refreshTokenExpiration)) {
+            $this->revokeRefreshToken($request['refresh_token']);
+
             return response()->json([
                 'error' => 'invalid token',
                 'message' => "refresh token has been expired"
@@ -119,7 +144,15 @@ class AuthController extends Controller
         }
 
         $request->user()->token()->revoke();
+        $this->revokeRefreshToken($request['refresh_token']);
         return $this->generateAccessToken($authenticatedUser);
+    }
+
+    protected function revokeRefreshToken($token)
+    {
+        $parseToken = explode("?", $token);
+        $refreshTokenId = $parseToken[0];
+        OAuthRefreshTokens::where('id', $refreshTokenId)->update(["revoked" => true]);
     }
 
     protected function generateRefreshToken($tokenId, $accessTokenExpiresAt)
