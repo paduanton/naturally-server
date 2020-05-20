@@ -167,17 +167,15 @@ class AuthController extends Controller
             $refreshToken->revoked = false;
             $refreshToken->expires_at = $accessTokenExpiresAt->addMonth(1);
 
-            $findByToken = OAuthRefreshTokens::where('token', $refreshToken->token)->first();
             $findById = OAuthRefreshTokens::find($refreshToken->id);
 
-            while ($findById || $findByToken) {
+            while ($findById) {
                 $uniqueHash = md5(mt_rand() . microtime() . uniqid());
 
                 $refreshToken->id = $uniqueHash;
                 $refreshToken->token = $uniqueHash . '?' . Str::uuid() . Str::random(690);
 
                 $findById = OAuthRefreshTokens::find($refreshToken->id);
-                $findByToken = OAuthRefreshTokens::where('token', $refreshToken->token)->first();
             }
 
             $refreshToken->save();

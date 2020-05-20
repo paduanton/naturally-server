@@ -82,7 +82,7 @@ class SocialNetworkAccountsController extends Controller
     {
         $socialNetworkAccount = SocialNetworkAccounts::findOrFail($id);
 
-        if($socialNetworkAccount->users->password === null){
+        if($socialNetworkAccount->user->password === null){
             return response()->json([
                 'error' => 'user does not have password',
                 'message' => 'please define a password to delete a social account',

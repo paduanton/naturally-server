@@ -32,7 +32,7 @@ class CommentsController extends Controller
 
     public function getCommentsByRecipesId($recipesId)
     {
-        $recipe = Recipes::findOrFail($recipesId);
+        Recipes::findOrFail($recipesId);
         $comments = Comments::where('recipes_id', $recipesId)->get();
 
         if ($comments->isEmpty()) {

@@ -118,5 +118,13 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->get('/recipes/{recipesId}/comments', 'API\CommentsController@getCommentsByRecipesId');
         $router->post('/users/{usersId}/recipes/{recipesId}/comments', 'API\CommentsController@store');
 
+         /*
+            Likes Routes
+        */
+
+        $router->apiResource('/likes', 'API\LikesController');
+        $router->get('/recipes/{recipesId}/likes', 'API\LikesController@getLikesByRecipesId');
+        $router->post('/users/{usersId}/recipes/{recipesId}/likes', 'API\LikesController@store');
+
     });
 });
