@@ -2,9 +2,10 @@
 
 namespace App\Exceptions;
 
+use Throwable;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -40,15 +41,6 @@ class Handler extends ExceptionHandler
         parent::report($exception);
     }
 
-    /**
-     * Render an exception into an HTTP response.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Throwable  $exception
-     * @return \Symfony\Component\HttpFoundation\Response
-     *
-     * @throws \Throwable
-     */
     public function render($request, Throwable $exception)
     {
 
@@ -57,6 +49,12 @@ class Handler extends ExceptionHandler
                 'message' => 'There is no data',
                 'error' => 'Model not found in the server'
             ], 404);
+        }
+
+        if ($exception instanceof AuthenticationException) {
+            return response()->json([
+                'message' => 'Unauthenticated',
+            ], 401);
         }
 
         return parent::render($request, $exception);

@@ -60,4 +60,9 @@ class Users extends Authenticatable
     {
         return $this->hasMany(OAuthAccessTokens::class);
     }
+
+    public function favorite_recipes()
+    {
+        return $this->hasMany(UsersFavoritesRecipes::class);
+    }
 }

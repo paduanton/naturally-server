@@ -16,7 +16,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         Unauthenticated Routes
     */
 
-        // Recipes
+    // Recipes
 
     $router->get('/recipes/{title}/search', 'API\RecipesController@search');
     $router->get('/recipes/{id}', 'API\RecipesController@show');
@@ -94,7 +94,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->apiResource('/ingredients', 'API\IngredientsController');
         $router->get('/recipes/{recipesId}/ingredients', 'API\IngredientsController@getIngredientsByRecipesId');
         $router->post('/recipes/{recipesId}/ingredients', 'API\IngredientsController@store');
-        
+
         /*
             Instructions Routes
         */
@@ -118,7 +118,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->get('/recipes/{recipesId}/comments', 'API\CommentsController@getCommentsByRecipesId');
         $router->post('/users/{usersId}/recipes/{recipesId}/comments', 'API\CommentsController@store');
 
-         /*
+        /*
             Likes Routes
         */
 
@@ -127,5 +127,13 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->get('/recipes/{recipesId}/likes', 'API\LikesController@getLikesByRecipesId');
         $router->post('/users/{usersId}/recipes/{recipesId}/likes', 'API\LikesController@store');
 
+        /*
+            UsersFavoritesRecipes Routes
+        */
+
+        $router->apiResource('/favorites', 'API\UsersFavoritesRecipesController');
+        $router->get('/recipes/{recipesId}/favorites', 'API\UsersFavoritesRecipesController@getFavoritesByRecipesId');
+        $router->get('/user/{userId}/favorites', 'API\UsersFavoritesRecipesController@getFavoritesRecipesByUserId');
+        $router->post('/user/{userId}/recipe/{recipeId}/favorite', 'API\UsersFavoritesRecipesController@store');
     });
 });

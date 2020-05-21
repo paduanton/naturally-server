@@ -7,7 +7,7 @@ use App\Recipes;
 use App\Likes;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\LikesResource;
+use App\Http\Resources\RecipesLikesResource;
 use App\Http\Resources\UsersLikesResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -21,13 +21,13 @@ class LikesController extends Controller
             throw new ModelNotFoundException();
         }
 
-        return LikesResource::collection($likes);
+        return RecipesLikesResource::collection($likes);
     }
 
     public function show($id)
     {
         $likes = Likes::findOrFail($id);
-        return new LikesResource($likes);
+        return new RecipesLikesResource($likes);
     }
 
     public function getLikesByUserId($userId) {
@@ -50,7 +50,7 @@ class LikesController extends Controller
             throw new ModelNotFoundException;
         }
 
-        return LikesResource::collection($likes);
+        return RecipesLikesResource::collection($likes);
     }
 
     public function store(Request $request, $usersId, $recipesId)
@@ -80,7 +80,7 @@ class LikesController extends Controller
         $like = Likes::create($like);
 
         if ($like) {
-            return new LikesResource($like);
+            return new RecipesLikesResource($like);
         }
 
         return response()->json([
@@ -98,7 +98,7 @@ class LikesController extends Controller
         $update = $like->update(['is_liked' => $request['is_liked']]);
 
         if ($update) {
-            return new LikesResource(Likes::find($id));
+            return new RecipesLikesResource(Likes::find($id));
         }
 
         return response()->json([
@@ -109,6 +109,11 @@ class LikesController extends Controller
     public function destroy($id)
     {
         $like = Likes::where('id', $id)->first();
+        
+        if(!$like) {
+            throw new ModelNotFoundException;
+        }
+
         $delete = $like->delete();
 
         if ($delete) {
