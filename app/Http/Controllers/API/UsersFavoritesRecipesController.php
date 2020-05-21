@@ -40,16 +40,16 @@ class UsersFavoritesRecipesController extends Controller
         return UsersFavoritesRecipesResource::collection($userFavoriteRecipes);
     }
 
-    public function getLikesByRecipesId($recipesId)
+    public function getFavoritesByRecipesId($recipeId)
     {
-        Recipes::findOrFail($recipesId);
-        $likes = UsersFavoritesRecipes::where('recipes_id', $recipesId)->get();
+        $recipe = Recipes::findOrFail($recipeId);
+        $favorites = $recipe->favorites;
 
-        if ($likes->isEmpty()) {
+        if ($favorites->isEmpty()) {
             throw new ModelNotFoundException;
         }
 
-        return UsersFavoritesRecipesResource::collection($likes);
+        return FavoritesRecipesResource::collection($favorites);
     }
 
     public function store($userId, $recipeId)

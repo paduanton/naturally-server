@@ -132,8 +132,17 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         */
 
         $router->apiResource('/favorites', 'API\UsersFavoritesRecipesController');
-        $router->get('/recipes/{recipesId}/favorites', 'API\UsersFavoritesRecipesController@getFavoritesByRecipesId');
+        $router->get('/recipe/{recipeId}/favorites', 'API\UsersFavoritesRecipesController@getFavoritesByRecipesId');
         $router->get('/user/{userId}/favorites', 'API\UsersFavoritesRecipesController@getFavoritesRecipesByUserId');
         $router->post('/user/{userId}/recipe/{recipeId}/favorite', 'API\UsersFavoritesRecipesController@store');
+        
+        /*
+            Ratings Routes
+        */
+
+        $router->apiResource('/ratings', 'API\RatingsController');
+        $router->get('/recipe/{recipeId}/ratings', 'API\RatingsController@getRatingsByRecipeId');
+        $router->get('/user/{userId}/ratings', 'API\RatingsController@getRatingsByUserId');
+        $router->post('/user/{userId}/recipe/{recipeId}/ratings', 'API\RatingsController@store');
     });
 });

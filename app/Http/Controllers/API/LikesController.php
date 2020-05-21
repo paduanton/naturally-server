@@ -31,8 +31,8 @@ class LikesController extends Controller
     }
 
     public function getLikesByUserId($userId) {
-        Users::findOrFail($userId);
-        $likes = Likes::where('users_id', $userId)->get();
+        $user = Users::findOrFail($userId);
+        $likes = $user->likes;
 
         if ($likes->isEmpty()) {
             throw new ModelNotFoundException;
@@ -43,8 +43,8 @@ class LikesController extends Controller
 
     public function getLikesByRecipesId($recipesId)
     {
-        Recipes::findOrFail($recipesId);
-        $likes = Likes::where('recipes_id', $recipesId)->get();
+        $recipe = Recipes::findOrFail($recipesId);
+        $likes = $recipe->likes;
 
         if ($likes->isEmpty()) {
             throw new ModelNotFoundException;

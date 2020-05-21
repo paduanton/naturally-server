@@ -16,7 +16,6 @@ class CreateRatingsTable extends Migration
             $table->boolean('made_it')->nullable();
             $table->tinyInteger('value');
             $table->string('description')->nullable();
-            $table->string('picture_url')->nullable();
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);
             $table->foreign('users_id')->references('id')->on('users');

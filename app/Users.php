@@ -51,7 +51,7 @@ class Users extends Authenticatable
         return $this->belongsToMany(Users::class, 'followers', 'users_id', 'following_users_id');
     }
 
-    public function recipes_comments()
+    public function comments()
     {
         return $this->belongsToMany(Recipes::class, 'comments', 'users_id', 'recipes_id');
     }
@@ -61,8 +61,18 @@ class Users extends Authenticatable
         return $this->hasMany(OAuthAccessTokens::class);
     }
 
+    public function likes()
+    {
+        return $this->hasMany(Likes::class);
+    }
+
     public function favorite_recipes()
     {
         return $this->hasMany(UsersFavoritesRecipes::class);
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(Ratings::class);
     }
 }

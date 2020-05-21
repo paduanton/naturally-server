@@ -54,4 +54,14 @@ class Recipes extends Model
     {
         return $this->hasMany(Likes::class);
     }
+
+    public function favorites()
+    {
+        return $this->hasMany(UsersFavoritesRecipes::class);
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(Ratings::class);
+    }
 }
