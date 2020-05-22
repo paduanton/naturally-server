@@ -159,14 +159,14 @@ class AuthController extends Controller
         OAuthRefreshTokens::where('id', $refreshTokenId)->update(["revoked" => true]);
     }
 
-    protected function generateRefreshToken($tokenId, $accessTokenExpiresAt)
+    protected function generateRefreshToken($accessTokenId, $accessTokenExpiresAt)
     {
         try {
             $uniqueHash = $this->getUniqueHash();
 
             $refreshToken = new OAuthRefreshTokens();
             $refreshToken->id = $uniqueHash;
-            $refreshToken->access_token_id = $tokenId;
+            $refreshToken->access_token_id = $accessTokenId;
             $refreshToken->token = $uniqueHash . '?' . Str::random(690);
             $refreshToken->revoked = false;
             $refreshToken->expires_at = $accessTokenExpiresAt->addMonth(1);
@@ -177,7 +177,7 @@ class AuthController extends Controller
                 $uniqueHash = $this->getUniqueHash();
 
                 $refreshToken->id = $uniqueHash;
-                $refreshToken->token = $uniqueHash . '?' . Str::uuid() . Str::random(690);
+                $refreshToken->token = $uniqueHash . '?' . Str::random(690);
 
                 $findById = OAuthRefreshTokens::find($refreshToken->id);
             }

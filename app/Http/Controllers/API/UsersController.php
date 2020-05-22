@@ -94,7 +94,7 @@ class UsersController extends Controller
         }
 
         return response()->json([
-            'message' => 'could not delete users data',
+            'message' => 'account successfully deleted',
         ], 400);
     }
 }
