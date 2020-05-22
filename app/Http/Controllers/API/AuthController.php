@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\OAuthRefreshTokens;
@@ -21,7 +22,7 @@ class AuthController extends Controller
         $this->validate($request, [
             'name' => 'required|string',
             'email' => 'email|required|unique:users',
-            'password' => 'required|confirmed|string',
+            'password' => 'required|confirmed|string|min:6',
             'birthday' => 'nullable|date',
             'remember_me' => 'nullable|boolean',
         ]);
@@ -34,7 +35,8 @@ class AuthController extends Controller
         Auth::login($user, $remember);
 
         if ($user) {
-            return response()->json($this->generateAccessToken($user), 201);
+            $user['authentication'] = $this->generateAccessToken($user);
+            return response()->json($user, 201);
         }
 
         return response()->json([
@@ -63,7 +65,9 @@ class AuthController extends Controller
         }
 
         $user = $request->user();
-        return response()->json($this->generateAccessToken($user));
+        $user['authentication'] = $this->generateAccessToken($user);
+
+        return response()->json($user);
     }
 
     public function logout(Request $request)
@@ -113,7 +117,7 @@ class AuthController extends Controller
         $refreshTokenExpiration = Carbon::parse($refreshToken->expires_at);
         $now = Carbon::now();
 
-        if($refreshToken->revoked) {
+        if ($refreshToken->revoked) {
             return response()->json([
                 'error' => 'invalid token',
                 'message' => "refresh token has been revoked already"

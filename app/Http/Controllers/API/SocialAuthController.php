@@ -10,7 +10,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 use Exception;
 
 class SocialAuthController extends Controller
@@ -89,7 +88,7 @@ class SocialAuthController extends Controller
         if (!$this->socialProvider->isOAuth1ProviderSupported($provider)) {
             return response()->json([
                 'error' => 'invalid provider',
-                'message' => "the social provider {$provider} is not supported",
+                'message' => "the social provider '{$provider}' is not supported",
             ], 400);
         }
 
