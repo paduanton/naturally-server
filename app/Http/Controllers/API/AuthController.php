@@ -30,8 +30,8 @@ class AuthController extends Controller
         $remember = $request['remember_me'];
         $request['username'] = $this->generateUsername($request['name']);
         $request['password'] = Hash::make($request['password']);
-        $user = Users::create($request->all());
 
+        $user = Users::create($request->all());
         Auth::login($user, $remember);
 
         if ($user) {
@@ -162,19 +162,19 @@ class AuthController extends Controller
     protected function generateRefreshToken($tokenId, $accessTokenExpiresAt)
     {
         try {
-            $uniqueHash = md5(mt_rand() . microtime() . uniqid());
+            $uniqueHash = $this->getUniqueHash();
 
             $refreshToken = new OAuthRefreshTokens();
             $refreshToken->id = $uniqueHash;
             $refreshToken->access_token_id = $tokenId;
-            $refreshToken->token = $uniqueHash . '?' . Str::uuid() . Str::random(690);
+            $refreshToken->token = $uniqueHash . '?' . Str::random(690);
             $refreshToken->revoked = false;
             $refreshToken->expires_at = $accessTokenExpiresAt->addMonth(1);
 
             $findById = OAuthRefreshTokens::find($refreshToken->id);
 
-            while ($findById) {
-                $uniqueHash = md5(mt_rand() . microtime() . uniqid());
+            while ($findById && strlen($uniqueHash) > 767) {
+                $uniqueHash = $this->getUniqueHash();
 
                 $refreshToken->id = $uniqueHash;
                 $refreshToken->token = $uniqueHash . '?' . Str::uuid() . Str::random(690);
@@ -202,6 +202,11 @@ class AuthController extends Controller
             'access_token' => $accessToken,
             'refresh_token' => $this->generateRefreshToken($token->token->id, $expiresAt),
         ];
+    }
+
+    protected static function getUniqueHash(int $size = 32)
+    {
+        return bin2hex(openssl_random_pseudo_bytes($size));
     }
 
     protected function generateUsername($name)
