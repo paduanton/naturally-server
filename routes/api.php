@@ -28,6 +28,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
     $router->post('/oauth/social', 'API\SocialAuthController@authenticate');
     $router->post('/login', 'API\AuthController@login');
     $router->post('/signup', 'API\AuthController@signup');
+    $router->post('/forgot', 'API\ForgotPasswordController@forgot');
 
     Route::group(['middleware' => 'auth:api'], function () use ($router) {
         $router->get('/oauth/refresh/{token}', 'API\AuthController@getRefreshTokenInfo');
@@ -135,7 +136,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->get('/recipe/{recipeId}/favorites', 'API\UsersFavoritesRecipesController@getFavoritesByRecipesId');
         $router->get('/user/{userId}/favorites', 'API\UsersFavoritesRecipesController@getFavoritesRecipesByUserId');
         $router->post('/user/{userId}/recipe/{recipeId}/favorite', 'API\UsersFavoritesRecipesController@store');
-        
+
         /*
             Ratings Routes
         */
