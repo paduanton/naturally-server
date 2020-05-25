@@ -29,6 +29,8 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
     $router->post('/login', 'API\AuthController@login');
     $router->post('/signup', 'API\AuthController@signup');
     $router->post('/forgot', 'API\ForgotPasswordController@forgot');
+    $router->get('/forgot/{token}', 'API\ForgotPasswordController@getPasswordResetByToken');
+    $router->patch('/forgot/{token}', 'API\ForgotPasswordController@reset');
 
     Route::group(['middleware' => 'auth:api'], function () use ($router) {
         $router->get('/oauth/refresh/{token}', 'API\AuthController@getRefreshTokenInfo');

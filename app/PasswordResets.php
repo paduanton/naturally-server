@@ -9,7 +9,7 @@ class PasswordResets extends Model
     protected $table = 'password_resets';
 
     protected $fillable = [
-        'email', 'token', 'done', 'expires_at', 'created_at'
+        'email', 'token', 'done', 'expires_at'
     ];
 
 }
