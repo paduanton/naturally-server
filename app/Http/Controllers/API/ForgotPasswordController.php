@@ -7,13 +7,14 @@ use Carbon\Carbon;
 use App\PasswordResets;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Services\ResetPasswordService;
 use App\Services\AuthenticationService;
-use App\Http\Resources\PasswordResetResource;
-use App\Notifications\PasswordResetRequest;
 use App\Notifications\PasswordResetSuccess;
+use App\Http\Resources\PasswordResetResource;
 
 class ForgotPasswordController extends Controller
 {
+    protected $resetPasswordService;
     protected $authService;
 
     public function __construct(AuthenticationService $auth)
@@ -38,8 +39,10 @@ class ForgotPasswordController extends Controller
         ];
 
         $passwordReset = PasswordResets::create($passwordReset);
-        $notification = $user->notify(new PasswordResetRequest($passwordReset->token));
-
+        
+        $this->resetPasswordService = new ResetPasswordService($passwordReset->token);
+        $notification = $this->resetPasswordService->notificateUser($user);
+        
         if ($user && $passwordReset && $notification) {
             return new PasswordResetResource($passwordReset);
         }
@@ -49,15 +52,11 @@ class ForgotPasswordController extends Controller
             'message' => "we could not create a password reset notification"
         ], 400);
     }
-    
+
     public function getPasswordResetByToken($token)
     {
-        $passwordReset = PasswordResets::where('token', $token)
-            ->first();
-        if (!$passwordReset)
-            return response()->json([
-                'message' => 'This password reset token is invalid.'
-            ], 404);
+        $passwordReset = PasswordResets::where('token', $token)->firstOrFail();
+   
         if (Carbon::parse($passwordReset->updated_at)->addMinutes(720)->isPast()) {
             $passwordReset->delete();
             return response()->json([
