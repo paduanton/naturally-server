@@ -12,4 +12,9 @@ class PasswordResets extends Model
         'email', 'token', 'done', 'expires_at'
     ];
 
+    protected $hidden = [
+        'deleted_at'
+    ];
+
+    protected $dates = ['expires_at'];
 }

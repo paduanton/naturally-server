@@ -4,6 +4,8 @@ namespace App\Services;
 
 use Exception;
 use App\Users;
+use Carbon\Carbon;
+use App\PasswordResets;
 use App\Notifications\PasswordResetRequest;
 use App\Services\Interfaces\ResetPasswordInterface;
 
@@ -18,6 +20,13 @@ class ResetPasswordService implements ResetPasswordInterface
 
     public function isTokenExpired()
     {
+        $passwordReset = PasswordResets::where('token', $this->token)->first();
+        
+        if (Carbon::parse($passwordReset->expires_at)->isPast()) {
+            return true;
+        }
+
+        return false;
     }
 
     public function notificateUser(Users $user)

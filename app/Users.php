@@ -75,4 +75,5 @@ class Users extends Authenticatable
     {
         return $this->hasMany(Ratings::class);
     }
+    
 }

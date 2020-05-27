@@ -42,7 +42,7 @@ class ForgotPasswordController extends Controller
         
         $this->resetPasswordService = new ResetPasswordService($passwordReset->token);
         $notification = $this->resetPasswordService->notificateUser($user);
-        
+
         if ($user && $passwordReset && $notification) {
             return new PasswordResetResource($passwordReset);
         }
@@ -55,15 +55,17 @@ class ForgotPasswordController extends Controller
 
     public function getPasswordResetByToken($token)
     {
+        $this->resetPasswordService = new ResetPasswordService($token);
         $passwordReset = PasswordResets::where('token', $token)->firstOrFail();
-   
-        if (Carbon::parse($passwordReset->updated_at)->addMinutes(720)->isPast()) {
+
+        if ($this->resetPasswordService->isTokenExpired()) {
             $passwordReset->delete();
             return response()->json([
                 'message' => 'This password reset token is invalid.'
             ], 404);
         }
-        return response()->json($passwordReset);
+
+        return new PasswordResetResource($passwordReset);
     }
     
     public function reset(Request $request, $token)
