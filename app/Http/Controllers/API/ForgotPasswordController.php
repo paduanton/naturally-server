@@ -6,7 +6,9 @@ use App\Users;
 use Carbon\Carbon;
 use App\PasswordResets;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UsersResource;
 use App\Services\ResetPasswordService;
 use App\Services\AuthenticationService;
 use App\Notifications\PasswordResetSuccess;
@@ -17,9 +19,10 @@ class ForgotPasswordController extends Controller
     protected $resetPasswordService;
     protected $authService;
 
-    public function __construct(AuthenticationService $auth)
+    public function __construct(AuthenticationService $auth, ResetPasswordService $reset)
     {
         $this->authService = $auth;
+        $this->resetPasswordService = $reset;
     }
 
     public function forgot(Request $request)
@@ -39,9 +42,8 @@ class ForgotPasswordController extends Controller
         ];
 
         $passwordReset = PasswordResets::create($passwordReset);
-        
-        $this->resetPasswordService = new ResetPasswordService($passwordReset->token);
-        $notification = $this->resetPasswordService->notificateUser($user);
+
+        $notification = $this->resetPasswordService->sendResetLinkEmail($user, $passwordReset->token);
 
         if ($user && $passwordReset && $notification) {
             return new PasswordResetResource($passwordReset);
@@ -55,43 +57,70 @@ class ForgotPasswordController extends Controller
 
     public function getPasswordResetByToken($token)
     {
-        $this->resetPasswordService = new ResetPasswordService($token);
         $passwordReset = PasswordResets::where('token', $token)->firstOrFail();
 
-        if ($this->resetPasswordService->isTokenExpired()) {
+        if ($passwordReset->done) {
+            return response()->json([
+                "message" => "this token has already been used to reset a password"
+            ], 409);
+        }
+
+        if ($this->resetPasswordService->isTokenExpired($token)) {
             $passwordReset->delete();
             return response()->json([
-                'message' => 'This password reset token is invalid.'
-            ], 404);
+                'error' => 'token expired',
+                'message' => 'the reset password token has been expired'
+            ], 422);
         }
 
         return new PasswordResetResource($passwordReset);
     }
-    
-    public function reset(Request $request, $token)
+
+    public function resetPassword(Request $request, $token)
     {
         $request->validate([
             'email' => 'required|string|email',
-            'password' => 'required|string|confirmed',
-            'token' => 'required|string'
+            'password' => 'required|confirmed|string|min:6',
         ]);
-        $passwordReset = PasswordResets::where([
-            ['token', $request->token],
-            ['email', $request->email]
-        ])->first();
-        if (!$passwordReset)
+
+        $user = Users::where('email', $request->email)->firstOrFail();
+        $passwordReset = PasswordResets::where('token', $token)->firstOrFail();
+
+        if ($passwordReset->done) {
             return response()->json([
-                'message' => 'This password reset token is invalid.'
-            ], 404);
-        $user = Users::where('email', $passwordReset->email)->first();
-        if (!$user)
+                "message" => "this token has already been used to reset a password"
+            ], 409);
+        }
+
+        if ($user->email !== $passwordReset->email) {
             return response()->json([
-                'message' => "We can't find a user with that e-mail address."
-            ], 404);
-        $user->password = bcrypt($request->password);
-        $user->save();
-        $passwordReset->delete();
-        $user->notify(new PasswordResetSuccess($passwordReset));
-        return response()->json($user);
+                "message" => "user email does not belong to this token"
+            ], 422);
+        }
+
+        $this->resetPasswordService = new ResetPasswordService($token);
+        if ($this->resetPasswordService->isTokenExpired($token)) {
+            $passwordReset->delete();
+            return response()->json([
+                'error' => 'token expired',
+                'message' => 'the reset password token has been expired'
+            ], 422);
+        }
+
+        $newPassword = Hash::make($request->password);
+        $updateUserPassword = $user->update(['password' => $newPassword]);
+
+        if ($updateUserPassword) {
+            $passwordReset->update(['done' => true]);
+            $passwordReset->delete();
+
+            $this->resetPasswordService->sendSuccessfullyResetedEmail($user, $passwordReset->token);
+
+            return new UsersResource($user);
+        }
+
+        return response()->json([
+            'message' => "it was not possible to update user's password"
+        ], 400);
     }
 }

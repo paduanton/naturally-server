@@ -6,21 +6,15 @@ use Exception;
 use App\Users;
 use Carbon\Carbon;
 use App\PasswordResets;
+use App\Notifications\PasswordResetSuccess;
 use App\Notifications\PasswordResetRequest;
 use App\Services\Interfaces\ResetPasswordInterface;
 
 class ResetPasswordService implements ResetPasswordInterface
 {
-    protected $token;
-
-    public function __construct($token)
+    public function isTokenExpired($token)
     {
-        $this->token = $token;
-    }
-
-    public function isTokenExpired()
-    {
-        $passwordReset = PasswordResets::where('token', $this->token)->first();
+        $passwordReset = PasswordResets::where('token', $token)->first();
         
         if (Carbon::parse($passwordReset->expires_at)->isPast()) {
             return true;
@@ -29,10 +23,21 @@ class ResetPasswordService implements ResetPasswordInterface
         return false;
     }
 
-    public function notificateUser(Users $user)
+    public function sendResetLinkEmail(Users $user, $token)
     {
         try {
-            $user->notify(new PasswordResetRequest($this->token));
+            $user->notify(new PasswordResetRequest($token));
+        } catch (Exception $exception) {
+            return false;
+        } finally {
+            return true;
+        }
+    }
+
+    public function sendSuccessfullyResetedEmail(Users $user)
+    {
+        try {
+            $user->notify(new PasswordResetSuccess());
         } catch (Exception $exception) {
             return false;
         } finally {
