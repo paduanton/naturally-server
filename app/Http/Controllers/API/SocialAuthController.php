@@ -4,8 +4,8 @@ namespace App\Http\Controllers\API;
 
 use League\OAuth2\Server\Exception\OAuthServerException;
 use App\Services\SocialNetworkAccountService;
-use App\Http\Controllers\API\AuthController;
 use Laravel\Socialite\Facades\Socialite;
+use App\Services\AuthenticationService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -17,12 +17,12 @@ class SocialAuthController extends Controller
 
     protected $socialProvider;
     protected $frontendURI;
-    protected $authController;
+    protected $authService;
 
-    public function __construct(SocialNetworkAccountService $social, AuthController $authController)
+    public function __construct(SocialNetworkAccountService $social, AuthenticationService $auth)
     {
         $this->socialAuthService = $social;
-        $this->authController = $authController;
+        $this->authService = $auth;
         $this->frontendURI = config('app.frontend_url');
     }
 
@@ -54,7 +54,7 @@ class SocialAuthController extends Controller
         try {
             $user = $this->socialAuthService->getUserFromSocialProvider();
             Auth::login($user, $remember);
-            $accessToken = $this->authController->generateAccessToken($user);
+            $accessToken = $this->authService->generateAccessToken($user);
         } catch (OAuthServerException $exception) {
             throw $exception;
         } catch (Exception $exception) {

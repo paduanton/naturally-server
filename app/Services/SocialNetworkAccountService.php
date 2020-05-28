@@ -126,7 +126,7 @@ class SocialNetworkAccountService implements SocialNetworkAccountsInterface
         $user = Users::firstOrCreate(['email' => $email], $userData);
         $user->social_network_accounts()->save($socialNetworkAccount);
         $this->storeUsersPicture($pictureURL, $user);
-
+        
         return $user;
     }
 
