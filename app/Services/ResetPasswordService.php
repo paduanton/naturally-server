@@ -20,7 +20,7 @@ class ResetPasswordService implements ResetPasswordInterface
         //
     }
 
-    public function setResetPasswordToken($token)
+    public function setToken($token)
     {
         $this->token = $token;
     }

@@ -42,7 +42,7 @@ class ForgotPasswordController extends Controller
 
         $passwordReset = PasswordResets::create($passwordReset);
 
-        $this->resetPasswordService->setResetPasswordToken($passwordReset->token);
+        $this->resetPasswordService->setToken($passwordReset->token);
         $notification = $this->resetPasswordService->sendResetLinkEmail($user);
 
         if ($user && $passwordReset && $notification) {
@@ -65,7 +65,7 @@ class ForgotPasswordController extends Controller
             ], 409);
         }
 
-        $this->resetPasswordService->setResetPasswordToken($token);
+        $this->resetPasswordService->setToken($token);
         
         if ($this->resetPasswordService->isTokenExpired()) {
             $passwordReset->delete();
@@ -100,7 +100,7 @@ class ForgotPasswordController extends Controller
             ], 422);
         }
 
-        $this->resetPasswordService->setResetPasswordToken($token);
+        $this->resetPasswordService->setToken($token);
         if ($this->resetPasswordService->isTokenExpired()) {
             $passwordReset->delete();
             return response()->json([
