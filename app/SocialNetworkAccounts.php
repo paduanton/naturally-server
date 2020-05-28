@@ -19,7 +19,7 @@ class SocialNetworkAccounts extends Model
         'deleted_at'
     ];
 
-    public function user()
+    public function users()
     {
         return $this->belongsTo(Users::class);
     }

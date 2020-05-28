@@ -94,7 +94,7 @@ class SocialNetworkAccountService implements SocialNetworkAccountsInterface
             ->first();
 
         if ($socialAccount) {
-            return $socialAccount->user;
+            return $socialAccount->users;
         }
 
         $name = $providerUser->getName();
