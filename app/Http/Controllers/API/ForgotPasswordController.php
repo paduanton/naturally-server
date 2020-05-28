@@ -11,7 +11,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UsersResource;
 use App\Services\ResetPasswordService;
 use App\Services\AuthenticationService;
-use App\Notifications\PasswordResetSuccess;
 use App\Http\Resources\PasswordResetResource;
 
 class ForgotPasswordController extends Controller
@@ -43,7 +42,8 @@ class ForgotPasswordController extends Controller
 
         $passwordReset = PasswordResets::create($passwordReset);
 
-        $notification = $this->resetPasswordService->sendResetLinkEmail($user, $passwordReset->token);
+        $this->resetPasswordService->setResetPasswordToken($passwordReset->token);
+        $notification = $this->resetPasswordService->sendResetLinkEmail($user);
 
         if ($user && $passwordReset && $notification) {
             return new PasswordResetResource($passwordReset);
@@ -65,7 +65,9 @@ class ForgotPasswordController extends Controller
             ], 409);
         }
 
-        if ($this->resetPasswordService->isTokenExpired($token)) {
+        $this->resetPasswordService->setResetPasswordToken($token);
+        
+        if ($this->resetPasswordService->isTokenExpired()) {
             $passwordReset->delete();
             return response()->json([
                 'error' => 'token expired',
@@ -98,8 +100,8 @@ class ForgotPasswordController extends Controller
             ], 422);
         }
 
-        $this->resetPasswordService = new ResetPasswordService($token);
-        if ($this->resetPasswordService->isTokenExpired($token)) {
+        $this->resetPasswordService->setResetPasswordToken($token);
+        if ($this->resetPasswordService->isTokenExpired()) {
             $passwordReset->delete();
             return response()->json([
                 'error' => 'token expired',
@@ -114,7 +116,7 @@ class ForgotPasswordController extends Controller
             $passwordReset->update(['done' => true]);
             $passwordReset->delete();
 
-            $this->resetPasswordService->sendSuccessfullyResetedEmail($user, $passwordReset->token);
+            $this->resetPasswordService->sendSuccessfullyResetedEmail($user);
 
             return new UsersResource($user);
         }

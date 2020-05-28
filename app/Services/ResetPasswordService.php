@@ -12,9 +12,22 @@ use App\Services\Interfaces\ResetPasswordInterface;
 
 class ResetPasswordService implements ResetPasswordInterface
 {
-    public function isTokenExpired($token)
+    protected $token;
+
+
+    public function __construct()
     {
-        $passwordReset = PasswordResets::where('token', $token)->first();
+        //
+    }
+
+    public function setResetPasswordToken($token)
+    {
+        $this->token = $token;
+    }
+
+    public function isTokenExpired()
+    {
+        $passwordReset = PasswordResets::where('token', $this->token)->first();
         
         if (Carbon::parse($passwordReset->expires_at)->isPast()) {
             return true;
@@ -23,10 +36,10 @@ class ResetPasswordService implements ResetPasswordInterface
         return false;
     }
 
-    public function sendResetLinkEmail(Users $user, $token)
+    public function sendResetLinkEmail(Users $user)
     {
         try {
-            $user->notify(new PasswordResetRequest($token));
+            $user->notify(new PasswordResetRequest($this->token));
         } catch (Exception $exception) {
             return false;
         } finally {
