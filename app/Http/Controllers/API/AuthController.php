@@ -2,19 +2,24 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Services\AuthenticationService;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use App\OAuthRefreshTokens;
 use App\OAuthAccessTokens;
 use Carbon\Carbon;
 use App\Users;
-use Exception;
 
 class AuthController extends Controller
 {
+    protected $authService;
+
+    public function __construct(AuthenticationService $auth)
+    {
+        $this->authService = $auth;
+    }
 
     public function signup(Request $request)
     {
@@ -27,14 +32,14 @@ class AuthController extends Controller
         ]);
 
         $remember = $request['remember_me'];
-        $request['username'] = $this->generateUsername($request['name']);
+        $request['username'] = $this->authService->generateUsername($request['name']);
         $request['password'] = Hash::make($request['password']);
 
         $user = Users::create($request->all());
         Auth::login($user, $remember);
 
         if ($user) {
-            $user['authentication'] = $this->generateAccessToken($user);
+            $user['authentication'] = $this->authService->generateAccessToken($user);
             return response()->json($user, 201);
         }
 
@@ -64,7 +69,7 @@ class AuthController extends Controller
         }
 
         $user = $request->user();
-        $user['authentication'] = $this->generateAccessToken($user);
+        $user['authentication'] = $this->authService->generateAccessToken($user);
 
         return response()->json($user);
     }
@@ -78,7 +83,7 @@ class AuthController extends Controller
         $revokeAccessToken = $accessToken->revoke();
 
         if ($revokeAccessToken) {
-            $this->revokeRefreshToken($accessTokenModel->refresh_token->token);
+            $this->authService->revokeRefreshToken($accessTokenModel->refresh_token->token);
 
             return response()->json([
                 'message' => 'Logout successfully'
@@ -88,15 +93,6 @@ class AuthController extends Controller
         return response()->json([
             'message' => "couldn't logout"
         ], 409);
-    }
-
-    public function getRefreshTokenInfo($token)
-    {
-        $parseToken = explode("?", $token);
-        $refreshTokenId = $parseToken[0];
-
-        $refreshToken = OAuthRefreshTokens::findOrFail($refreshTokenId);
-        return response()->json($refreshToken);
     }
 
     public function refreshToken(Request $request)
@@ -124,7 +120,7 @@ class AuthController extends Controller
         }
 
         if ($now->greaterThan($refreshTokenExpiration)) {
-            $this->revokeRefreshToken($request['refresh_token']);
+            $this->authService->revokeRefreshToken($request['refresh_token']);
 
             return response()->json([
                 'error' => 'invalid token',
@@ -147,96 +143,7 @@ class AuthController extends Controller
         }
 
         $request->user()->token()->revoke();
-        $this->revokeRefreshToken($request['refresh_token']);
-        return $this->generateAccessToken($authenticatedUser);
-    }
-
-    protected function revokeRefreshToken($token)
-    {
-        $parseToken = explode("?", $token);
-        $refreshTokenId = $parseToken[0];
-        OAuthRefreshTokens::where('id', $refreshTokenId)->update(["revoked" => true]);
-    }
-
-    protected function generateRefreshToken($accessTokenId, $accessTokenExpiresAt)
-    {
-        try {
-            $uniqueHash = $this->getUniqueHash();
-
-            $refreshToken = new OAuthRefreshTokens();
-            $refreshToken->id = $uniqueHash;
-            $refreshToken->access_token_id = $accessTokenId;
-            $refreshToken->token = $uniqueHash . '?' . Str::random(690);
-            $refreshToken->revoked = false;
-            $refreshToken->expires_at = $accessTokenExpiresAt->addMonth(1);
-
-            $findById = OAuthRefreshTokens::find($refreshToken->id);
-
-            while ($findById && strlen($uniqueHash) > 767) {
-                $uniqueHash = $this->getUniqueHash();
-
-                $refreshToken->id = $uniqueHash;
-                $refreshToken->token = $uniqueHash . '?' . Str::random(690);
-
-                $findById = OAuthRefreshTokens::find($refreshToken->id);
-            }
-
-            $refreshToken->save();
-        } catch (Exception $exception) {
-            return false;
-        }
-
-        return $refreshToken->token;
-    }
-
-    public function generateAccessToken($user)
-    {
-        $token = $user->createToken('Personal Access Token');
-        $accessToken = $token->accessToken;
-        $expiresAt = Carbon::parse($token->token->expires_at);
-
-        return [
-            'token_type' => 'Bearer',
-            'expires_in' => $expiresAt->toDateTimeString(),
-            'access_token' => $accessToken,
-            'refresh_token' => $this->generateRefreshToken($token->token->id, $expiresAt),
-        ];
-    }
-
-    protected static function getUniqueHash(int $size = 32)
-    {
-        return bin2hex(openssl_random_pseudo_bytes($size));
-    }
-
-    protected function generateUsername($name)
-    {
-        $firstName = strtok($name, ' ');
-        $lastName = strrchr($name, ' ');
-
-        if (!$lastName) {
-            $username = $firstName;
-        } else {
-            $username = $firstName . "." . $lastName;
-        }
-
-        $username = str_replace(" ", "", $username);
-        $username = Str::ascii($username);
-        $username = strtolower($username);
-        $username = preg_replace("/[^A-Za-z.]/", '', $username);
-
-        if (!$username) {
-            $username = 'user' . mt_rand();
-        }
-
-        $user = Users::where('username', $username)->first();
-
-        while ($user) {
-            $randomNumber = mt_rand();
-            $username = $username . $randomNumber;
-
-            $user = Users::where('username', $username)->first();
-        }
-
-        return $username;
+        $this->authService->revokeRefreshToken($request['refresh_token']);
+        return $this->authService->generateAccessToken($authenticatedUser);
     }
 }

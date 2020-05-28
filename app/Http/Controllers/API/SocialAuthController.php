@@ -16,14 +16,14 @@ class SocialAuthController extends Controller
 {
 
     protected $socialProvider;
-    protected $frontendURL;
+    protected $frontendURI;
     protected $authController;
 
     public function __construct(SocialNetworkAccountService $social, AuthController $authController)
     {
         $this->socialAuthService = $social;
         $this->authController = $authController;
-        $this->frontendURL = config('app.frontend_url');
+        $this->frontendURI = config('app.frontend_url');
     }
 
     public function authenticate(Request $request)
@@ -81,7 +81,7 @@ class SocialAuthController extends Controller
 
         // frontend callback
 
-        return redirect()->away($this->frontendURL . "/provider/{$provider}/callback?token={$providerAccessToken}&secret={$providerAccessTokenSecret}");
+        return redirect()->away($this->frontendURI . "/provider/{$provider}/callback?token={$providerAccessToken}&secret={$providerAccessTokenSecret}");
 
         /*
         return response()->json([
