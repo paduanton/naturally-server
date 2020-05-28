@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API;
 
 use App\Services\AuthenticationService;
-use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -33,7 +32,7 @@ class AuthController extends Controller
 
         $remember = $request['remember_me'];
         $request['username'] = $this->authService->generateUsername($request['name']);
-        $request['password'] = Hash::make($request['password']);
+        $request['password'] = $this->authService->hashPassword($request['password']);
 
         $user = Users::create($request->all());
         Auth::login($user, $remember);
@@ -69,6 +68,8 @@ class AuthController extends Controller
         }
 
         $user = $request->user();
+        $user->update(['password' => $this->authService->rehashPasswordIfNeeded($user->password)]);
+        
         $user['authentication'] = $this->authService->generateAccessToken($user);
 
         return response()->json($user);

@@ -5,8 +5,9 @@ namespace App\Services;
 use Exception;
 use App\Users;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 use App\OAuthRefreshTokens;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 use App\Services\Interfaces\AuthenticationInterface;
 
 class AuthenticationService implements AuthenticationInterface
@@ -16,10 +17,25 @@ class AuthenticationService implements AuthenticationInterface
         //    
     }
 
+    public function hashPassword($password)
+    {
+        return Hash::make($password);
+    }
+
+    public function rehashPasswordIfNeeded($hashedPassword)
+    {
+        if (Hash::needsRehash($hashedPassword)) {
+            $hashedPassword = $this->hashPassword($hashedPassword);
+        }
+
+        return $hashedPassword;
+    }
+
     public static function getUniqueHash(int $size = 32)
     {
         return bin2hex(openssl_random_pseudo_bytes($size));
     }
+
 
     public function getRefreshTokenInfo($token)
     {
