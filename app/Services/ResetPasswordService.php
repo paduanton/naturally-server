@@ -14,7 +14,6 @@ class ResetPasswordService implements ResetPasswordInterface
 {
     protected $token;
 
-
     public function __construct()
     {
         //

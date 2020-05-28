@@ -21,7 +21,7 @@ class SocialAuthController extends Controller
 
     public function __construct(SocialNetworkAccountService $social, AuthController $authController)
     {
-        $this->socialProvider = $social;
+        $this->socialAuthService = $social;
         $this->authController = $authController;
         $this->frontendURL = config('app.frontend_url');
     }
@@ -39,28 +39,35 @@ class SocialAuthController extends Controller
             'access_token_secret' => 'string|required_if:provider,twitter'
         ]);
 
-        $provider = $request['provider'];
         $remember = $request['remember_me'];
+        $provider = $request['provider'];
         $providerAccessToken = $request['access_token'];
         $providerAccessTokenSecret = isset($request['access_token_secret']) && $provider === 'twitter' ? $request['access_token_secret'] : null;
 
-        try {
-            $user = $this->socialProvider->getUserFromSocialProvider($provider, $providerAccessToken, $providerAccessTokenSecret);
-            $accessToken = $this->authController->generateAccessToken($user);
+        $this->socialAuthService->setProvider($provider);
+        $this->socialAuthService->setAccessToken($providerAccessToken);
 
+        if ($providerAccessTokenSecret) {
+            $this->socialAuthService->setAccessTokenSecret($providerAccessTokenSecret);
+        }
+
+        try {
+            $user = $this->socialAuthService->getUserFromSocialProvider();
             Auth::login($user, $remember);
+            $accessToken = $this->authController->generateAccessToken($user);
         } catch (OAuthServerException $exception) {
             throw $exception;
         } catch (Exception $exception) {
             throw $exception;
+        } finally {
+            return response()->json($accessToken);
         }
 
-        return response()->json($accessToken);
     }
 
     public function handleProviderCallback($provider)
     {
-        if (!$this->socialProvider->isOAuth1ProviderSupported($provider)) {
+        if (!$this->socialAuthService->isOAuth1ProviderSupported($provider)) {
             throw OAuthServerException::invalidCredentials();
         }
 
@@ -72,7 +79,11 @@ class SocialAuthController extends Controller
         } catch (Exception $exception) {
             throw $exception;
         } finally {
-            return redirect()->away($this->frontendURL . "/provider/{$provider}/token/{$providerAccessToken}/secret/{$providerAccessTokenSecret}/callback"); // frontend callback
+
+            // frontend callback
+            
+            return redirect()->away($this->frontendURL . "/provider/{$provider}/callback?token={$providerAccessToken}&secret={$providerAccessTokenSecret}");
+            
             /*
             return response()->json([
                 'provider' => $provider,
@@ -85,7 +96,7 @@ class SocialAuthController extends Controller
 
     public function redirectToProvider($provider)
     {
-        if (!$this->socialProvider->isOAuth1ProviderSupported($provider)) {
+        if (!$this->socialAuthService->isOAuth1ProviderSupported($provider)) {
             return response()->json([
                 'error' => 'invalid provider',
                 'message' => "the social provider '{$provider}' is not supported",
@@ -94,5 +105,4 @@ class SocialAuthController extends Controller
 
         return Socialite::driver($provider)->redirect();
     }
-
 }

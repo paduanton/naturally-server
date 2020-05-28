@@ -75,5 +75,10 @@ class Users extends Authenticatable
     {
         return $this->hasMany(Ratings::class);
     }
+
+    public function password_resets()
+    {
+        return $this->hasMany(PasswordResets::class, 'email', 'email');
+    }
     
 }

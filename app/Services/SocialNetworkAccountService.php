@@ -14,26 +14,47 @@ use App\Services\Interfaces\SocialNetworkAccountsInterface;
 
 class SocialNetworkAccountService implements SocialNetworkAccountsInterface
 {
+    protected $provider, $accessToken, $accessTokenSecret;
 
-    public function getUserFromSocialProvider($provider, $accessToken, $accessTokenSecret): Users
+    public function __construct()
+    {
+        //
+    }
+
+    public function setProvider($provider)
+    {
+        $this->provider = $provider;
+    }
+
+    public function setAccessToken($accessToken)
+    {
+        $this->accessToken = $accessToken;
+    }
+
+    public function setAccessTokenSecret($accessTokenSecret)
+    {
+        $this->accessTokenSecret = $accessTokenSecret;
+    }
+    
+    public function getUserFromSocialProvider(): Users
     {
         try {
-            if ($this->isOAuth1ProviderSupported($provider) && $accessTokenSecret) {
-                $userFromProvider = $this->getUserEntityByAccessTokenAndSecret($provider, $accessToken, $accessTokenSecret);
-            } else if ($this->isOAuth2ProviderSupported($provider)) {
-                $userFromProvider = $this->getUserEntityByAccessToken($provider, $accessToken);
+            if ($this->isOAuth1ProviderSupported($this->provider) && $this->accessTokenSecret) {
+                $userFromProvider = $this->getUserEntityByAccessTokenAndSecret($this->accessToken, $this->accessTokenSecret);
+            } else if ($this->isOAuth2ProviderSupported($this->provider)) {
+                $userFromProvider = $this->getUserEntityByAccessToken($this->accessToken);
             }
         } catch (Exception $exception) {
             throw $exception;
         }
 
-        return $this->findOrCreateSocialUser($userFromProvider, $provider);
+        return $this->findOrCreateSocialUser($userFromProvider);
     }
 
-    public function getUserEntityByAccessToken($provider, $accessToken)
+    public function getUserEntityByAccessToken($accessToken)
     {
         try {
-            $userFromOAuth2 = Socialite::driver($provider)->stateless()->userFromToken($accessToken);
+            $userFromOAuth2 = Socialite::driver($this->provider)->stateless()->userFromToken($accessToken);
         } catch (OAuthServerException $exception) {
             throw $exception;
         } catch (Exception $exception) {
@@ -43,10 +64,10 @@ class SocialNetworkAccountService implements SocialNetworkAccountsInterface
         return $userFromOAuth2;
     }
 
-    public function getUserEntityByAccessTokenAndSecret($provider, $accessToken, $accessTokenSecret)
+    public function getUserEntityByAccessTokenAndSecret($accessToken, $accessTokenSecret)
     {
         try {
-            $userFromOAuth1 = Socialite::driver($provider)->userFromTokenAndSecret($accessToken, $accessTokenSecret);
+            $userFromOAuth1 = Socialite::driver($this->provider)->userFromTokenAndSecret($accessToken, $accessTokenSecret);
         } catch (Exception $exception) {
             throw $exception;
         }
@@ -64,8 +85,10 @@ class SocialNetworkAccountService implements SocialNetworkAccountsInterface
         return in_array($provider, ['twitter']);
     }
 
-    protected function findOrCreateSocialUser($providerUser, $provider)
+    protected function findOrCreateSocialUser($providerUser)
     {
+        $provider = $this->provider;
+        
         $socialAccount = SocialNetworkAccounts::where('provider_name', $provider)
             ->where('provider_id', $providerUser->getId())
             ->first();

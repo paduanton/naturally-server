@@ -20,4 +20,10 @@ class PasswordResets extends Model
     ];
 
     protected $dates = ['expires_at'];
+
+    public function users()
+    {
+        return $this->belongsTo(Users::class, 'email', 'email');
+    }
+    
 }
