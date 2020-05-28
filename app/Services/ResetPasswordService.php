@@ -27,7 +27,7 @@ class ResetPasswordService implements ResetPasswordInterface
     public function isTokenExpired()
     {
         $passwordReset = PasswordResets::where('token', $this->token)->first();
-        
+
         if (Carbon::parse($passwordReset->expires_at)->isPast()) {
             return true;
         }
@@ -41,9 +41,9 @@ class ResetPasswordService implements ResetPasswordInterface
             $user->notify(new PasswordResetRequest($this->token));
         } catch (Exception $exception) {
             return false;
-        } finally {
-            return true;
         }
+
+        return true;
     }
 
     public function sendSuccessfullyResetedEmail(Users $user)
@@ -52,8 +52,8 @@ class ResetPasswordService implements ResetPasswordInterface
             $user->notify(new PasswordResetSuccess());
         } catch (Exception $exception) {
             return false;
-        } finally {
-            return true;
         }
+
+        return true;
     }
 }

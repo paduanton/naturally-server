@@ -184,9 +184,9 @@ class AuthController extends Controller
             $refreshToken->save();
         } catch (Exception $exception) {
             return false;
-        } finally {
-            return $refreshToken->token;
         }
+
+        return $refreshToken->token;
     }
 
     public function generateAccessToken($user)

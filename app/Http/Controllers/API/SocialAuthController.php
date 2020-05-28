@@ -59,10 +59,9 @@ class SocialAuthController extends Controller
             throw $exception;
         } catch (Exception $exception) {
             throw $exception;
-        } finally {
-            return response()->json($accessToken);
         }
 
+        return response()->json($accessToken);
     }
 
     public function handleProviderCallback($provider)
@@ -78,20 +77,19 @@ class SocialAuthController extends Controller
             $providerAccessTokenSecret = $userFromProvider->tokenSecret;
         } catch (Exception $exception) {
             throw $exception;
-        } finally {
-
-            // frontend callback
-            
-            return redirect()->away($this->frontendURL . "/provider/{$provider}/callback?token={$providerAccessToken}&secret={$providerAccessTokenSecret}");
-            
-            /*
-            return response()->json([
-                'provider' => $provider,
-                'access_token' => $providerAccessToken,
-                'access_token_secret' => $providerAccessTokenSecret
-            ]);
-            */
         }
+
+        // frontend callback
+
+        return redirect()->away($this->frontendURL . "/provider/{$provider}/callback?token={$providerAccessToken}&secret={$providerAccessTokenSecret}");
+
+        /*
+        return response()->json([
+            'provider' => $provider,
+            'access_token' => $providerAccessToken,
+            'access_token_secret' => $providerAccessTokenSecret
+        ]);
+        */
     }
 
     public function redirectToProvider($provider)
