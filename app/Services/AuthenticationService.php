@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\OAuthRefreshTokens;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use App\Notifications\WelcomeReminder;
 use App\Services\Interfaces\AuthenticationInterface;
 
 class AuthenticationService implements AuthenticationInterface
@@ -20,6 +21,17 @@ class AuthenticationService implements AuthenticationInterface
     public function hashPassword($password)
     {
         return Hash::make($password);
+    }
+
+    public function sendWelcomeMail(Users $user)
+    {
+        try {
+            $user->notify(new WelcomeReminder($user));
+        } catch (Exception $exception) {
+            return false;
+        }
+
+        return true;
     }
 
     public function rehashPasswordIfNeeded($hashedPassword)

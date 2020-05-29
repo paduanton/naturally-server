@@ -38,6 +38,7 @@ class AuthController extends Controller
         Auth::login($user, $remember);
 
         if ($user) {
+            $this->authService->sendWelcomeMail($user);
             $user['authentication'] = $this->authService->generateAccessToken($user);
             return response()->json($user, 201);
         }

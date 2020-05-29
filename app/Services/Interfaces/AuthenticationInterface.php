@@ -8,6 +8,7 @@ use Carbon\Carbon;
 interface AuthenticationInterface
 {
 
+    public function sendWelcomeMail(Users $user);
     public static function getUniqueHash(int $size = 32);
     public function hashPassword(string $password);
     public function rehashPasswordIfNeeded(string $hashedPassword);
