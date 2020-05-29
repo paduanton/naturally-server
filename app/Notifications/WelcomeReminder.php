@@ -2,56 +2,44 @@
 
 namespace App\Notifications;
 
+use App\Users;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class WelcomeReminder extends Notification
+class WelcomeReminder extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    protected $user, $appName, $frontendURI;
+
+    public function __construct(Users $user)
     {
-        //
+        $this->user = $user;
+        $this->appName = config('app.name');
+        $this->frontendURI = config('app.frontend_url');
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
     public function via($notifiable)
     {
         return ['mail'];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
     public function toMail($notifiable)
     {
+        $userFirstName = strtok($this->user->name, ' ');
+
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->subject("Start enjoying food in a very unique way with {$this->appName}")
+            ->greeting("Welcome to {$this->appName}, {$userFirstName}!")
+            ->line("We're excited to have begun a relationship with you and we hope you can enjoy the best experience you could ever have with us. 🥂")
+            ->line("We see food in an unexampled way and if you don't... We would like you to do it too 🥘😋. We look forward for your contribution to our Website.")
+            ->line("Your username is {$this->user->username} and you can sign-in in our Website with it or your email account.")
+            ->line("If you would like so, you may log-in with your social media accounts too =)... Like Google, Facebook or even Twitter!!!")
+            ->action('Enjoy now', $this->frontendURI);
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
     public function toArray($notifiable)
     {
         return [
