@@ -5,20 +5,22 @@ namespace App\Services;
 use Exception;
 use App\Users;
 use App\ProfileImages;
-use App\SocialNetworkAccounts;
 use Illuminate\Support\Str;
+use App\SocialNetworkAccounts;
 use Illuminate\Http\UploadedFile;
+use App\Services\AuthenticationService;
 use Laravel\Socialite\Facades\Socialite;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use App\Services\Interfaces\SocialNetworkAccountsInterface;
 
+
 class SocialNetworkAccountService implements SocialNetworkAccountsInterface
 {
-    protected $provider, $accessToken, $accessTokenSecret;
+    protected $provider, $accessToken, $accessTokenSecret, $defaultAuthService;
 
-    public function __construct()
+    public function __construct(AuthenticationService $defaultAuthService)
     {
-        //
+        $this->defaultAuthService = $defaultAuthService;
     }
 
     public function setProvider($provider)
@@ -35,7 +37,7 @@ class SocialNetworkAccountService implements SocialNetworkAccountsInterface
     {
         $this->accessTokenSecret = $accessTokenSecret;
     }
-    
+
     public function getUserFromSocialProvider(): Users
     {
         try {
@@ -88,7 +90,7 @@ class SocialNetworkAccountService implements SocialNetworkAccountsInterface
     protected function findOrCreateSocialUser($providerUser)
     {
         $provider = $this->provider;
-        
+
         $socialAccount = SocialNetworkAccounts::where('provider_name', $provider)
             ->where('provider_id', $providerUser->getId())
             ->first();
@@ -124,9 +126,14 @@ class SocialNetworkAccountService implements SocialNetworkAccountsInterface
         ];
 
         $user = Users::firstOrCreate(['email' => $email], $userData);
+
+        if ($user->wasRecentlyCreated) {
+            $this->defaultAuthService->sendWelcomeMail($user);
+        }
+
         $user->social_network_accounts()->save($socialNetworkAccount);
         $this->storeUsersPicture($pictureURL, $user);
-        
+
         return $user;
     }
 
