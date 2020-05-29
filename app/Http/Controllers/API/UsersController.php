@@ -3,15 +3,20 @@
 namespace App\Http\Controllers\API;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Services\AuthenticationService;
 use App\Http\Resources\UsersResource;
-use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Users;
 
 class UsersController extends Controller
 {
+    protected $authService;
 
+    public function __construct(AuthenticationService $auth)
+    {
+        $this->authService = $auth;
+    }
     public function index()
     {
         $users = Users::all();
@@ -41,7 +46,7 @@ class UsersController extends Controller
 
     public function search($name)
     {
-        
+
         $users = Users::where('name', 'LIKE', "%{$name}%")
             ->orWhere('username', 'LIKE', "%{$name}%")
             ->get();
@@ -67,14 +72,22 @@ class UsersController extends Controller
         Users::findOrFail($id);
 
         if ($request['password']) {
-            $request['password'] = Hash::make($request['password']);
+            $request['password'] = $this->authService->hashPassword(($request['password']));
+
+            $hasChangedPassword = true;
             unset($request['password_confirmation']);
         }
 
         $user = Users::where('id', $id)->update($request->all());
 
         if ($user) {
-            return new UsersResource(Users::find($id));
+            $user = Users::find($id);
+            
+            if (isset($hasChangedPassword) && $hasChangedPassword === true) {
+                $this->authService->sendPasswordChangingAlert($user);
+            }
+
+            return new UsersResource($user);
         }
 
         return response()->json([
