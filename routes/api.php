@@ -21,9 +21,13 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
     $router->get('/recipes/{title}/search', 'API\RecipesController@search');
     $router->get('/recipes/{id}', 'API\RecipesController@show');
 
-    /*
-        Authentication Routes
-    */
+    // Users
+
+    $router->get('/public/{login}/profile', 'API\UsersController@getPublicProfile');
+
+
+    // Authentication Routes
+
 
     $router->post('/oauth/social', 'API\SocialAuthController@authenticate');
     $router->post('/login', 'API\AuthController@login');
@@ -33,6 +37,9 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
     $router->patch('/forgot/{token}', 'API\ForgotPasswordController@resetPassword');
 
     Route::group(['middleware' => 'auth:api'], function () use ($router) {
+        /*
+            Authenticated Routes
+        */
         $router->get('/oauth/refresh/{token}', 'API\AuthController@getRefreshTokenInfo');
         $router->post('/oauth/refresh', 'API\AuthController@refreshToken');
         $router->post('/logout', 'API\AuthController@logout');

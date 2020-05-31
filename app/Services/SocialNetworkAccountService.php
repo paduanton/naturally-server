@@ -128,7 +128,7 @@ class SocialNetworkAccountService implements SocialNetworkAccountsInterface
         $user = Users::firstOrCreate(['email' => $email], $userData);
 
         if ($user->wasRecentlyCreated) {
-            $this->defaultAuthService->sendWelcomeMail($user);
+            $this->defaultAuthService->sendWelcomedMail($user);
         }
 
         $user->social_network_accounts()->save($socialNetworkAccount);

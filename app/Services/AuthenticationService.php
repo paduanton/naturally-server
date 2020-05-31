@@ -24,6 +24,17 @@ class AuthenticationService implements AuthenticationInterface
         return Hash::make($password);
     }
 
+    public function isEmail($input)
+    {
+        $match = filter_var($input, FILTER_VALIDATE_EMAIL);
+
+        if ($match) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function sendPasswordChangingAlert(Users $user)
     {
         try {
@@ -35,7 +46,7 @@ class AuthenticationService implements AuthenticationInterface
         return true;
     }
 
-    public function sendWelcomeMail(Users $user)
+    public function sendWelcomedMail(Users $user)
     {
         try {
             $user->notify(new WelcomeReminder($user));
@@ -140,7 +151,7 @@ class AuthenticationService implements AuthenticationInterface
         return $refreshToken->token;
     }
 
-    public function generateAccessToken(Users $user)
+    public function generateUserAuthResource(Users $user)
     {
         $token = $user->createToken('Personal Access Token');
         $accessToken = $token->accessToken;
@@ -151,6 +162,7 @@ class AuthenticationService implements AuthenticationInterface
             'expires_in' => $expiresAt->toDateTimeString(),
             'access_token' => $accessToken,
             'refresh_token' => $this->generateRefreshToken($token->token->id, $expiresAt),
+            'remember_token' => $user->remember_token
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Controllers\API\ProfileImagesController;
 use App\Services\AuthenticationService;
 use App\Http\Resources\UsersResource;
 use App\Http\Controllers\Controller;
@@ -11,12 +12,14 @@ use App\Users;
 
 class UsersController extends Controller
 {
-    protected $authService;
+    protected $authService, $profileImageController;
 
-    public function __construct(AuthenticationService $auth)
+    public function __construct(AuthenticationService $auth, ProfileImagesController $profileImages)
     {
         $this->authService = $auth;
+        $this->profileImageController = $profileImages;
     }
+
     public function index()
     {
         $users = Users::all();
@@ -33,14 +36,29 @@ class UsersController extends Controller
         return new UsersResource($user);
     }
 
+    public function getPublicProfile($login)
+    {
+        $user = null;
+
+        if ($this->authService->isEmail($login)) {
+            $user = Users::where('email', $login)->firstOrFail();
+        } else {
+            $user = $this->getByUsername($login);
+        }
+
+        $userProfilePicture = $this->profileImageController->getThumbnail($user->id);
+
+        return response()->json([
+            'name' => $user->name,
+            'email' => $user->email,
+            'username' => $user->username,
+            'profile_picture' => $userProfilePicture->picture_url
+        ], 200);
+    }
+
     public function getByUsername($username)
     {
         $user = Users::where('username', $username)->firstOrFail();
-
-        if (!$user) {
-            throw new ModelNotFoundException;
-        }
-
         return new UsersResource($user);
     }
 
@@ -82,7 +100,7 @@ class UsersController extends Controller
 
         if ($user) {
             $user = Users::find($id);
-            
+
             if (isset($hasChangedPassword) && $hasChangedPassword === true) {
                 $this->authService->sendPasswordChangingAlert($user);
             }

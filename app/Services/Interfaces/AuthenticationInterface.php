@@ -7,8 +7,9 @@ use Carbon\Carbon;
 
 interface AuthenticationInterface
 {
+    public function isEmail($input);
     public function sendPasswordChangingAlert(Users $user);
-    public function sendWelcomeMail(Users $user);
+    public function sendWelcomedMail(Users $user);
     public static function getUniqueHash(int $size = 32);
     public function hashPassword(string $password);
     public function rehashPasswordIfNeeded(string $hashedPassword);
@@ -16,5 +17,5 @@ interface AuthenticationInterface
     public function generateUsername(string $name);
     public function revokeRefreshToken(string $token);
     public function generateRefreshToken(string $accessTokenId, Carbon $accessTokenExpiresAt);
-    public function generateAccessToken(Users $user);
+    public function generateUserAuthResource(Users $user);
 }

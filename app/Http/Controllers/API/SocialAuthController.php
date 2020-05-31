@@ -52,16 +52,24 @@ class SocialAuthController extends Controller
         }
 
         try {
+            $httpStatusCode = 200;
+
             $user = $this->socialAuthService->getUserFromSocialProvider();
             Auth::login($user, $remember);
-            $accessToken = $this->authService->generateAccessToken($user);
+
+            $authResource = $this->authService->generateUserAuthResource($user);
         } catch (OAuthServerException $exception) {
             throw $exception;
         } catch (Exception $exception) {
             throw $exception;
         }
 
-        return response()->json($accessToken);
+        if ($user->wasRecentlyCreated) {
+            $httpStatusCode = 201;
+        }
+
+        $user['auth_resource'] = $authResource;
+        return response()->json($user, $httpStatusCode);
     }
 
     public function handleProviderCallback($provider)

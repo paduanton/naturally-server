@@ -38,8 +38,8 @@ class AuthController extends Controller
         Auth::login($user, $remember);
 
         if ($user) {
-            $this->authService->sendWelcomeMail($user);
-            $user['authentication'] = $this->authService->generateAccessToken($user);
+            $this->authService->sendWelcomedMail($user);
+            $user['auth_resource'] = $this->authService->generateUserAuthResource($user);
             return response()->json($user, 201);
         }
 
@@ -71,7 +71,7 @@ class AuthController extends Controller
         $user = $request->user();
         $user->update(['password' => $this->authService->rehashPasswordIfNeeded($user->password)]);
         
-        $user['authentication'] = $this->authService->generateAccessToken($user);
+        $user['auth_resource'] = $this->authService->generateUserAuthResource($user);
 
         return response()->json($user);
     }
@@ -146,6 +146,6 @@ class AuthController extends Controller
 
         $request->user()->token()->revoke();
         $this->authService->revokeRefreshToken($request['refresh_token']);
-        return $this->authService->generateAccessToken($authenticatedUser);
+        return $this->authService->generateUserAuthResource($authenticatedUser);
     }
 }
