@@ -5,17 +5,28 @@ namespace App\Services;
 use Exception;
 use App\Users;
 use Carbon\Carbon;
-use App\PasswordResets;
+use App\EmailVerifications;
 use App\Notifications\VerifyEmail;
-use App\Services\Interfaces\ResetPasswordInterface;
+use Illuminate\Support\Facades\Hash;
+use App\Services\Interfaces\VerifyEmailInterface;
 
-class VerifyEmailService implements ResetPasswordInterface
+class VerifyEmailService implements VerifyEmailInterface
 {
-    protected $token;
+    protected $token, $encryptedUser;
 
     public function __construct()
     {
         //
+    }
+
+    public function getEncryptedUser()
+    {
+        return $this->encryptedUser;
+    }
+
+    public function setEncryptedUser($encryptedUser)
+    {
+        $this->encryptedUser = $encryptedUser;
     }
 
     public function setToken($token)
@@ -23,32 +34,49 @@ class VerifyEmailService implements ResetPasswordInterface
         $this->token = $token;
     }
 
-    public function isTokenExpired()
+    public function encryptUser(Users $user)
     {
-        $passwordReset = PasswordResets::where('token', $this->token)->first();
+        $email = $user->email;
+        $name = $user->name;
+        $username = $user->username;
 
-        if (Carbon::parse($passwordReset->expires_at)->isPast()) {
+        $concatData = $email . $name . $username;
+        $encryption = Hash::make($concatData);
+
+        $this->setEncryptedUser($encryption);
+    }
+
+    public function isUserValid(Users $user)
+    {
+        $encryptedUser = $this->getEncryptedUser();
+
+        $email = $user->email;
+        $name = $user->name;
+        $username = $user->username;
+
+        $concatData = $email . $name . $username;
+        if (Hash::check($concatData, $encryptedUser)) {
             return true;
         }
 
         return false;
     }
 
-    public function sendResetLinkEmail(Users $user)
+    public function isTokenExpired()
     {
-        try {
-            $user->notify(new PasswordResetRequest($this->token));
-        } catch (Exception $exception) {
-            return false;
+        $emailVerification = EmailVerifications::where('token', $this->token)->first();
+
+        if (Carbon::parse($emailVerification->expires_at)->isPast()) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
-    public function sendSuccessfullyResetedEmail(Users $user)
+    public function sendVerifyEmail(Users $user, EmailVerifications $emailVerification)
     {
         try {
-            $user->notify(new PasswordResetSuccess());
+            $user->notify(new VerifyEmail($emailVerification));
         } catch (Exception $exception) {
             return false;
         }

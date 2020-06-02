@@ -21,6 +21,10 @@ class Users extends Authenticatable
         'password', 'remember_token', 'deleted_at', 'pivot'
     ];
 
+    protected $casts = [
+        'email_verified_at'
+    ];
+    
     public function recipes()
     {
         return $this->hasMany(Recipes::class);

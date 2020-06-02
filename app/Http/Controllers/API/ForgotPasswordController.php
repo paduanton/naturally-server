@@ -31,7 +31,7 @@ class ForgotPasswordController extends Controller
         ]);
 
         $now = Carbon::now();
-        $user = Users::where('email', $request->email)->first();
+        $user = Users::where('email', $request->email)->firstOrFail();
 
         $passwordReset = [
             "email" => $user->email,
