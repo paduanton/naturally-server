@@ -40,9 +40,14 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         /*
             Authenticated Routes
         */
+
+        /* 
+            Auth
+        */
         $router->get('/oauth/refresh/{token}', 'API\AuthController@getRefreshTokenInfo');
         $router->post('/oauth/refresh', 'API\AuthController@refreshToken');
         $router->post('/logout', 'API\AuthController@logout');
+        $router->post('/user/{userId}/verify', 'API\AuthController@logout');
 
         /*
             Users Routes

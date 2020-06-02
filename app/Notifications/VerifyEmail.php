@@ -2,56 +2,44 @@
 
 namespace App\Notifications;
 
+use App\EmailVerifications;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class VerifyEmail extends Notification
+class VerifyEmail extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    protected $emailVerification;
+
+    public function __construct(EmailVerifications $verify)
     {
-        //
+        $this->frontendURI = config('app.frontend_url');
+        $this->emailVerification = $verify;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
     public function via($notifiable)
     {
         return ['mail'];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
     public function toMail($notifiable)
     {
+        $id = $this->emailVerification->id;
+        $token = $this->emailVerification->token;
+        $expiresAt = $this->emailVerification->expires_at;
+        $signature =  $this->emailVerification->signature;
+
+        $frontendRoute = $this->frontendURI . "/verify/{$id}/email/{$token}?expires={$expiresAt}&signature={$signature}";
+
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('Please click the button below to verify your email address.')
+            ->action('Verify Email Address', $frontendRoute)
+            ->line('If you did not create an account or have not requested an email verification from us, no further action is required.');
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
     public function toArray($notifiable)
     {
         return [
