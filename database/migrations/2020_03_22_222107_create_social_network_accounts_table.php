@@ -13,8 +13,8 @@ class CreateSocialNetworkAccountsTable extends Migration
             $table->id();
             $table->foreignId('users_id');
             $table->enum('provider_name', ['facebook', 'twitter', 'google']);
-            $table->decimal('provider_id', 65, 0);
-            $table->string('username')->nullable();
+            $table->decimal('provider_id', 65, 0)->unsigned()->index();
+            $table->string('username')->nullable()->index();
             $table->string('profile_url')->nullable();
             $table->string('picture_url');
             $table->timestampsTz(0);

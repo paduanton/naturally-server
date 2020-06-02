@@ -8,16 +8,17 @@ use App\Services\AuthenticationService;
 use App\Http\Resources\UsersResource;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\ProfileImages;
 use App\Users;
 
 class UsersController extends Controller
 {
-    protected $authService, $profileImageController;
+    protected $authService;
 
-    public function __construct(AuthenticationService $auth, ProfileImagesController $profileImages)
+    public function __construct(AuthenticationService $auth)
     {
         $this->authService = $auth;
-        $this->profileImageController = $profileImages;
+        $this->defaultUserPicture = config('app.default_user_picture');
     }
 
     public function index()
@@ -36,7 +37,7 @@ class UsersController extends Controller
         return new UsersResource($user);
     }
 
-    public function getPublicProfile($login)
+    public function getPublicProfile(Request $request, $login)
     {
         $user = null;
 
@@ -46,13 +47,11 @@ class UsersController extends Controller
             $user = $this->getByUsername($login);
         }
 
-        $userProfilePicture = $this->profileImageController->getThumbnail($user->id);
-
         return response()->json([
             'name' => $user->name,
             'email' => $user->email,
             'username' => $user->username,
-            'profile_picture' => $userProfilePicture->picture_url
+            'profile_picture' => $this->getUserThumbnail($user->id)
         ], 200);
     }
 
@@ -96,6 +95,10 @@ class UsersController extends Controller
             unset($request['password_confirmation']);
         }
 
+        if ($request['email']) {
+            $request['email_verified_at'] = false;
+        }
+
         $user = Users::where('id', $id)->update($request->all());
 
         if ($user) {
@@ -127,5 +130,16 @@ class UsersController extends Controller
         return response()->json([
             'message' => 'account successfully deleted',
         ], 400);
+    }
+
+    protected function getUserThumbnail($userId)
+    {
+        $userThumbnail = ProfileImages::where('users_id', $userId)->where('thumbnail', true)->first();
+
+        if (!$userThumbnail) {
+            return $this->defaultUserPicture;
+        }
+
+        return $userThumbnail->picture_url;
     }
 }

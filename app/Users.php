@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
@@ -15,15 +14,11 @@ class Users extends Authenticatable
     protected $table = 'users';
 
     protected $fillable = [
-        'name', 'username', 'email', 'password', 'birthday'
+        'name', 'username', 'email', 'password', 'birthday', 'email_verified_at'
     ];
 
     protected $hidden = [
         'password', 'remember_token', 'deleted_at', 'pivot'
-    ];
-
-    protected $casts = [
-        'email_verified_at' => 'datetime',
     ];
 
     public function recipes()
@@ -80,5 +75,9 @@ class Users extends Authenticatable
     {
         return $this->hasMany(PasswordResets::class, 'email', 'email');
     }
-    
+
+    public function email_verifications()
+    {
+        return $this->hasMany(EmailVerifications::class, 'email', 'email');
+    }
 }

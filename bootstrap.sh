@@ -31,8 +31,5 @@ php artisan cache:clear
 chmod -R gu+w storage
 chmod -R guo+w storage
 
-# Setting smtp.mailtrap.io manually on hosts
-echo "34.228.149.98 smtp.mailtrap.io" >> /etc/hosts
-
-# Cleaing application cache again to make sure all alterations are up-to-date
+# Cleaning application cache again to make sure all alterations are up-to-date
 php artisan cache:clear
