@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API;
 
 use App\Users;
-use Carbon\Carbon;
 use App\EmailVerifications;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -137,7 +136,7 @@ class VerifyEmailController extends Controller
         }
 
         $this->verifyEmailService->encryptUser($user);
-        
+
         if(!$this->verifyEmailService->isUserValid($user)) {
             return response()->json([
                 'message' => 'invalid user'
