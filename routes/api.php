@@ -35,7 +35,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
     $router->post('/forgot', 'API\ForgotPasswordController@forgot');
     $router->get('/forgot/{token}', 'API\ForgotPasswordController@getPasswordResetByToken');
     $router->patch('/forgot/{token}', 'API\ForgotPasswordController@resetPassword');
-    $router->post('/verify/{id}', 'API\VerifyEmailController@validate');
+    $router->patch('/verify/{id}', 'API\VerifyEmailController@validation');
 
     Route::group(['middleware' => 'auth:api'], function () use ($router) {
         /*
@@ -50,6 +50,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->post('/oauth/refresh', 'API\AuthController@refreshToken');
         $router->post('/logout', 'API\AuthController@logout');
         $router->post('/user/{userId}/verify', 'API\VerifyEmailController@verify');
+        $router->post('/verify/{id}/resend', 'API\VerifyEmailController@resendVerification');
 
         /*
             Users Routes

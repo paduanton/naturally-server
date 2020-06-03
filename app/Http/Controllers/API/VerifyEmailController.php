@@ -30,8 +30,8 @@ class VerifyEmailController extends Controller
         ]);
 
         $user = Users::findOrFail($userId);
-        
-        if($user->email_verified_at !== null) {
+
+        if ($user->email_verified_at !== null) {
             return response()->json([
                 'message' => "user has already verified its account"
             ], 422);
@@ -68,76 +68,93 @@ class VerifyEmailController extends Controller
             'message' => "we could not send verification email link"
         ], 400);
     }
-    /*
-    public function validate($token)
+
+
+    public function resendVerification($id)
     {
-        $emailVerification = EmailVerifications::where('token', $token)->firstOrFail();
+        $emailVerification = EmailVerifications::findOrFail($id);
+        $user = $emailVerification->users;
 
         if ($emailVerification->done) {
             return response()->json([
-                "message" => "this token has already been used to reset a password"
+                "message" => "this token has already been used to verify an email before"
             ], 409);
         }
 
-        $this->verifyEmailService->setToken($token);
+        $this->verifyEmailService->setToken($emailVerification->token);
 
         if ($this->verifyEmailService->isTokenExpired()) {
             $emailVerification->delete();
             return response()->json([
                 'error' => 'token expired',
-                'message' => 'the verify token has been expired'
+                'message' => 'the verification token has been expired'
             ], 422);
         }
 
-        return new PasswordResetResource($passwordReset);
+        $notification = $this->verifyEmailService->sendVerifyEmail($user, $emailVerification);
+
+        if ($notification) {
+            return new EmailVerificationResource($emailVerification);
+        }
+
+        return response()->json([
+            'error' => 'error sending email',
+            'message' => 'we could not send the verification email'
+        ], 422);
     }
 
-    public function resendVerification(Request $request)
+
+    public function validation(Request $request, $id)
     {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|confirmed|string|min:6',
+        $this->validate($request, [
+            'token' => 'required|string|exists:App\EmailVerifications,token',
+            'signature' => 'required|string|exists:App\EmailVerifications,signature',
         ]);
 
-        $user = Users::where('email', $request->email)->firstOrFail();
-        $passwordReset = PasswordResets::where('token', $token)->firstOrFail();
+        $emailVerification = EmailVerifications::findOrFail($id);
+        $user = $emailVerification->users;
 
-        if ($passwordReset->done) {
+        if (($request->token != $emailVerification->token) || ($emailVerification->signature != $request->signature)) {
             return response()->json([
-                "message" => "this token has already been used to reset a password"
+                "message" => "token or signature are invalid"
+            ], 400);
+        }
+
+        if ($emailVerification->done) {
+            return response()->json([
+                "message" => "this token has already been used to verify an email before"
             ], 409);
         }
 
-        if ($user->email !== $passwordReset->email) {
-            return response()->json([
-                "message" => "user email does not belong to this token"
-            ], 422);
-        }
+        $this->verifyEmailService->setToken($request->token);
 
-        $this->resetPasswordService->setToken($token);
-        if ($this->resetPasswordService->isTokenExpired()) {
-            $passwordReset->delete();
+        if ($this->verifyEmailService->isTokenExpired()) {
+            $emailVerification->delete();
             return response()->json([
                 'error' => 'token expired',
-                'message' => 'the reset password token has been expired'
+                'message' => 'the verification token has been expired'
             ], 422);
         }
 
-        $newPassword = Hash::make($request->password);
-        $updateUserPassword = $user->update(['password' => $newPassword]);
+        $this->verifyEmailService->encryptUser($user);
+        
+        if(!$this->verifyEmailService->isUserValid($user)) {
+            return response()->json([
+                'message' => 'invalid user'
+            ], 422);
+        }
 
-        if ($updateUserPassword) {
-            $passwordReset->update(['done' => true]);
-            $passwordReset->delete();
+        $updateUser = $user->update(['email_verified_at' => now()]);
 
-            $this->resetPasswordService->sendSuccessfullyResetedEmail($user);
+        if ($updateUser) {
+            $emailVerification->update(['done' => true]);
+            $emailVerification->delete();
 
             return new UsersResource($user);
         }
 
         return response()->json([
-            'message' => "it was not possible to update user's password"
+            'message' => "it was not possible to verify this email"
         ], 400);
     }
-*/
 }
