@@ -63,6 +63,8 @@ class AuthController extends Controller
 
         $remember = $request['remember_me'];
         $login = isset($request['username']) ? 'username' : 'email';
+        
+        Users::where($login, $request[$login])->firstOrFail();
 
         $credentials = request([$login, 'password']);
         if (!Auth::attempt($credentials, $remember)) {
