@@ -96,7 +96,7 @@ class UsersController extends Controller
         }
 
         if ($request['email']) {
-            $request['email_verified_at'] = false;
+            $request['email_verified_at'] = null;
         }
 
         $user = Users::where('id', $id)->update($request->all());

@@ -3,7 +3,6 @@
 namespace App\Services\Interfaces;
 
 use App\Users;
-use Carbon\Carbon;
 use App\EmailVerifications;
 
 interface VerifyEmailInterface

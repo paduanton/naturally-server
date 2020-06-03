@@ -37,7 +37,8 @@ class WelcomeReminder extends Notification implements ShouldQueue
             ->line("We see food in an unexampled way and if you don't... We would like you to do it too 🥘😋. We look forward for your contribution to our Website.")
             ->line("Your username is {$this->user->username} and you can sign-in in our Website with it or your email account.")
             ->line("If you would like so, you may log-in with your social media accounts too =)... Like Google, Facebook or even Twitter!!!")
-            ->action('Enjoy now', $this->frontendURI);
+            ->action('Enjoy now', $this->frontendURI)
+            ->line("One more thing... We also have sent you an email verification message. Verify your email to enjoy more features.");
     }
 
     public function toArray($notifiable)

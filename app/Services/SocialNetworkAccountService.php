@@ -5,22 +5,26 @@ namespace App\Services;
 use Exception;
 use App\Users;
 use App\ProfileImages;
+
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use App\SocialNetworkAccounts;
 use Illuminate\Http\UploadedFile;
 use App\Services\AuthenticationService;
 use Laravel\Socialite\Facades\Socialite;
+use App\Http\Controllers\API\VerifyEmailController;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use App\Services\Interfaces\SocialNetworkAccountsInterface;
 
-
 class SocialNetworkAccountService implements SocialNetworkAccountsInterface
 {
-    protected $provider, $accessToken, $accessTokenSecret, $defaultAuthService;
+    protected $provider, $accessToken, $accessTokenSecret, $defaultAuthService, $verifyEmailController, $request;
 
-    public function __construct(AuthenticationService $defaultAuthService)
+    public function __construct(AuthenticationService $defaultAuthService, VerifyEmailController $verify, Request  $request)
     {
         $this->defaultAuthService = $defaultAuthService;
+        $this->verifyEmailController = $verify;
+        $this->request = $request;
     }
 
     public function setProvider($provider)
@@ -129,6 +133,9 @@ class SocialNetworkAccountService implements SocialNetworkAccountsInterface
 
         if ($user->wasRecentlyCreated) {
             $this->defaultAuthService->sendWelcomedMail($user);
+            
+            $this->request['email'] = $user->email;
+            $this->verifyEmailController->verify($this->request, $user->id);
         }
 
         $user->social_network_accounts()->save($socialNetworkAccount);

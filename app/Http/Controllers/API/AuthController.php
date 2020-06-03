@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\API\VerifyEmailController;
 use App\Services\AuthenticationService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -13,11 +14,12 @@ use App\Users;
 
 class AuthController extends Controller
 {
-    protected $authService;
+    protected $authService, $verifyEmailController;
 
-    public function __construct(AuthenticationService $auth)
+    public function __construct(AuthenticationService $auth, VerifyEmailController $verify)
     {
         $this->authService = $auth;
+        $this->verifyEmailController = $verify;
     }
 
     public function signup(Request $request)
@@ -39,6 +41,8 @@ class AuthController extends Controller
 
         if ($user) {
             $this->authService->sendWelcomedMail($user);
+            $this->verifyEmailController->verify($request, $user->id);
+
             $user['auth_resource'] = $this->authService->generateUserAuthResource($user);
             return response()->json($user, 201);
         }
