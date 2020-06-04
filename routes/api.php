@@ -8,13 +8,11 @@ Route::get('/', function () {
 });
 
 Route::group(['prefix' => '/v1'], function () use ($router) {
+            /* -----  Unauthenticated Routes  ----- */
+
     $router->get('/', function () {
         return ['naturally-v1-api', date(DATE_ISO8601), env('APP_ENV')];
     });
-
-    /*
-        Unauthenticated Routes
-    */
 
     // Recipes
 
@@ -25,22 +23,24 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
 
     $router->get('/public/{login}/profile', 'API\UsersController@getPublicProfile');
 
-
     // Authentication Routes
-
 
     $router->post('/oauth/social', 'API\SocialAuthController@authenticate');
     $router->post('/login', 'API\AuthController@login');
     $router->post('/signup', 'API\AuthController@signup');
+    
+    //   Forgot Password
+    
     $router->post('/forgot', 'API\ForgotPasswordController@forgot');
     $router->get('/forgot/{token}', 'API\ForgotPasswordController@getPasswordResetByToken');
     $router->patch('/forgot/{token}', 'API\ForgotPasswordController@resetPassword');
+
+    //  Verify Email
+
     $router->patch('/verify/{id}', 'API\VerifyEmailController@validation');
 
     Route::group(['middleware' => 'auth:api'], function () use ($router) {
-        /*
-            Authenticated Routes
-        */
+        /* -----  Authenticated Routes  ----- */
 
         /* 
             Authentication Routes
@@ -49,6 +49,11 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->get('/oauth/refresh/{token}', 'API\AuthController@getRefreshTokenInfo');
         $router->post('/oauth/refresh', 'API\AuthController@refreshToken');
         $router->post('/logout', 'API\AuthController@logout');
+
+        /*
+            Verify Email
+        */
+
         $router->post('/user/{userId}/verify', 'API\VerifyEmailController@verify');
         $router->post('/verify/{id}/resend', 'API\VerifyEmailController@resendVerification');
 
@@ -58,6 +63,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
 
         $router->get('/users/{name}/search', 'API\UsersController@search');
         $router->get('/user/{username}', 'API\UsersController@getByUsername');
+        $router->put('/users/{id}', 'API\UsersController@update')->middleware('verified');
         $router->apiResource('/users', 'API\UsersController');
         $router->get('/user', function (Request $request) {
             return $request->user();
