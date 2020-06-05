@@ -114,18 +114,29 @@ class RatingImageController extends Controller
         ], 409);
     }
 
-    public function destroy($id)
+    public function destroy($ratingId, $id)
     {
-        $ratingImage = RatingsImages::findOrFail($id);
+        $rating = Ratings::findOrFail($ratingId);
+        $image = RatingsImages::findOrFail($id);
 
-        if ($ratingImage->thumbnail) {
+        if($image->ratings->id !== $rating->id){
+            return response()->json([
+                'message' => "it's not possible to delete another rating's picture",
+            ], 400);
+        }
+
+        $ratingImages = $rating->images;
+        $imagesCount = sizeof($ratingImages);
+        $isThumbnail = (bool) $image->thumbnail;
+
+        if ($imagesCount > 1 && $isThumbnail) {
             return response()->json([
                 'message' => 'it is not possible to delete a rating thumbnail',
             ], 400);
         }
 
-        $deleteFile = Storage::delete('public/' . $ratingImage->path);
-        $delete = $ratingImage->delete();
+        $deleteFile = Storage::delete('public/' . $image->path);
+        $delete = $image->delete();
 
         if ($delete && $deleteFile) {
             return response()->json([], 204);

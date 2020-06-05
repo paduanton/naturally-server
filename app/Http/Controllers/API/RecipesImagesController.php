@@ -114,25 +114,36 @@ class RecipesImagesController extends Controller
         ], 409);
     }
 
-    public function destroy($id)
+    public function destroy($recipeId, $id)
     {
-        $recipeImage = RecipesImages::findOrFail($id);
+        $recipe = Recipes::findOrFail($recipeId);
+        $image = RecipesImages::findOrFail($id);
 
-        if ($recipeImage->thumbnail) {
+        if($image->recipes->id !== $recipe->id){
             return response()->json([
-                'message' => 'it is not possible to delete a recipe thumbnail',
+                'message' => "it's not possible to delete another recipe's picture",
             ], 400);
         }
 
-        $deleteFile = Storage::delete('public/' . $recipeImage->path);
-        $delete = $recipeImage->delete();
+        $userImages = $recipe->images;
+        $imagesCount = sizeof($userImages);
+        $isThumbnail = (bool) $image->thumbnail;
+
+        if ($imagesCount > 1 && $isThumbnail) {
+            return response()->json([
+                'message' => 'it is not possible to delete a recipe thumbnail image',
+            ], 400);
+        }
+
+        $deleteFile = Storage::delete('public/' . $image->path);
+        $delete = $image->delete();
 
         if ($delete && $deleteFile) {
             return response()->json([], 204);
         }
 
         return response()->json([
-            'message' => 'could not delete recipes image data',
+            'message' => 'could not delete recipe image data',
         ], 400);
     }
 }

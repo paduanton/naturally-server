@@ -137,25 +137,36 @@ class ProfileImagesController extends Controller
         ], 409);
     }
 
-    public function destroy($id)
+    public function destroy($userId, $id)
     {
-        $userImage = ProfileImages::findOrFail($id);
+        $user = Users::findOrFail($userId);
+        $image = ProfileImages::findOrFail($id);
 
-        if ($userImage->thumbnail) {
+        if($image->users->id !== $user->id){
             return response()->json([
-                'message' => 'it is not possible to delete a user thumbnail',
+                'message' => "user can not delete someone's picture",
             ], 400);
         }
 
-        $deleteFile = Storage::delete('public/' . $userImage->path);
-        $delete = $userImage->delete();
+        $userImages = $user->images;
+        $imagesCount = sizeof($userImages);
+        $isThumbnail = (bool) $image->thumbnail;
+
+        if ($imagesCount > 1 && $isThumbnail) {
+            return response()->json([
+                'message' => 'it is not possible to delete a profile thumbnail image',
+            ], 400);
+        }
+
+        $deleteFile = Storage::delete('public/' . $image->path);
+        $delete = $image->delete();
 
         if ($delete && $deleteFile) {
             return response()->json([], 204);
         }
 
         return response()->json([
-            'message' => 'could not delete users image data',
+            'message' => 'could not delete profile image data',
         ], 400);
     }
 }

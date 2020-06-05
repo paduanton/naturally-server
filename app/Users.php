@@ -52,7 +52,7 @@ class Users extends Authenticatable
 
     public function comments()
     {
-        return $this->belongsToMany(Recipes::class, 'comments', 'users_id', 'recipes_id');
+        return $this->hasMany(Comments::class);
     }
 
     public function access_tokens()
