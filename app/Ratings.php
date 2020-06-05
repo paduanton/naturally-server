@@ -24,4 +24,9 @@ class Ratings extends Model
     {
         return $this->belongsTo(Recipes::class);
     }
+
+    public function images()
+    {
+        return $this->hasMany(RatingsImages::class);
+    }
 }

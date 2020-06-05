@@ -168,5 +168,15 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->get('/recipe/{recipeId}/ratings', 'API\RatingsController@getRatingsByRecipeId');
         $router->get('/user/{userId}/ratings', 'API\RatingsController@getRatingsByUserId');
         $router->post('/user/{userId}/recipe/{recipeId}/ratings', 'API\RatingsController@store');
+
+        /*
+            RatingsImages Routes
+        */
+
+        $router->get('/images/{id}/rating', 'API\RatingImageController@show');
+        $router->delete('/images/{id}/rating', 'API\RatingImageController@destroy');
+        $router->get('/rating/{ratingId}/images', 'API\RatingImageController@index');
+        $router->post('/rating/{ratingId}/image', 'API\RatingImageController@upload');
+        $router->patch('/rating/{ratingId}/image/{id}', 'API\RatingImageController@update');
     });
 });

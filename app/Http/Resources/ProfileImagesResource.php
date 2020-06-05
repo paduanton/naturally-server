@@ -11,7 +11,7 @@ class ProfileImagesResource extends JsonResource
         return [
             'id' => $this->id,
             'users_id' => $this->users_id,
-            'thumbnail' => $this->thumbnail,
+            'thumbnail' => (boolean) $this->thumbnail,
             'picture_url' => $this->picture_url,
             'filename' => $this->filename,
             'path' => $this->path,

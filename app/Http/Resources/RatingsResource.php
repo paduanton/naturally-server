@@ -12,7 +12,7 @@ class RatingsResource extends JsonResource
             'id' => $this->id,
             'users_id' => $this->users_id,
             'recipes_id' => $this->recipes_id,
-            'made_it' => $this->made_it,
+            'made_it' => (boolean) $this->made_it,
             'value' => $this->value,
             'description' => $this->description,
             'created_at' => $this->created_at->toDateTimeString(),

@@ -12,7 +12,7 @@ class RecipesLikesResource extends JsonResource
         return [
             'id' => $this->id,
             'recipes_id' => $this->recipes_id,
-            'is_liked' => $this->is_liked,
+            'is_liked' => (boolean) $this->is_liked,
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
             'user' => $this->users

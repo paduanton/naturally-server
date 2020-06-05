@@ -12,7 +12,7 @@ class UsersLikesResource extends JsonResource
         return [
             'id' => $this->id,
             'users_id' => $this->users_id,
-            'is_liked' => $this->is_liked,
+            'is_liked' => (boolean) $this->is_liked,
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
             'recipe' => $this->recipes

@@ -11,7 +11,7 @@ class UsersRatingsResource extends JsonResource
         return [
             'id' => $this->id,
             'users_id' => $this->users_id,
-            'made_it' => $this->made_it,
+            'made_it' => (boolean) $this->made_it,
             'value' => $this->value,
             'description' => $this->description,
             'created_at' => $this->created_at->toDateTimeString(),
