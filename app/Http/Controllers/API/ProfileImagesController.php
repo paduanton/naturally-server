@@ -159,9 +159,9 @@ class ProfileImagesController extends Controller
         }
 
         $deleteFile = Storage::delete('public/' . $image->path);
-        $delete = $image->delete();
+        $deleteEntity = $image->delete();
 
-        if ($delete && $deleteFile) {
+        if ($deleteEntity && $deleteFile) {
             return response()->json([], 204);
         }
 
