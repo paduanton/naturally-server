@@ -9,6 +9,7 @@ use App\OAuthRefreshTokens;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use App\Notifications\WelcomeReminder;
+use App\Http\Resources\UserAuthResource;
 use App\Notifications\PasswordChangingAlert;
 use App\Services\Interfaces\AuthenticationInterface;
 
@@ -81,7 +82,7 @@ class AuthenticationService implements AuthenticationInterface
         return response()->json($refreshToken);
     }
 
-    public function generateUsername($name)
+    public function createUsername($name)
     {
         $firstName = strtok($name, ' ');
         $lastName = strrchr($name, ' ');
@@ -120,7 +121,7 @@ class AuthenticationService implements AuthenticationInterface
         OAuthRefreshTokens::where('id', $refreshTokenId)->update(["revoked" => true]);
     }
 
-    public function generateRefreshToken($accessTokenId, $accessTokenExpiresAt)
+    public function createRefreshToken($accessTokenId, $accessTokenExpiresAt)
     {
         try {
             $uniqueHash = $this->getUniqueHash();
@@ -151,18 +152,23 @@ class AuthenticationService implements AuthenticationInterface
         return $refreshToken->token;
     }
 
-    public function generateUserAuthResource(Users $user)
+    public function createUserAuthResource(Users $user)
     {
         $token = $user->createToken('Personal Access Token');
         $accessToken = $token->accessToken;
-        $expiresAt = Carbon::parse($token->token->expires_at);
 
-        return [
+        $expiresAt = Carbon::parse($token->token->expires_at);
+        $createdAt =  Carbon::parse($token->token->created_at);
+
+        $user['auth_resource'] = [
             'token_type' => 'Bearer',
-            'expires_in' => $expiresAt->toDateTimeString(),
+            'expires_in' => $expiresAt,
             'access_token' => $accessToken,
-            'refresh_token' => $this->generateRefreshToken($token->token->id, $expiresAt),
+            'created_at' => $createdAt,
+            'refresh_token' => $this->createRefreshToken($token->token->id, $expiresAt),
             'remember_token' => $user->remember_token
         ];
+
+        return new UserAuthResource($user);
     }
 }

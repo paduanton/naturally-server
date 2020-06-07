@@ -14,8 +14,8 @@ interface AuthenticationInterface
     public function hashPassword(string $password);
     public function rehashPasswordIfNeeded(string $hashedPassword);
     public function getRefreshTokenInfo(string $token);
-    public function generateUsername(string $name);
+    public function createUsername(string $name);
     public function revokeRefreshToken(string $token);
-    public function generateRefreshToken(string $accessTokenId, Carbon $accessTokenExpiresAt);
-    public function generateUserAuthResource(Users $user);
+    public function createRefreshToken(string $accessTokenId, Carbon $accessTokenExpiresAt);
+    public function createUserAuthResource(Users $user);
 }

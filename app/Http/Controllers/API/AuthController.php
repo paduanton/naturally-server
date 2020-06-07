@@ -33,7 +33,7 @@ class AuthController extends Controller
         ]);
 
         $remember = $request['remember_me'];
-        $request['username'] = $this->authService->generateUsername($request['name']);
+        $request['username'] = $this->authService->createUsername($request['name']);
         $request['password'] = $this->authService->hashPassword($request['password']);
 
         $user = Users::create($request->all());
@@ -43,8 +43,7 @@ class AuthController extends Controller
             $this->authService->sendWelcomedMail($user);
             $this->verifyEmailController->verify($request, $user->id);
 
-            $user['auth_resource'] = $this->authService->generateUserAuthResource($user);
-            return response()->json($user, 201);
+            return $this->authService->createUserAuthResource($user);
         }
 
         return response()->json([
@@ -63,7 +62,7 @@ class AuthController extends Controller
 
         $remember = $request['remember_me'];
         $login = isset($request['username']) ? 'username' : 'email';
-        
+
         Users::where($login, $request[$login])->firstOrFail();
 
         $credentials = request([$login, 'password']);
@@ -76,10 +75,8 @@ class AuthController extends Controller
 
         $user = $request->user();
         $user->update(['password' => $this->authService->rehashPasswordIfNeeded($user->password)]);
-        
-        $user['auth_resource'] = $this->authService->generateUserAuthResource($user);
 
-        return response()->json($user);
+        return $this->authService->createUserAuthResource($user);
     }
 
     public function logout(Request $request)
@@ -152,6 +149,6 @@ class AuthController extends Controller
 
         $request->user()->token()->revoke();
         $this->authService->revokeRefreshToken($request['refresh_token']);
-        return $this->authService->generateUserAuthResource($authenticatedUser);
+        return $this->authService->createUserAuthResource($authenticatedUser);
     }
 }
