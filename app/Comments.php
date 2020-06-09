@@ -4,10 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 
 class Comments extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, SoftCascadeTrait;
 
     protected $table = 'comments';
 
@@ -18,6 +19,8 @@ class Comments extends Model
     protected $hidden = [
         'deleted_at'
     ];
+
+    protected $softCascade = ['replies'];
 
     public function replies()
     {

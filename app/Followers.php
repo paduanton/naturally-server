@@ -24,4 +24,14 @@ class Followers extends Model
     ];
 
     const DELETED_AT = 'unfollowed_at';
+
+    public function follower()
+    {
+        return $this->belongsTo(Users::class, 'users_id');
+    }
+
+    public function followed()
+    {
+        return $this->belongsTo(Users::class, 'following_users_id');
+    }
 }

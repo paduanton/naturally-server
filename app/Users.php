@@ -3,13 +3,14 @@
 namespace App;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
 class Users extends Authenticatable
 {
-    use HasApiTokens, Notifiable, SoftDeletes;
+    use HasApiTokens, Notifiable, SoftDeletes, SoftCascadeTrait;
 
     protected $table = 'users';
 
@@ -24,7 +25,12 @@ class Users extends Authenticatable
     protected $casts = [
         'email_verified_at'
     ];
-    
+
+    protected $softCascade = [
+        'recipes', 'social_network_accounts', 'images', 'followers', 'following',
+        'comments', 'likes', 'favorite_recipes', 'ratings', 'password_resets', 'email_verifications'
+    ];
+
     public function recipes()
     {
         return $this->hasMany(Recipes::class);

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return ['naturally-v1-web', date(DATE_ISO8601), env('APP_ENV')];
+    return ['naturally-v1-web', now()->toDateTimeString(), config('app.env')];
 });
 
 Route::get('/oauth1/social/{provider}/redirect', 'API\SocialAuthController@redirectToProvider');

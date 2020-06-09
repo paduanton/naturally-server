@@ -4,11 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use eloquentFilter\QueryFilter\ModelFilters\Filterable;
 
 class Recipes extends Model
 {
-    use SoftDeletes, Filterable;
+    use SoftDeletes, Filterable, SoftCascadeTrait;
 
     protected $table = 'recipes';
 
@@ -23,6 +24,10 @@ class Recipes extends Model
 
     private static $whiteListFilter = [
         'cooking_time', 'meal_type', 'category', 'yields', 'cost', 'complexity'
+    ];
+
+    protected $softCascade = [
+        'images', 'ingredients', 'comments', 'likes', 'favorites', 'ratings'
     ];
 
     public function users()
@@ -44,7 +49,7 @@ class Recipes extends Model
     {
         return $this->hasMany(Instructions::class);
     }
-    
+
     public function comments()
     {
         return $this->hasMany(Comments::class);

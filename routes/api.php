@@ -4,14 +4,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return ['naturally-api', date(DATE_ISO8601), env('APP_ENV')];
+    return ['naturally-api', now()->toDateTimeString(), config('app.env')];
 });
 
 Route::group(['prefix' => '/v1'], function () use ($router) {
-            /* -----  Unauthenticated Routes  ----- */
+    /* -----  Unauthenticated Routes  ----- */
 
     $router->get('/', function () {
-        return ['naturally-v1-api', date(DATE_ISO8601), env('APP_ENV')];
+        return ['naturally-v1-api', now()->toDateTimeString(), config('app.env')];
     });
 
     // Recipes
@@ -28,9 +28,9 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
     $router->post('/oauth/social', 'API\SocialAuthController@authenticate');
     $router->post('/login', 'API\AuthController@login');
     $router->post('/signup', 'API\AuthController@signup');
-    
+
     //   Forgot Password
-    
+
     $router->post('/forgot', 'API\ForgotPasswordController@forgot');
     $router->get('/forgot/{token}', 'API\ForgotPasswordController@getPasswordResetByToken');
     $router->patch('/forgot/{token}', 'API\ForgotPasswordController@resetPassword');
