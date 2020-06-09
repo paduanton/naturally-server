@@ -27,8 +27,8 @@ class Users extends Authenticatable
     ];
 
     protected $softCascade = [
-        'recipes', 'social_network_accounts', 'images', 'followers', 'following',
-        'comments', 'likes', 'favorite_recipes', 'ratings', 'password_resets', 'email_verifications'
+        'recipes', 'social_network_accounts', 'images', 'followers', 'following', 'comments',
+        'likes', 'favorite_recipes', 'ratings', 'password_resets', 'email_verifications', 'restored_accounts'
     ];
 
     public function recipes()
@@ -89,5 +89,10 @@ class Users extends Authenticatable
     public function email_verifications()
     {
         return $this->hasMany(EmailVerifications::class, 'email', 'email');
+    }
+
+    public function restored_accounts()
+    {
+        return $this->hasMany(RestoredAccounts::class, 'email', 'email');
     }
 }

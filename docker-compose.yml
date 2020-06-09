@@ -8,8 +8,10 @@ services:
   db:
     container_name: naturallydb
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: "201125"
+      MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
     image: mysql:5.7
     networks:
       - naturally
