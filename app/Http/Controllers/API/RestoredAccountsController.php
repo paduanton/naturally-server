@@ -104,7 +104,7 @@ class RestoredAccountsController extends Controller
         ]);
 
         $restoredAccount = RestoredAccounts::findOrFail($id);
-        $user = Users::where('email', $restoredAccount->email)->firstOrFail();
+        $user = Users::where('email', $restoredAccount->email)->first();
 
         if ($user) {
             return response()->json([
