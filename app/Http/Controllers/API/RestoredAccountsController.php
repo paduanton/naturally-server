@@ -63,7 +63,6 @@ class RestoredAccountsController extends Controller
         ], 400);
     }
 
-
     public function resendSolicitation($id)
     {
         $restoredAccount = RestoredAccounts::findOrFail($id);
