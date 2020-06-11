@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Http\Controllers\API\ProfileImagesController;
 use App\Services\AuthenticationService;
 use App\Http\Resources\UsersResource;
 use App\Http\Controllers\Controller;
