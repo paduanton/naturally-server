@@ -12,7 +12,9 @@ class RatingImageResource extends JsonResource
         return [
             'id' => $this->id,
             'ratings_id' => $this->ratings_id,
-            'thumbnail' => (boolean) $this->thumbnail,
+            'title' => $this->title,
+            'alt' => $this->alt,
+            'thumbnail' => (bool) $this->thumbnail,
             'picture_url' => $this->picture_url,
             'filename' => $this->filename,
             'path' => $this->path,

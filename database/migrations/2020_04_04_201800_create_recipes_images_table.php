@@ -12,6 +12,8 @@ class CreateRecipesImagesTable extends Migration
         Schema::create('recipes_images', function (Blueprint $table) {
             $table->id();
             $table->foreignId('recipes_id');
+            $table->string('title')->nullable();
+            $table->string('alt')->nullable();
             $table->boolean('thumbnail');
             $table->string('picture_url')->unique();
             $table->string('filename')->unique();

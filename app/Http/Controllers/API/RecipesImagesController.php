@@ -35,7 +35,9 @@ class RecipesImagesController extends Controller
     {
         $this->validate($request, [
             'image' => 'required|image|mimes:jpeg,png,jpg,gif',
-            'thumbnail' => 'required|boolean'
+            'thumbnail' => 'required|boolean',
+            'title' => 'nullable|string',
+            'alt' => 'nullable|string'
         ]);
 
         $thumbnail = $request['thumbnail'];
@@ -66,6 +68,8 @@ class RecipesImagesController extends Controller
         $file = $request->file('image');
 
         $image = new RecipesImages();
+        $image->title = $request['title'] ?? null;
+        $image->alt = $request['alt'] ?? null;
         $image->thumbnail = $request['thumbnail'];
         $image->original_filename = $file->getClientOriginalName();
         $image->original_extension = $file->getClientOriginalExtension();
@@ -85,27 +89,39 @@ class RecipesImagesController extends Controller
     {
         $this->validate($request, [
             'thumbnail' => [
-                'required',
+                'nullable',
                 'boolean',
-                Rule::in([true, 1, "1"])
-            ]
+                Rule::in([true, 1, "1"]),
+                'required_without_all:title,alt'
+            ],
+            'title' => 'nullable|string',
+            'alt' => 'nullable|string'
         ]);
 
         $recipeImage = RecipesImages::findOrFail($id);
 
-        if ($recipeImage->thumbnail) {
-            return new RecipesImagesResource($recipeImage);
+        if (isset($request['thumbnail']) && $request['thumbnail'] == true) {
+            if ($recipeImage->thumbnail) {
+                $image = $recipeImage;
+            } else {
+                $currentThumbnailImage = RecipesImages::where('recipes_id', $recipesId)->where('thumbnail', true)->first();
+
+                if ($currentThumbnailImage) {
+                    $currentThumbnailImage->update(['thumbnail' => false]);
+                }
+
+                $image = RecipesImages::where('id', $id)->update(['thumbnail' => true]);
+            }
         }
 
-        $currentThumbnailImage = RecipesImages::where('recipes_id', $recipesId)->where('thumbnail', true)->first();
+        if (isset($request['title']) || isset($request['alt'])) {
+            $title = $request['title'] ?? null;
+            $alt = $request['alt'] ?? null;
 
-        if ($currentThumbnailImage) {
-            $currentThumbnailImage->update(['thumbnail' => false]);
+            $image = RecipesImages::where('id', $id)->update(['title' => $title, 'alt' => $alt]);
         }
 
-        $newThumbnailImage = RecipesImages::where('id', $id)->update(['thumbnail' => true]);
-
-        if ($newThumbnailImage) {
+        if ($image) {
             return new RecipesImagesResource(RecipesImages::find($id));
         }
 
@@ -119,7 +135,7 @@ class RecipesImagesController extends Controller
         $recipe = Recipes::findOrFail($recipeId);
         $image = RecipesImages::findOrFail($id);
 
-        if($image->recipes->id !== $recipe->id){
+        if ($image->recipes->id !== $recipe->id) {
             return response()->json([
                 'message' => "it's not possible to delete another recipe's picture",
             ], 400);

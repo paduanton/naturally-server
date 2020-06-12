@@ -1,17 +1,20 @@
 <?php
 
 namespace App\Http\Resources;
+
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class RecipesImagesResource extends JsonResource
 {
-    
+
     public function toArray($request)
     {
         return [
             'id' => $this->id,
             'recipes_id' => $this->recipes_id,
-            'thumbnail' => (boolean) $this->thumbnail,
+            'title' => $this->title,
+            'alt' => $this->alt,
+            'thumbnail' => (bool) $this->thumbnail,
             'picture_url' => $this->picture_url,
             'filename' => $this->filename,
             'path' => $this->path,

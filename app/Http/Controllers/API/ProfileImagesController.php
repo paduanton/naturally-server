@@ -13,14 +13,14 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ProfileImagesController extends Controller
 {
-    
+
     protected $defaultUserPicture;
 
     public function __construct()
     {
         $this->defaultUserPicture = config('app.default_user_picture');
     }
-    
+
     public function index($usersId)
     {
         Users::findOrFail($usersId);
@@ -44,7 +44,7 @@ class ProfileImagesController extends Controller
         Users::findOrFail($usersId);
         $userThumbnail = ProfileImages::where('users_id', $usersId)->where('thumbnail', true)->first();
 
-        if(!$userThumbnail) {
+        if (!$userThumbnail) {
             return response()->json([
                 'thumbnail' => false,
                 'picture_url' => $this->defaultUserPicture
@@ -58,7 +58,9 @@ class ProfileImagesController extends Controller
     {
         $this->validate($request, [
             'image' => 'required|image|mimes:jpeg,png,jpg,gif',
-            'thumbnail' => 'required|boolean'
+            'thumbnail' => 'required|boolean',
+            'title' => 'nullable|string',
+            'alt' => 'nullable|string'
         ]);
 
         $user = Users::findOrFail($usersId);
@@ -89,6 +91,8 @@ class ProfileImagesController extends Controller
         $file = $request->file('image');
 
         $image = new ProfileImages();
+        $image->title = $request['title'] ?? null;
+        $image->alt = $request['alt'] ?? null;
         $image->thumbnail = $request['thumbnail'];
         $image->original_filename = $file->getClientOriginalName();
         $image->original_extension = $file->getClientOriginalExtension();
@@ -108,27 +112,40 @@ class ProfileImagesController extends Controller
     {
         $this->validate($request, [
             'thumbnail' => [
-                'required',
+                'nullable',
                 'boolean',
-                Rule::in([true, 1, "1"])
-            ]
+                Rule::in([true, 1, "1"]),
+                'required_without_all:title,alt'
+            ],
+            'title' => 'nullable|string',
+            'alt' => 'nullable|string'
         ]);
 
         $userImage = ProfileImages::findOrFail($id);
 
-        if ($userImage->thumbnail) {
-            return new ProfileImagesResource($userImage);
+        if (isset($request['thumbnail']) && $request['thumbnail'] == true) {
+            if ($userImage->thumbnail) {
+                $image = $userImage;
+            } else {
+                $currentThumbnailImage = ProfileImages::where('users_id', $usersId)->where('thumbnail', true)->first();
+
+                if ($currentThumbnailImage) {
+                    $currentThumbnailImage->update(['thumbnail' => false]);
+                }
+
+                $image = ProfileImages::where('id', $id)->update(['thumbnail' => true]);
+            }
         }
 
-        $currentThumbnailImage = ProfileImages::where('users_id', $usersId)->where('thumbnail', true)->first();
+        if (isset($request['title']) || isset($request['alt'])) {
+            $title = $request['title'] ?? null;
+            $alt = $request['alt'] ?? null;
 
-        if ($currentThumbnailImage) {
-            $currentThumbnailImage->update(['thumbnail' => false]);
+            $image = ProfileImages::where('id', $id)->update(['title' => $title, 'alt' => $alt]);
         }
 
-        $newThumbnailImage = ProfileImages::where('id', $id)->update(['thumbnail' => true]);
 
-        if ($newThumbnailImage) {
+        if ($image) {
             return new ProfileImagesResource(ProfileImages::find($id));
         }
 
@@ -142,7 +159,7 @@ class ProfileImagesController extends Controller
         $user = Users::findOrFail($userId);
         $image = ProfileImages::findOrFail($id);
 
-        if($image->users->id !== $user->id){
+        if ($image->users->id !== $user->id) {
             return response()->json([
                 'message' => "user can not delete someone's picture",
             ], 400);

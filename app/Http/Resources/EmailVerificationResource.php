@@ -14,7 +14,7 @@ class EmailVerificationResource extends JsonResource
             'email' => $this->email,
             'token' => $this->token,
             'signature' => $this->signature,
-            'done' => (boolean) $this->done,
+            'done' => (bool) $this->done,
             'expires_at' => $this->expires_at->toDateTimeString(),
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
