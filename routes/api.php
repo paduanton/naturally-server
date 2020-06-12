@@ -180,9 +180,18 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         */
 
         $router->get('/images/{id}/rating', 'API\RatingImageController@show');
-        $router->delete('/rating/{ratingId}/image/{id}', 'API\RatingImageController@destroy');
         $router->get('/rating/{ratingId}/images', 'API\RatingImageController@index');
         $router->post('/rating/{ratingId}/image', 'API\RatingImageController@upload');
         $router->patch('/rating/{ratingId}/image/{id}', 'API\RatingImageController@update');
+        $router->delete('/rating/{ratingId}/image/{id}', 'API\RatingImageController@destroy');
+
+        /*
+            Phones Routes
+        */
+
+        $router->get('/phone/{id}', 'API\PhoneController@show');
+        $router->get('/user/{userId}/phones', 'API\PhoneController@getPhoneByUsersId');
+        $router->post('/user/{userId}/phone', 'API\PhoneController@store');
+        $router->delete('/phone/{id}', 'API\RatingImageController@destroy');
     });
 });
