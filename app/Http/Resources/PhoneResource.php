@@ -11,11 +11,11 @@ class PhoneResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'users_id' => $this->users_id,
             'main' => $this->main,
             'label' => $this->label,
-            'country' => $this->country,
             'country_code' => $this->country_code,
-            'number' => $this->number,
+            'number' => '+' . $this->number,
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
         ];

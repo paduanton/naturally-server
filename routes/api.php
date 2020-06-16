@@ -190,8 +190,8 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         */
 
         $router->get('/phone/{id}', 'API\PhoneController@show');
-        $router->get('/user/{userId}/phones', 'API\PhoneController@getPhoneByUsersId');
+        $router->get('/user/{userId}/phones', 'API\PhoneController@getPhoneByUserId');
         $router->post('/user/{userId}/phone', 'API\PhoneController@store');
-        $router->delete('/phone/{id}', 'API\RatingImageController@destroy');
+        $router->delete('/phone/{id}', 'API\PhoneController@destroy');
     });
 });

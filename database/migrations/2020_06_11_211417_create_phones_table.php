@@ -13,9 +13,8 @@ class CreatePhonesTable extends Migration
             $table->id();
             $table->foreignId('users_id');
             $table->boolean('main');
-            $table->string('label', 25);
-            $table->string('country');
-            $table->string('country_code');
+            $table->string('label', 15);
+            $table->string('country_code', 2);
             $table->string('number', 20)->unique();
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);

@@ -12,7 +12,7 @@ class Phones extends Model
     protected $table = 'phones';
 
     protected $fillable = [
-        'users_id', 'main', 'label', 'country',
+        'users_id', 'main', 'label',
          'country_code', 'number'
     ];
 
