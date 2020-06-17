@@ -27,9 +27,23 @@ class Users extends Authenticatable
     ];
 
     protected $softCascade = [
-        'recipes', 'social_network_accounts', 'images', 'followers', 'following', 'comments', 'likes', 
+        'recipes', 'social_network_accounts', 'images', 'followers', 'following', 'comments', 'likes',
         'favorite_recipes', 'ratings', 'password_resets', 'email_verifications', 'restored_accounts', 'phones'
     ];
+
+
+    public static function getAuthorAccount(): Users
+    {
+        $AUTHOR_EMAIL = config('app.author');
+
+        if (!$AUTHOR_EMAIL) {
+            $author = Users::find(1);
+        } else {
+            $author = Users::where('email', $AUTHOR_EMAIL)->first();
+        }
+
+        return $author;
+    }
 
     public function recipes()
     {
@@ -99,5 +113,10 @@ class Users extends Authenticatable
     public function phones()
     {
         return $this->hasMany(Phones::class);
+    }
+
+    public function reports()
+    {
+        return $this->hasMany(Reports::class);
     }
 }

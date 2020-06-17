@@ -34,7 +34,7 @@ class PhoneController extends Controller
     public function store(Request $request, $userId)
     {
         $this->validate($request, [
-            'label' => 'required|string',
+            'label' => 'required|string|between:4,15',
             'number' => 'required|phone:AUTO,BR,mobile',
             'country' => 'required|string',
             'main' => 'required|boolean'

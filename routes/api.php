@@ -45,6 +45,10 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
     $router->patch('/restore/{id}', 'API\RestoredAccountsController@validation');
     $router->post('/restore/{id}/resend', 'API\RestoredAccountsController@resendSolicitation');
 
+    // Report
+
+    $router->post('/report', 'API\ReportController@store');
+
     Route::group(['middleware' => 'auth:api'], function () use ($router) {
         /* -----  Authenticated Routes  ----- */
 

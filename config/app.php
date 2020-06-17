@@ -2,6 +2,8 @@
 
 return [
 
+    'author' => env('APP_AUTHOR', 'antonio.padua@naturally.cooking'),
+
     'frontend_url' => env('FRONTEND_APP_URL', 'http://naturally.cooking'),
 
     'default_user_picture' => env('DEFAULT_USER_PICTURE', 'http://naturally.cooking/storage/uploads/users/images/default-picture.png'),
