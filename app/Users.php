@@ -27,7 +27,7 @@ class Users extends Authenticatable
     ];
 
     protected $softCascade = [
-        'recipes', 'social_network_accounts', 'images', 'followers', 'following', 'comments', 'likes',
+        'recipes', 'social_network_accounts', 'images', 'followers', 'following', 'comments', 'likes', 'access_tokens',
         'favorite_recipes', 'ratings', 'password_resets', 'email_verifications', 'restored_accounts', 'phones'
     ];
 
@@ -77,7 +77,7 @@ class Users extends Authenticatable
 
     public function access_tokens()
     {
-        return $this->hasMany(OAuthAccessTokens::class);
+        return $this->hasMany(OAuthAccessTokens::class, 'user_id');
     }
 
     public function likes()

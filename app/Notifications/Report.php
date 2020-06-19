@@ -30,7 +30,7 @@ class Report extends Notification implements ShouldQueue
         $isUser = (isset($this->content['user']) && !empty($this->content['user'])) ? true : false;
 
         return (new MailMessage)
-            ->subject("Report from - {$this->appName} Application - {$this->appEnv}")
+            ->subject("Report from - {$this->appName} Application - ({$this->appEnv})")
             ->line("Title: {$this->content['title']}")
             ->line("Category: {$this->content['category']}")
             ->line("Description: {$this->content['description']}")

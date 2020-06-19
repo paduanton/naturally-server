@@ -16,7 +16,7 @@ class CreateIngredientsTable extends Migration
             $table->string('description');
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);
-            $table->foreign('recipes_id')->references('id')->on('recipes');
+            $table->foreign('recipes_id')->references('id')->on('recipes')->onDelete('cascade');
         });
     }
 

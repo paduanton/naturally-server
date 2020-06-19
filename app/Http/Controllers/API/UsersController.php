@@ -118,16 +118,22 @@ class UsersController extends Controller
     public function destroy(Request $request, $id)
     {
         $user = Users::findOrFail($id);
+        $permanentlyDelete = (bool) $request->query('permanentlyDelete');
 
         $logout = $request->user()->token()->revoke();
-        $delete = $user->delete();
+
+        if ($permanentlyDelete) {
+            $delete = $user->forceDelete();
+        } else {
+            $delete = $user->delete();
+        }
 
         if ($delete && $logout) {
             return response()->json([], 204);
         }
 
         return response()->json([
-            'message' => 'account successfully deleted',
+            'message' => 'unable to complete operation',
         ], 400);
     }
 

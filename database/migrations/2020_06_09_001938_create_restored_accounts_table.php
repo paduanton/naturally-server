@@ -16,7 +16,7 @@ class CreateRestoredAccountsTable extends Migration
             $table->boolean('done');
             $table->dateTimeTz('expires_at', 0);
             $table->timestampsTz(0);
-            $table->softDeletesTz('deleted_at', 0);
+            $table->softDeletesTz('deleted_at', 0)->onDelete('cascade');
         });
     }
 

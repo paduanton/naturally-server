@@ -15,8 +15,8 @@ class CreateFollowersTable extends Migration
             $table->foreignId('following_users_id');
             $table->timestampTz('followed_at')->nullable();
             $table->softDeletesTz('unfollowed_at', 0);
-            $table->foreign('users_id')->references('id')->on('users');
-            $table->foreign('following_users_id')->references('id')->on('users');
+            $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('following_users_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

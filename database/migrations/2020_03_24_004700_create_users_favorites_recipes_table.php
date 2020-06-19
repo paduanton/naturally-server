@@ -15,8 +15,8 @@ class CreateUsersFavoritesRecipesTable extends Migration
             $table->foreignId('recipes_id');
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);
-            $table->foreign('users_id')->references('id')->on('users');
-            $table->foreign('recipes_id')->references('id')->on('recipes');
+            $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('recipes_id')->references('id')->on('recipes')->onDelete('cascade');
         });
     }
 

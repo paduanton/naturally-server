@@ -19,7 +19,7 @@ class CreateReportsTable extends Migration
             $table->string('email')->nullable();
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);
-            $table->foreign('users_id')->references('id')->on('users');
+            $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

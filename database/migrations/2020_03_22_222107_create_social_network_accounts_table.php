@@ -19,7 +19,7 @@ class CreateSocialNetworkAccountsTable extends Migration
             $table->string('picture_url');
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);
-            $table->foreign('users_id')->references('id')->on('users');
+            $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

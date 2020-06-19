@@ -23,7 +23,7 @@ class CreateRecipesImagesTable extends Migration
             $table->enum('original_extension', ['png', 'jpg', 'jpeg', 'gif']);
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);
-            $table->foreign('recipes_id')->references('id')->on('recipes');
+            $table->foreign('recipes_id')->references('id')->on('recipes')->onDelete('cascade');
         });
     }
 

@@ -18,7 +18,7 @@ class CreatePhonesTable extends Migration
             $table->string('number', 20)->unique();
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);
-            $table->foreign('users_id')->references('id')->on('users');
+            $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

@@ -23,7 +23,7 @@ class CreateRatingsImagesTable extends Migration
             $table->enum('original_extension', ['png', 'jpg', 'jpeg', 'gif']);
             $table->timestampsTz(0);
             $table->softDeletesTz('deleted_at', 0);
-            $table->foreign('ratings_id')->references('id')->on('ratings');
+            $table->foreign('ratings_id')->references('id')->on('ratings')->onDelete('cascade');
         });
     }
 
