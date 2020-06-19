@@ -4,10 +4,14 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Services\AuthenticationService;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Model;
 use App\Http\Resources\UsersResource;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\ProfileImages;
+Use App\RatingsImages;
+use App\RecipesImages;
 use App\Users;
 
 class UsersController extends Controller
@@ -123,6 +127,10 @@ class UsersController extends Controller
         $logout = $request->user()->token()->revoke();
 
         if ($permanentlyDelete) {
+            $this->deleteImageFiles(new RecipesImages);
+            $this->deleteImageFiles(new ProfileImages);
+            $this->deleteImageFiles(new RatingsImages);
+            
             $delete = $user->forceDelete();
         } else {
             $delete = $user->delete();
@@ -146,5 +154,14 @@ class UsersController extends Controller
         }
 
         return $userThumbnail->picture_url;
+    }
+
+    protected function deleteImageFiles(Model $model)
+    {
+        $images = $model::all();
+
+        foreach ($images as $image) {
+            Storage::delete('public/' . $image->path);
+        }
     }
 }
