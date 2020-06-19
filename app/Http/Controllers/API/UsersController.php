@@ -82,10 +82,11 @@ class UsersController extends Controller
     public function update(Request $request, $id)
     {
         $age = $this->authService->getUserAgeLimitDate();
+        $usernamePattern = $this->authService->getUsernamePattern();
 
         $this->validate($request, [
             'name' => 'nullable|string',
-            'username' => 'nullable|string|unique:users',
+            'username' => "nullable|string|unique:users|regex:{$usernamePattern}",
             'email' => 'email|nullable|unique:users',
             'password' => 'nullable|confirmed|string',
             'birthday' => "nullable|nullable|date_format:Y/m/d|before:{$age}|after:1920-01-01",

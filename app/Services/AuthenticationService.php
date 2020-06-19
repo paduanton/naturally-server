@@ -36,12 +36,26 @@ class AuthenticationService implements AuthenticationInterface
         return false;
     }
 
+    public function getUsernamePattern()
+    {
+        /*
+            Allows only letters, numbers, one dot and must not initiate with a dot and not ends with a dot
+
+            Regex: ^[0-9a-zA-Z]+(\.[0-9a-zA-Z]+)?$
+        */
+
+        $pattern = "^[0-9a-zA-Z]+(\.[0-9a-zA-Z]+)?$";
+        $delimiter = "/";
+
+        return $delimiter . $pattern . $delimiter;
+    }
+
     public function getUserAgeLimitDate()
     {
         /*
             Only users 7 years old or higher can access the App
         */
-        
+
         return  now()->subYears(7)->subDay()->format('Y-m-d');
     }
 

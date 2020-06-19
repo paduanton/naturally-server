@@ -42,8 +42,8 @@ class AuthController extends Controller
         Auth::login($user, $remember);
 
         if ($user) {
-            // $this->authService->sendWelcomedMail($user);
-            // $this->verifyEmailController->verify($request, $user->id);
+            $this->authService->sendWelcomedMail($user);
+            $this->verifyEmailController->verify($request, $user->id);
 
             return $this->authService->createUserAuthResource($user);
         }
