@@ -36,6 +36,15 @@ class AuthenticationService implements AuthenticationInterface
         return false;
     }
 
+    public function getUserAgeLimitDate()
+    {
+        /*
+            Only users 7 years old or higher can access the App
+        */
+        
+        return  now()->subYears(7)->subDay()->format('Y-m-d');
+    }
+
     public function sendPasswordChangingAlert(Users $user)
     {
         try {

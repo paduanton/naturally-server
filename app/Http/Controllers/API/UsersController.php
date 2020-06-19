@@ -81,12 +81,14 @@ class UsersController extends Controller
 
     public function update(Request $request, $id)
     {
+        $age = $this->authService->getUserAgeLimitDate();
+
         $this->validate($request, [
             'name' => 'nullable|string',
             'username' => 'nullable|string|unique:users',
             'email' => 'email|nullable|unique:users',
             'password' => 'nullable|confirmed|string',
-            'birthday' => 'nullable|date',
+            'birthday' => "nullable|nullable|date_format:Y/m/d|before:{$age}|after:1920-01-01",
         ]);
 
         Users::findOrFail($id);

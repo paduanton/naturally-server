@@ -7,6 +7,7 @@ use Carbon\Carbon;
 
 interface AuthenticationInterface
 {
+    public function getUserAgeLimitDate();
     public function isEmail($input);
     public function sendPasswordChangingAlert(Users $user);
     public function sendWelcomedMail(Users $user);

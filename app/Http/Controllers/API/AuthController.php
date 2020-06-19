@@ -24,11 +24,13 @@ class AuthController extends Controller
 
     public function signup(Request $request)
     {
+        $age = $this->authService->getUserAgeLimitDate();
+
         $this->validate($request, [
             'name' => 'required|string',
             'email' => 'email|required|unique:users',
             'password' => 'required|confirmed|string|min:6',
-            'birthday' => 'nullable|date',
+            'birthday' => "nullable|nullable|date_format:Y/m/d|before:{$age}|after:1920-01-01",
             'remember_me' => 'nullable|boolean',
         ]);
 
