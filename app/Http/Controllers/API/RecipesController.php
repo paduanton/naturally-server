@@ -13,14 +13,14 @@ use App\Users;
 class RecipesController extends Controller
 {
 
-    public function index(ModelFilters $filters, Request $request)
+    public function index(ModelFilters $filters)
     {
         $recipes = [];
 
         if ($filters->filters()) {
-            $recipes = Recipes::filter($filters)->get();
+            $recipes = Recipes::filter($filters)->paginate();
         } else {
-            $recipes = Recipes::all();
+            $recipes = Recipes::paginate();
         }
 
         if ($recipes->isEmpty()) {
@@ -38,26 +38,26 @@ class RecipesController extends Controller
 
     public function getRecipesByUsersId(ModelFilters $filters, $usersId)
     {
-        Users::findOrFail($usersId);
-        $usersRecipes = Recipes::where('users_id', $usersId);
+        $user = Users::findOrFail($usersId);
+        $userRecipes = $user->recipes();
 
         if ($filters->filters()) {
-            $usersRecipes = $usersRecipes->filter($filters)->get();
+            $userRecipes = $userRecipes->filter($filters)->paginate();
         } else {
-            $usersRecipes = $usersRecipes->get();
+            $userRecipes = $userRecipes->paginate();
         }
 
-        if ($usersRecipes->isEmpty()) {
+        if ($userRecipes->isEmpty()) {
             throw new ModelNotFoundException;
         }
 
-        return RecipesResource::collection($usersRecipes);
+        return RecipesResource::collection($userRecipes);
     }
 
     public function search($title)
     {
         
-        $recipes = Recipes::where('title', 'LIKE', "%{$title}%")->get();
+        $recipes = Recipes::where('title', 'LIKE', "%{$title}%")->paginate();
 
         if ($recipes->isEmpty()) {
             throw new ModelNotFoundException;

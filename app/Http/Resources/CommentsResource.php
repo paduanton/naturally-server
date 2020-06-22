@@ -17,7 +17,7 @@ class CommentsResource extends JsonResource
             'description' => $this->description,
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
-            'replies' => $this->replies
+            'replies' => $this->replies()->paginate(3)
         ];
     }
 }

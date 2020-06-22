@@ -5,10 +5,11 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
+use eloquentFilter\QueryFilter\ModelFilters\Filterable;
 
 class Comments extends Model
 {
-    use SoftDeletes, SoftCascadeTrait;
+    use SoftDeletes, SoftCascadeTrait, Filterable;
 
     protected $table = 'comments';
 

@@ -16,8 +16,13 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
 
     // Recipes
 
+    $router->get('/recipes', 'API\RecipesController@index');
     $router->get('/recipes/{title}/search', 'API\RecipesController@search');
     $router->get('/recipes/{id}', 'API\RecipesController@show');
+
+    // Comments
+
+    $router->get('/recipes/{recipesId}/comments', 'API\CommentsController@getCommentsByRecipesId');
 
     // Users
 
@@ -83,7 +88,8 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
             Recipes Routes
         */
 
-        $router->apiResource('/recipes', 'API\RecipesController');
+        $router->put('/recipes', 'API\RecipesController@update');
+        $router->delete('/recipes', 'API\RecipesController@destroy');
         $router->get('/users/{usersId}/recipes', 'API\RecipesController@getRecipesByUsersId');
         $router->post('/users/{usersId}/recipes', 'API\RecipesController@store');
 
@@ -149,7 +155,6 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         */
 
         $router->apiResource('/comments', 'API\CommentsController');
-        $router->get('/recipes/{recipesId}/comments', 'API\CommentsController@getCommentsByRecipesId');
         $router->post('/users/{usersId}/recipes/{recipesId}/comments', 'API\CommentsController@store');
 
         /*

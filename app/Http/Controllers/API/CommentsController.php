@@ -10,13 +10,15 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CommentsResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use eloquentFilter\QueryFilter\ModelFilters\ModelFilters;
 
 class CommentsController extends Controller
 {
 
     public function index()
     {
-        $comments = Comments::all();
+        $comments = Comments::paginate();
+
         if ($comments->isEmpty()) {
             throw new ModelNotFoundException();
         }
@@ -30,16 +32,22 @@ class CommentsController extends Controller
         return new CommentsResource($comment);
     }
 
-    public function getCommentsByRecipesId($recipesId)
+    public function getCommentsByRecipesId(ModelFilters $filters, $recipesId)
     {
-        Recipes::findOrFail($recipesId);
-        $comments = Comments::where('recipes_id', $recipesId)->get();
+        $recipe = Recipes::findOrFail($recipesId);
+        $recipeComments = $recipe->comments();
 
-        if ($comments->isEmpty()) {
+        if ($filters->filters()) {
+            $recipeComments = $recipeComments->filter($filters)->paginate();
+        } else {
+            $recipeComments = $recipeComments->paginate();
+        }
+
+        if ($recipeComments->isEmpty()) {
             throw new ModelNotFoundException;
         }
 
-        return CommentsResource::collection($comments);
+        return CommentsResource::collection($recipeComments);
     }
 
     public function store(Request $request, $usersId, $recipesId)
@@ -88,13 +96,13 @@ class CommentsController extends Controller
         ]);
 
         $comment = Comments::findOrFail($id);
-        
+
         $now = Carbon::now();
         $createdAt = $comment->created_at;
-        
+
         $diferenceBetweenDates = $createdAt->diffInSeconds($now);
-        
-        if($diferenceBetweenDates > 300){ // 300s = 5 minutes
+
+        if ($diferenceBetweenDates > 300) { // 300s = 5 minutes
             return response()->json([
                 'message' => 'it is not possible to update a comment created more than 5 minutes ago',
             ], 409);
