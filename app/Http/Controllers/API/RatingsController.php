@@ -61,9 +61,15 @@ class RatingsController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        Users::findOrFail($userId);
-        Recipes::findOrFail($recipeId);
+        $user = Users::findOrFail($userId);
+        $recipe = Recipes::findOrFail($recipeId);
         
+        if($user->id === $recipe->users_id) {
+            return response()->json([
+                'message' => 'an user can not rate its own recipe'
+            ], 400);
+        }
+
         $userHasRatedRecipe = Ratings::where("users_id", $userId)->where("recipes_id", $recipeId)->first();
         
         if($userHasRatedRecipe) {

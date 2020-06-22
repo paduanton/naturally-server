@@ -69,4 +69,9 @@ class Recipes extends Model
     {
         return $this->hasMany(Ratings::class);
     }
+
+    public function recipes_ratings_images()
+    {
+        return $this->hasManyThrough(RatingsImages::class, Ratings::class);
+    }
 }

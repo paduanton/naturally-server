@@ -119,4 +119,14 @@ class Users extends Authenticatable
     {
         return $this->hasMany(Reports::class);
     }
+
+    public function users_recipes_images()
+    {
+        return $this->hasManyThrough(RecipesImages::class, Recipes::class);
+    }
+
+    public function users_ratings_images()
+    {
+        return $this->hasManyThrough(RatingsImages::class, Ratings::class);
+    }
 }

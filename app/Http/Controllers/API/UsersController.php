@@ -10,7 +10,7 @@ use App\Http\Resources\UsersResource;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\ProfileImages;
-Use App\RatingsImages;
+use App\RatingsImages;
 use App\RecipesImages;
 use App\Users;
 
@@ -130,10 +130,11 @@ class UsersController extends Controller
         $logout = $request->user()->token()->revoke();
 
         if ($permanentlyDelete) {
-            $this->deleteImageFiles(new RecipesImages);
-            $this->deleteImageFiles(new ProfileImages);
-            $this->deleteImageFiles(new RatingsImages);
-            
+            $this->deleteProfileImageFiles($user);
+            $this->deleteRecipeImageFiles($user);
+            $this->deleteUserRatingImageFiles($user);
+            $this->deleteUserRecipesRatingImageFiles($user);
+
             $delete = $user->forceDelete();
         } else {
             $delete = $user->delete();
@@ -159,12 +160,43 @@ class UsersController extends Controller
         return $userThumbnail->picture_url;
     }
 
-    protected function deleteImageFiles(Model $model)
+    protected function deleteProfileImageFiles(Users $user)
     {
-        $images = $model::all();
+        $userImages = $user->images;
 
-        foreach ($images as $image) {
+        foreach ($userImages as $image) {
             Storage::delete('public/' . $image->path);
+        }
+    }
+
+    protected function deleteRecipeImageFiles(Users $user)
+    {
+        $recipeImages = $user->users_recipes_images;
+
+        foreach ($recipeImages as $image) {
+            Storage::delete('public/' . $image->path);
+        }
+    }
+
+    protected function deleteUserRatingImageFiles(Users $user)
+    {
+        $ratingImages = $user->users_ratings_images;
+
+        foreach ($ratingImages as $image) {
+            Storage::delete('public/' . $image->path);
+        }
+    }
+
+    protected function deleteUserRecipesRatingImageFiles(Users $user)
+    {
+        $userRecipes = $user->recipes;
+
+        foreach ($userRecipes as $recipe) {
+            $recipeRatingImages = $recipe->recipes_ratings_images;
+            
+            foreach ($recipeRatingImages as $image) {
+                Storage::delete('public/' . $image->path);
+            }
         }
     }
 }
