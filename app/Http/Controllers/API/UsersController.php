@@ -88,8 +88,8 @@ class UsersController extends Controller
             'name' => 'nullable|string',
             'username' => "nullable|string|unique:users|regex:{$usernamePattern}",
             'email' => 'email|nullable|unique:users',
-            'password' => 'nullable|confirmed|string',
-            'birthday' => "nullable|nullable|date_format:Y/m/d|before:{$age}|after:1920-01-01",
+            'password' => 'nullable|confirmed|string|min:6',
+            'birthday' => "nullable|date_format:Y/m/d|before:{$age}|after:1920-01-01",
         ]);
 
         Users::findOrFail($id);

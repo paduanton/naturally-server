@@ -30,7 +30,7 @@ class AuthController extends Controller
             'name' => 'required|string',
             'email' => 'email|required|unique:users',
             'password' => 'required|confirmed|string|min:6',
-            'birthday' => "nullable|nullable|date_format:Y/m/d|before:{$age}|after:1920-01-01",
+            'birthday' => "nullable|date_format:Y/m/d|before:{$age}|after:1920-01-01",
             'remember_me' => 'nullable|boolean',
         ]);
 

@@ -23,7 +23,7 @@ class ReportController extends Controller
             'category' => [
                 'required',
                 'string',
-                Rule::in(['bug', 'suggestion', 'idea', 'partnership', 'something_else']),
+                Rule::in(['bug', 'suggestion', 'idea', 'partnership', 'something_else', 'application_improvement']),
             ],
             'who_reported' => 'required_without:users_id|string',
             'email' => 'required_without:users_id|email'
