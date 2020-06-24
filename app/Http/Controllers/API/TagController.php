@@ -7,7 +7,9 @@ use App\Recipes;
 use App\RecipesTags;
 use App\Services\TagService;
 use Illuminate\Http\Request;
+use App\Http\Resources\TagResource;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\RecipesResource;
 use App\Http\Resources\RecipesTagsResource;
 use App\Http\Resources\RecipeTagRelationshipResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -23,13 +25,26 @@ class TagController extends Controller
 
     public function index()
     {
-        $comments = Comments::paginate();
+        $tags = Tags::paginate();
 
-        if ($comments->isEmpty()) {
+        if ($tags->isEmpty()) {
             throw new ModelNotFoundException();
         }
 
-        return CommentsResource::collection($comments);
+        return TagResource::collection($tags);
+    }
+
+    public function getRecipesByTag($hashtag) {
+        $tag = Tags::where('hashtag', $hashtag)->firstOrFail();
+
+        $tagRecipes = $tag->recipes();
+        $tagRecipes = $tagRecipes->paginate();
+        
+        if ($tagRecipes->isEmpty()) {
+            throw new ModelNotFoundException;
+        }
+
+        return RecipesResource::collection($tagRecipes);
     }
 
     public function getTagsByRecipeId($recipesId)
@@ -73,7 +88,6 @@ class TagController extends Controller
             'message' => 'could not store data'
         ], 400);
     }
-
 
     public function destroy($recipeId, $tagId)
     {

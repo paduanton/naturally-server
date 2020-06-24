@@ -54,6 +54,12 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
 
     $router->post('/report', 'API\ReportController@store');
 
+    // Tag
+
+    $router->get('/tags', 'API\TagController@index');
+    $router->get('/tag/{hashtag}/recipes', 'API\TagController@getRecipesByTag');
+    $router->get('/recipe/{recipeId}/tags', 'API\TagController@getTagsByRecipeId');
+
     Route::group(['middleware' => 'auth:api'], function () use ($router) {
         /* -----  Authenticated Routes  ----- */
 
@@ -207,11 +213,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
             Tags Routes
         */
 
-        $router->get('/tags', 'API\TagController@index');
-        $router->get('/tag/{tag}/recipes', 'API\TagController@getRecipesByTag');
-        $router->get('/recipe/{recipeId}/tags', 'API\TagController@getTagsByRecipeId');
         $router->post('/recipe/{recipeId}/tag', 'API\TagController@store');
         $router->delete('/recipe/{recipeId}/tag/{tagId}', 'API\TagController@destroy');
-
     });
 });

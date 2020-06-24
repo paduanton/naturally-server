@@ -17,4 +17,9 @@ class Tags extends Model
     {
         return $this->hasMany(RecipesTags::class);
     }
+
+    public function recipes()
+    {
+        return $this->belongsToMany(Recipes::class)->wherePivot('deleted_at', null);
+    }
 }
