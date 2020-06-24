@@ -202,5 +202,16 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->get('/user/{userId}/phones', 'API\PhoneController@getPhoneByUserId');
         $router->post('/user/{userId}/phone', 'API\PhoneController@store');
         $router->delete('/phone/{id}', 'API\PhoneController@destroy');
+
+        /*
+            Tags Routes
+        */
+
+        $router->get('/tags', 'API\TagController@index');
+        $router->get('/tag/{tag}/recipes', 'API\TagController@getRecipesByTag');
+        $router->get('/recipe/{recipeId}/tags', 'API\TagController@getTagsByRecipesId');
+        $router->post('/recipe/{recipeId}/tag', 'API\TagController@store');
+        $router->delete('/recipe/{recipeId}/tag', 'API\TagController@destroy');
+
     });
 });

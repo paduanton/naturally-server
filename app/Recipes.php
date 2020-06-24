@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use eloquentFilter\QueryFilter\ModelFilters\Filterable;
+use phpDocumentor\Reflection\DocBlock\Tag;
 
 class Recipes extends Model
 {
@@ -27,7 +28,8 @@ class Recipes extends Model
     ];
 
     protected $softCascade = [
-        'images', 'ingredients', 'comments', 'likes', 'favorites', 'ratings'
+        'images', 'ingredients', 'comments',
+        'likes', 'favorites', 'ratings', 'recipes_tags'
     ];
 
     public function users()
@@ -71,6 +73,16 @@ class Recipes extends Model
     }
 
     public function recipes_ratings_images()
+    {
+        return $this->hasManyThrough(RatingsImages::class, Ratings::class);
+    }
+
+    public function recipes_tags()
+    {
+        return $this->hasMany(Tags::class);
+    }
+
+    public function tags()
     {
         return $this->hasManyThrough(RatingsImages::class, Ratings::class);
     }
