@@ -70,6 +70,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->get('/oauth/refresh/{token}', 'API\AuthController@getRefreshTokenInfo');
         $router->post('/oauth/refresh', 'API\AuthController@refreshToken');
         $router->post('/logout', 'API\AuthController@logout');
+        $router->post('/logout/{userId}/devices', 'API\AuthController@logoutFromAllDevices');
 
         /*
             Verify Email

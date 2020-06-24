@@ -11,6 +11,7 @@ use App\OAuthRefreshTokens;
 use App\OAuthAccessTokens;
 use Carbon\Carbon;
 use App\Users;
+use Exception;
 
 class AuthController extends Controller
 {
@@ -100,6 +101,25 @@ class AuthController extends Controller
         return response()->json([
             'message' => "couldn't logout"
         ], 409);
+    }
+
+    public function logoutFromAllDevices(Request $request, $userId)
+    {
+        $user = Users::findOrFail($userId);
+
+        try {
+            $userAccessToken = $request->user()->token();
+
+            $this->authService->revokeAllAccessTokensExceptCurrentOne($user, $userAccessToken);
+        } catch (Exception $exception) {
+            return response()->json([
+                'message' => $exception->getMessage()
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Logout successfully from all devices except this one'
+        ], 200);
     }
 
     public function refreshToken(Request $request)

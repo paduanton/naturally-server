@@ -4,9 +4,11 @@ namespace App\Services\Interfaces;
 
 use App\Users;
 use Carbon\Carbon;
+use Laravel\Passport\Token;
 
 interface AuthenticationInterface
 {
+    public function revokeAllAccessTokensExceptCurrentOne(Users $user, Token $currentAccessToken);
     public function getUsernamePattern();
     public function getUserAgeLimitDate();
     public function isEmail($input);

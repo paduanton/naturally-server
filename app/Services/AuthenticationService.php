@@ -5,7 +5,9 @@ namespace App\Services;
 use Exception;
 use App\Users;
 use Carbon\Carbon;
+use App\OAuthAccessTokens;
 use App\OAuthRefreshTokens;
+use Laravel\Passport\Token;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use App\Notifications\WelcomeReminder;
@@ -23,6 +25,23 @@ class AuthenticationService implements AuthenticationInterface
     public function hashPassword($password)
     {
         return Hash::make($password);
+    }
+
+    public function revokeAllAccessTokensExceptCurrentOne(Users $user, Token $currentAccessToken)
+    {  
+        $userAccessTokens = $user->access_tokens;
+
+        foreach($userAccessTokens as $accessToken) {
+            if($accessToken->revoked) {
+                continue;
+            } else {
+                if($accessToken->id === $currentAccessToken->id) {
+                    continue;
+                }
+    
+                OAuthAccessTokens::where('id', $accessToken->id)->update(["revoked" => true]);
+            }
+        }
     }
 
     public function isEmail($input)

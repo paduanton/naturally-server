@@ -12,8 +12,10 @@ class OAuthAccessTokens extends Model
         'user_id', 'client_id', 'scopes', 'revoked', 'expires_at'
     ];
 
-    public $timestamps = false;
-    
+    protected $casts = [
+        'id' => 'string'
+    ];
+
     public function refresh_token()
     {
         return $this->hasOne(OAuthRefreshTokens::class, 'access_token_id');
