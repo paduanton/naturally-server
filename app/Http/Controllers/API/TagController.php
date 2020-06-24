@@ -2,18 +2,24 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Users;
+use App\Tags;
 use App\Recipes;
-use App\Comments;
-use Carbon\Carbon;
+use App\RecipesTags;
+use App\Services\TagService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CommentsResource;
+use App\Http\Resources\RecipesTagsResource;
+use App\Http\Resources\RecipeTagRelationshipResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use eloquentFilter\QueryFilter\ModelFilters\ModelFilters;
 
 class TagController extends Controller
 {
+    protected $tagService;
+
+    public function __construct(TagService $service)
+    {
+        $this->tagService = $service;
+    }
 
     public function index()
     {
@@ -26,62 +32,41 @@ class TagController extends Controller
         return CommentsResource::collection($comments);
     }
 
-    public function show($id)
-    {
-        $comment = Comments::findOrFail($id);
-        return new CommentsResource($comment);
-    }
-
-    public function getCommentsByRecipesId(ModelFilters $filters, $recipesId)
+    public function getTagsByRecipeId($recipesId)
     {
         $recipe = Recipes::findOrFail($recipesId);
-        $recipeComments = $recipe->comments();
+        $recipeTags = $recipe->tags();
 
-        if ($filters->filters()) {
-            $recipeComments = $recipeComments->filter($filters)->paginate();
-        } else {
-            $recipeComments = $recipeComments->paginate();
-        }
-
-        if ($recipeComments->isEmpty()) {
+        $recipeTags = $recipeTags->paginate();
+        
+        if ($recipeTags->isEmpty()) {
             throw new ModelNotFoundException;
         }
 
-        return CommentsResource::collection($recipeComments);
+        return RecipeTagRelationshipResource::collection($recipeTags);
     }
 
-    public function store(Request $request, $usersId, $recipesId)
+    public function store(Request $request, $recipeId)
     {
+        $hashtagPattern = $this->tagService->getHashtagPattern();
+
         $this->validate($request, [
-            'description' => 'required|string',
-            'parent_comments_id' => 'nullable|integer|exists:App\Comments,id'
+            'hashtag' => "required|regex:{$hashtagPattern}"
         ]);
 
-        Users::findOrFail($usersId);
-        Recipes::findOrFail($recipesId);
+        $recipe = Recipes::findOrFail($recipeId);
 
-        if (isset($request['parent_comments_id'])) {
-            $comment = Comments::find($request['parent_comments_id']);
+        $tag = Tags::firstOrCreate(['hashtag' => $request['hashtag']], ['hashtag' => $request['hashtag']]);
 
-            if (isset($comment->parent_comments_id)) {
-                return response()->json([
-                    'error' => 'invalid reply',
-                    'message' => 'a reply cannot have another reply'
-                ], 400);
-            }
-        }
-
-        $comment = [
-            'description' => $request['description'],
-            'users_id' => $usersId,
-            'recipes_id' => $recipesId,
-            'parent_comments_id' => isset($request['parent_comments_id']) ? $request['parent_comments_id'] : null
+        $recipeTag = [
+            'recipes_id' => $recipe->id,
+            'tags_id' => $tag->id
         ];
 
-        $comment = Comments::create($comment);
+        $tag = RecipesTags::firstOrCreate($recipeTag, $recipeTag);
 
-        if ($comment) {
-            return new CommentsResource($comment);
+        if ($tag) {
+            return new RecipesTagsResource($tag);
         }
 
         return response()->json([
@@ -89,48 +74,20 @@ class TagController extends Controller
         ], 400);
     }
 
-    public function update(Request $request, $id)
+
+    public function destroy($recipeId, $tagId)
     {
-        $this->validate($request, [
-            'description' => 'required|string'
-        ]);
+        Recipes::findOrFail($recipeId);
+        Tags::findOrFail($tagId);
 
-        $comment = Comments::findOrFail($id);
-
-        $now = Carbon::now();
-        $createdAt = $comment->created_at;
-
-        $diferenceBetweenDates = $createdAt->diffInSeconds($now);
-
-        if ($diferenceBetweenDates > 300) { // 300s = 5 minutes
-            return response()->json([
-                'message' => 'it is not possible to update a comment created more than 5 minutes ago',
-            ], 409);
-        }
-
-        $update = Comments::where('id', $id)->update(['description' => $request['description']]);
-
-        if ($update) {
-            return new CommentsResource(Comments::find($id));
-        }
-
-        return response()->json([
-            'message' => 'could not update comments data',
-        ], 409);
-    }
-
-    public function destroy($id)
-    {
-        Comments::findOrFail($id);
-
-        $delete = Comments::where('id', $id)->delete();
+        $delete = RecipesTags::where('tags_id', $tagId)->where('recipes_id', $recipeId)->firstOrFail()->delete();
 
         if ($delete) {
             return response()->json([], 204);
         }
 
         return response()->json([
-            'message' => 'could not delete comment',
+            'message' => 'could not remove tag from recipe',
         ], 400);
     }
 }

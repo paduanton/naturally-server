@@ -84,6 +84,6 @@ class Recipes extends Model
 
     public function tags()
     {
-        return $this->hasManyThrough(RatingsImages::class, Ratings::class);
+        return $this->belongsToMany(Tags::class)->withPivot('created_at', 'updated_at')->wherePivot('deleted_at', null)->as('relationship');
     }
 }

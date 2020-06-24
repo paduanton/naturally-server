@@ -209,9 +209,9 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
 
         $router->get('/tags', 'API\TagController@index');
         $router->get('/tag/{tag}/recipes', 'API\TagController@getRecipesByTag');
-        $router->get('/recipe/{recipeId}/tags', 'API\TagController@getTagsByRecipesId');
+        $router->get('/recipe/{recipeId}/tags', 'API\TagController@getTagsByRecipeId');
         $router->post('/recipe/{recipeId}/tag', 'API\TagController@store');
-        $router->delete('/recipe/{recipeId}/tag', 'API\TagController@destroy');
+        $router->delete('/recipe/{recipeId}/tag/{tagId}', 'API\TagController@destroy');
 
     });
 });
