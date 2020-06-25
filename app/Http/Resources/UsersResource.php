@@ -15,8 +15,8 @@ class UsersResource extends JsonResource
             'email' => $this->email,
             'email_verified_at' => $this->email_verified_at,
             'birthday' => $this->birthday,
-            'created_at' => $this->created_at->toDateTimeString(),
-            'updated_at' => $this->updated_at->toDateTimeString()
+            'created_at' => is_string($this->created_at) ? $this->created_at : $this->created_at->toDateTimeString(),
+            'updated_at' => is_string($this->updated_at) ? $this->updated_at : $this->updated_at->toDateTimeString(),
         ];
     }
 }

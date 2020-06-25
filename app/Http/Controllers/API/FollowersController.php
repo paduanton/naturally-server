@@ -45,8 +45,10 @@ class FollowersController extends Controller
         $mutualFollowing = DB::table('users')
             ->join('followers as firstUserFollowing', 'users.id', '=', 'firstUserFollowing.following_users_id')
             ->where('firstUserFollowing.users_id', $firstUser->id)
+            ->where('firstUserFollowing.unfollowed_at', null)
             ->join('followers as secondUsersFollowing', 'users.id', '=', 'secondUsersFollowing.following_users_id')
             ->where('secondUsersFollowing.users_id', $secondUser->id)
+            ->where('secondUsersFollowing.unfollowed_at', null)
             ->select('users.*')
             ->get();
 
@@ -65,8 +67,10 @@ class FollowersController extends Controller
         $mutualFollowers = DB::table('users')
             ->join('followers as firstUserFollowers', 'users.id', '=', 'firstUserFollowers.users_id')
             ->where('firstUserFollowers.following_users_id', $firstUser->id)
+            ->where('firstUserFollowers.unfollowed_at', null)
             ->join('followers as secondUsersFollowers', 'users.id', '=', 'secondUsersFollowers.users_id')
             ->where('secondUsersFollowers.following_users_id', $secondUser->id)
+            ->where('secondUsersFollowers.unfollowed_at', null)
             ->select('users.*')
             ->get();
 
@@ -84,8 +88,10 @@ class FollowersController extends Controller
         $friends = DB::table('users')
             ->join('followers as usersFollowing', 'users.id', '=', 'usersFollowing.following_users_id')
             ->where('usersFollowing.users_id', $user->id)
+            ->where('usersFollowing.unfollowed_at', null)
             ->join('followers as usersFollowers', 'users.id', '=', 'usersFollowers.users_id')
             ->where('usersFollowers.following_users_id', $user->id)
+            ->where('usersFollowers.unfollowed_at', null)
             ->select('users.*')
             ->get();
 
