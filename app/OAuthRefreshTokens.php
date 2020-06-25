@@ -12,6 +12,10 @@ class OAuthRefreshTokens extends Model
         'id', 'access_token_id', 'token', 'revoked', 'expires_at'
     ];
 
+    protected $casts = [
+        'id' => 'string'
+    ];
+    
     public $timestamps = false;
     
     public function access_token()

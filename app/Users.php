@@ -27,7 +27,7 @@ class Users extends Authenticatable
     ];
 
     protected $softCascade = [
-        'recipes', 'social_network_accounts', 'images', 'followers', 'following', 'comments', 'likes', 'access_tokens',
+        'recipes', 'social_network_accounts', 'images', 'followers', 'following', 'comments', 'likes',
         'favorite_recipes', 'ratings', 'password_resets', 'email_verifications', 'restored_accounts', 'phones'
     ];
 

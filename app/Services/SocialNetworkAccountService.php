@@ -229,13 +229,13 @@ class SocialNetworkAccountService implements SocialNetworkAccountsInterface
             }
         }
 
-        $user = Users::where('username', $username)->first();
+        $user = Users::where('username', $username)->withTrashed()->first();
 
         while ($user) {
             $randomNumber = mt_rand();
             $newUsername = $username . $randomNumber;
 
-            $user = Users::where('username', $newUsername)->first();
+            $user = Users::where('username', $newUsername)->withTrashed()->first();
         }
 
         if (isset($newUsername)) {

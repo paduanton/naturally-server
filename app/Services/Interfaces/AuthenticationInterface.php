@@ -8,7 +8,8 @@ use Laravel\Passport\Token;
 
 interface AuthenticationInterface
 {
-    public function revokeAllAccessTokensExceptCurrentOne(Users $user, Token $currentAccessToken);
+    public function revokeAllUserActiveTokens(Users $user);
+    public function revokeAllUserAccessTokensExceptCurrentOne(Users $user, Token $currentAccessToken);
     public function getUsernamePattern();
     public function getUserAgeLimitDate();
     public function isEmail($input);
@@ -17,7 +18,6 @@ interface AuthenticationInterface
     public static function getUniqueHash(int $size = 32);
     public function hashPassword(string $password);
     public function rehashPasswordIfNeeded(string $hashedPassword);
-    public function getRefreshTokenInfo(string $token);
     public function createUsername(string $name);
     public function revokeRefreshToken(string $token);
     public function createRefreshToken(string $accessTokenId, Carbon $accessTokenExpiresAt);

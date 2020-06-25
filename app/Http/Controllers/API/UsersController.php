@@ -127,8 +127,6 @@ class UsersController extends Controller
         $user = Users::findOrFail($id);
         $permanentlyDelete = (bool) $request->query('permanentlyDelete');
 
-        $logout = $request->user()->token()->revoke();
-
         if ($permanentlyDelete) {
             $this->deleteProfileImageFiles($user);
             $this->deleteRecipeImageFiles($user);
@@ -137,10 +135,11 @@ class UsersController extends Controller
 
             $delete = $user->forceDelete();
         } else {
+            $this->authService->revokeAllUserActiveTokens($user);
             $delete = $user->delete();
         }
 
-        if ($delete && $logout) {
+        if ($delete) {
             return response()->json([], 204);
         }
 

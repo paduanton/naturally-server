@@ -27,18 +27,28 @@ class AuthenticationService implements AuthenticationInterface
         return Hash::make($password);
     }
 
-    public function revokeAllAccessTokensExceptCurrentOne(Users $user, Token $currentAccessToken)
-    {  
+    public function revokeAllUserActiveTokens(Users $user)
+    {
+        $accessTokens = OAuthAccessTokens::where('user_id', $user->id)->where('revoked', false)->get();
+
+        foreach ($accessTokens as $token) {
+            $token->update(['revoked' => true]);
+            $token->refresh_token->update(['revoked' => true]);
+        }
+    }
+
+    public function revokeAllUserAccessTokensExceptCurrentOne(Users $user, Token $currentAccessToken)
+    {
         $userAccessTokens = $user->access_tokens;
 
-        foreach($userAccessTokens as $accessToken) {
-            if($accessToken->revoked) {
+        foreach ($userAccessTokens as $accessToken) {
+            if ($accessToken->revoked) {
                 continue;
             } else {
-                if($accessToken->id === $currentAccessToken->id) {
+                if ($accessToken->id === $currentAccessToken->id) {
                     continue;
                 }
-    
+
                 OAuthAccessTokens::where('id', $accessToken->id)->update(["revoked" => true]);
             }
         }
@@ -114,16 +124,6 @@ class AuthenticationService implements AuthenticationInterface
         return bin2hex(openssl_random_pseudo_bytes($size));
     }
 
-
-    public function getRefreshTokenInfo($token)
-    {
-        $parseToken = explode("?", $token);
-        $refreshTokenId = $parseToken[0];
-
-        $refreshToken = OAuthRefreshTokens::findOrFail($refreshTokenId);
-        return response()->json($refreshToken);
-    }
-
     public function createUsername($name)
     {
         $firstName = strtok($name, ' ');
@@ -144,13 +144,13 @@ class AuthenticationService implements AuthenticationInterface
             $username = 'user' . mt_rand();
         }
 
-        $user = Users::where('username', $username)->first();
+        $user = Users::where('username', $username)->withTrashed()->first();
 
         while ($user) {
             $randomNumber = mt_rand();
             $username = $username . $randomNumber;
 
-            $user = Users::where('username', $username)->first();
+            $user = Users::where('username', $username)->withTrashed()->first();
         }
 
         return $username;

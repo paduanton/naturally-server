@@ -53,6 +53,15 @@ class AuthController extends Controller
             'message' => "couldn't sign user up"
         ], 400);
     }
+    
+    public function getRefreshTokenInfo($token)
+    {
+        $parseToken = explode("?", $token);
+        $refreshTokenId = $parseToken[0];
+
+        $refreshToken = OAuthRefreshTokens::findOrFail($refreshTokenId);
+        return response()->json($refreshToken);
+    }
 
     public function login(Request $request)
     {
@@ -110,7 +119,7 @@ class AuthController extends Controller
         try {
             $userAccessToken = $request->user()->token();
 
-            $this->authService->revokeAllAccessTokensExceptCurrentOne($user, $userAccessToken);
+            $this->authService->revokeAllUserAccessTokensExceptCurrentOne($user, $userAccessToken);
         } catch (Exception $exception) {
             return response()->json([
                 'message' => $exception->getMessage()
