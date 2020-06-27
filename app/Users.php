@@ -27,10 +27,9 @@ class Users extends Authenticatable
     ];
 
     protected $softCascade = [
-        'recipes', 'social_network_accounts', 'images', 'followers', 'following', 'comments', 'likes',
+        'recipes', 'social_network_accounts', 'images', 'follower_relationship', 'following_relationship', 'comments', 'likes',
         'favorite_recipes', 'ratings', 'password_resets', 'email_verifications', 'restored_accounts', 'phones'
     ];
-
 
     public static function getAuthorAccount(): Users
     {
@@ -58,6 +57,16 @@ class Users extends Authenticatable
     public function images()
     {
         return $this->hasMany(ProfileImages::class);
+    }
+
+    public function following_relationship()
+    {
+        return $this->hasMany(Followers::class, 'following_users_id');
+    }
+
+    public function follower_relationship()
+    {
+        return $this->hasMany(Followers::class, 'users_id');
     }
 
     public function followers()

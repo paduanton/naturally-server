@@ -46,8 +46,10 @@ class Handler extends ExceptionHandler
     {
 
         if ($exception instanceof ModelNotFoundException) {
+            $message = $exception->getMessage() ? $exception->getMessage() : 'There is no data';
+            
             return response()->json([
-                'message' => 'There is no data',
+                'message' => $message,
                 'error' => 'Model not found in the server'
             ], 404);
         }

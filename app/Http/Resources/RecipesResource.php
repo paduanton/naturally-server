@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Comments;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class RecipesResource extends JsonResource
@@ -22,6 +23,14 @@ class RecipesResource extends JsonResource
             'cost' => $this->cost,
             'complexity' => $this->complexity,
             'notes' => $this->notes,
+            'images' => RecipesImagesResource::collection($this->images),
+            'tags' => TagResource::collection($this->tags),
+            'ingredients' => IngredientsResource::collection($this->ingredients),
+            'instructions' => InstructionsResource::collection($this->instructions),
+            'comments' => CommentsResource::collection($this->comments),
+            'likes' => RecipesLikesResource::collection($this->likes),
+            'favorites' => FavoritesRecipesResource::collection($this->favorites),
+            'ratings' => RatingsResource::collection($this->ratings),
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString()
         ];

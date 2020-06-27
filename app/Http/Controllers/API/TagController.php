@@ -13,6 +13,7 @@ use App\Http\Resources\RecipesResource;
 use App\Http\Resources\RecipesTagsResource;
 use App\Http\Resources\RecipeTagRelationshipResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use eloquentFilter\QueryFilter\ModelFilters\ModelFilters;
 
 class TagController extends Controller
 {
@@ -34,12 +35,18 @@ class TagController extends Controller
         return TagResource::collection($tags);
     }
 
-    public function getRecipesByTag($hashtag) {
+    public function getRecipesByTag(ModelFilters $filters, $hashtag)
+    {
         $tag = Tags::where('hashtag', $hashtag)->firstOrFail();
 
         $tagRecipes = $tag->recipes();
-        $tagRecipes = $tagRecipes->paginate();
-        
+
+        if ($filters->filters()) {
+            $tagRecipes = $tagRecipes->filter($filters)->paginate();
+        } else {
+            $tagRecipes = $tagRecipes->paginate();
+        }
+
         if ($tagRecipes->isEmpty()) {
             throw new ModelNotFoundException;
         }
@@ -47,13 +54,13 @@ class TagController extends Controller
         return RecipesResource::collection($tagRecipes);
     }
 
-    public function getTagsByRecipeId($recipesId)
+    public function getTagsByRecipeId(ModelFilters $filters, $recipesId)
     {
         $recipe = Recipes::findOrFail($recipesId);
-        $recipeTags = $recipe->tags();
 
+        $recipeTags = $recipe->tags();
         $recipeTags = $recipeTags->paginate();
-        
+
         if ($recipeTags->isEmpty()) {
             throw new ModelNotFoundException;
         }

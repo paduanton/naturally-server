@@ -79,7 +79,7 @@ class Recipes extends Model
 
     public function recipes_tags()
     {
-        return $this->hasMany(Tags::class);
+        return $this->hasMany(RecipesTags::class);
     }
 
     public function tags()

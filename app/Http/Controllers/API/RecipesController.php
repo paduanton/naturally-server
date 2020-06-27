@@ -54,13 +54,19 @@ class RecipesController extends Controller
         return RecipesResource::collection($userRecipes);
     }
 
-    public function search($title)
+    public function search(ModelFilters $filters, $title)
     {
         
-        $recipes = Recipes::where('title', 'LIKE', "%{$title}%")->paginate();
+        $recipes = Recipes::where('title', 'LIKE', "%{$title}%");
+
+        if ($filters->filters()) {
+            $recipes = $recipes->filter($filters)->paginate();
+        } else {
+            $recipes = $recipes->paginate();
+        }
 
         if ($recipes->isEmpty()) {
-            throw new ModelNotFoundException;
+            throw new ModelNotFoundException("No recipe found");
         }
 
         return RecipesResource::collection($recipes);
