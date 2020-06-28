@@ -3,11 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
+Route::middleware('throttle:60,1')->get('/', function () {
     return ['naturally-api', now()->toDateTimeString(), config('app.env')];
 });
 
-Route::group(['prefix' => '/v1'], function () use ($router) {
+Route::group(['prefix' => '/v1', 'middleware' => 'throttle:150|250,1'], function () use ($router) {
     /* -----  Unauthenticated Routes  ----- */
 
     $router->get('/', function () {
@@ -19,10 +19,6 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
     $router->get('/recipes', 'API\RecipesController@index');
     $router->get('/recipes/{title}/search', 'API\RecipesController@search');
     $router->get('/recipes/{id}', 'API\RecipesController@show');
-
-    // Comments
-
-    $router->get('/recipes/{recipesId}/comments', 'API\CommentsController@getCommentsByRecipesId');
 
     // Users
 
@@ -64,7 +60,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
 
     $router->get('/likes/recipes', 'API\LikesController@getMoreLikedRecipes');
 
-    Route::group(['middleware' => 'auth:api'], function () use ($router) {
+    Route::middleware('auth:api')->group(function () use ($router) {
         /* -----  Authenticated Routes  ----- */
 
         /* 
@@ -165,7 +161,8 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         /*
             Comments Routes
         */
-
+        
+        $router->get('/recipes/{recipesId}/comments', 'API\CommentsController@getCommentsByRecipesId');
         $router->apiResource('/comments', 'API\CommentsController');
         $router->post('/users/{usersId}/recipes/{recipesId}/comments', 'API\CommentsController@store');
 

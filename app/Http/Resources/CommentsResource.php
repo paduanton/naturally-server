@@ -11,13 +11,13 @@ class CommentsResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'users_id' => $this->users_id,
             'recipes_id' => $this->recipes_id,
             'parent_comments_id' => $this->parent_comments_id,
             'description' => $this->description,
+            'replies' => $this->replies()->paginate(3),
+            'user' => new UsersResource($this->users),
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
-            'replies' => $this->replies()->paginate(3)
         ];
     }
 }

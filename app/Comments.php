@@ -32,4 +32,9 @@ class Comments extends Model
     {
         return $this->belongsTo(Comments::class);
     }
+
+    public function users()
+    {
+        return $this->belongsTo(Users::class);
+    }
 }

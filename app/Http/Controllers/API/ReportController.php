@@ -10,7 +10,6 @@ use App\Notifications\Report;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReportResource;
-use Illuminate\Foundation\Auth\User;
 
 class ReportController extends Controller
 {
@@ -18,12 +17,12 @@ class ReportController extends Controller
     {
         $this->validate($request, [
             'users_id' => 'nullable|numeric|integer|exists:App\Users,id',
-            'title' => 'required|string|between:5,60',
+            'title' => 'required|string|between:5,30',
             'description' => 'required|string|between:10,255',
             'category' => [
                 'required',
                 'string',
-                Rule::in(['bug', 'suggestion', 'idea', 'partnership', 'something_else', 'application_improvement']),
+                Rule::in(['bug', 'suggestion', 'idea', 'partnership', 'application_improvement', 'other']),
             ],
             'who_reported' => 'required_without:users_id|string',
             'email' => 'required_without:users_id|email'

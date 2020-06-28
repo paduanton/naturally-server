@@ -13,9 +13,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::middleware('throttle:60,1')->get('/', function () {
     return ['naturally-v1-web', now()->toDateTimeString(), config('app.env')];
 });
 
-Route::get('/oauth1/social/{provider}/redirect', 'API\SocialAuthController@redirectToProvider');
-Route::get('/oauth1/social/{provider}/callback', 'API\SocialAuthController@handleProviderCallback');
+Route::group(['prefix' => '/oauth1/social', 'middleware' => 'throttle:60,1'], function () use ($router) {
+    Route::get('/{provider}/redirect', 'API\SocialAuthController@redirectToProvider')->name('oauth1.redirect');
+    Route::get('/{provider}/callback', 'API\SocialAuthController@handleProviderCallback')->name('oauth1.callback');
+});
+
+/*
+    Terms of Use, Data Policy and Cookies Policy.
+*/
+
+Route::get('/legal/terms', 'TermsController@index')->name('terms');

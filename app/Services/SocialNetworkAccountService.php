@@ -5,7 +5,6 @@ namespace App\Services;
 use Exception;
 use App\Users;
 use App\ProfileImages;
-
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\SocialNetworkAccounts;

@@ -14,7 +14,7 @@ class CreateReportsTable extends Migration
             $table->foreignId('users_id')->nullable();
             $table->string('title');
             $table->string('description');
-            $table->enum('category', ['bug', 'suggestion', 'idea', 'partnership', 'something_else', 'application_improvement']);
+            $table->enum('category', ['bug', 'suggestion', 'idea', 'partnership', 'application_improvement', 'other']);
             $table->string('who_reported')->nullable();
             $table->string('email')->nullable();
             $table->timestampsTz(0);
