@@ -60,6 +60,10 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
     $router->get('/tag/{hashtag}/recipes', 'API\TagController@getRecipesByTag');
     $router->get('/recipe/{recipeId}/tags', 'API\TagController@getTagsByRecipeId');
 
+    // Likes
+
+    $router->get('/likes/recipes', 'API\LikesController@getMoreLikedRecipes');
+
     Route::group(['middleware' => 'auth:api'], function () use ($router) {
         /* -----  Authenticated Routes  ----- */
 
@@ -70,7 +74,7 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->get('/oauth/refresh/{token}', 'API\AuthController@getRefreshTokenInfo');
         $router->post('/oauth/refresh', 'API\AuthController@refreshToken');
         $router->post('/logout', 'API\AuthController@logout');
-        $router->post('/logout/{userId}/devices', 'API\AuthController@logoutFromAllDevices');
+        $router->post('/logout/{userId}/devices', 'API\AuthController@logoutFromAllDevices')->middleware('verified');
 
         /*
             Verify Email
@@ -86,7 +90,9 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->get('/users/{name}/search', 'API\UsersController@search');
         $router->get('/user/{username}', 'API\UsersController@getByUsername');
         $router->put('/users/{id}', 'API\UsersController@update')->middleware('verified');
-        $router->apiResource('/users', 'API\UsersController');
+        $router->delete('/users/{id}', 'API\UsersController@destroy')->middleware('verified');
+        $router->get('/users/{id}', 'API\UsersController@show');
+        $router->get('/users', 'API\UsersController@index');
         $router->get('/user', function (Request $request) {
             return $request->user();
         });

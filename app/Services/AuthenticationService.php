@@ -68,12 +68,18 @@ class AuthenticationService implements AuthenticationInterface
     public function getUsernamePattern()
     {
         /*
-            Allows only letters, numbers, one dot and must not initiate with a dot and not ends with a dot
+            Rules:
+            - Only letters and numbers
+            - One dot or one underscore in the middle of string
+            - Must initiate with A-z or 0-9
+            - Min char: 4
+            - Max char: 20
+            - Must not end with anything other than A-z or 0-9
 
             Regex: ^[0-9a-zA-Z]+(\.[0-9a-zA-Z]+)?$
         */
 
-        $pattern = "^[0-9a-zA-Z]+(\.[0-9a-zA-Z]+)?$";
+        $pattern = "^(?=[^\._]+[\._]?[^\._]+$)[\w\.]{4,20}$";
         $delimiter = "/";
 
         return $delimiter . $pattern . $delimiter;
@@ -82,7 +88,7 @@ class AuthenticationService implements AuthenticationInterface
     public function getUserAgeLimitDate()
     {
         /*
-            Only users 7 years old or higher can access the App
+            Only users 7 years older can access the app
         */
 
         return  now()->subYears(7)->subDay()->format('Y-m-d');

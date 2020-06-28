@@ -15,7 +15,7 @@ class Recipes extends Model
     protected $table = 'recipes';
 
     protected $fillable = [
-        'users_id', 'title', 'description', 'cooking_time', 'category',
+        'users_id', 'title', 'description', 'cooking_time', 'category', 
         'meal_type', 'youtube_video_url', 'yields', 'cost', 'complexity', 'notes'
     ];
 
@@ -28,7 +28,7 @@ class Recipes extends Model
     ];
 
     protected $softCascade = [
-        'images', 'ingredients', 'comments',
+        'images', 'ingredients', 'comments', 'instructions',
         'likes', 'favorites', 'ratings', 'recipes_tags'
     ];
 

@@ -28,7 +28,7 @@ class UsersController extends Controller
     {
         $users = Users::all();
         if ($users->isEmpty()) {
-            throw new ModelNotFoundException;
+            throw new ModelNotFoundException('No user found');
         }
 
         return UsersResource::collection($users);
@@ -72,7 +72,7 @@ class UsersController extends Controller
             ->get();
 
         if ($users->isEmpty()) {
-            throw new ModelNotFoundException;
+            throw new ModelNotFoundException("No user found");
         }
 
         return UsersResource::collection($users);
