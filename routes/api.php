@@ -125,7 +125,6 @@ Route::group(['prefix' => '/v1'], function () use ($router) {
         $router->get('/users/{usersId}/images', 'API\ProfileImagesController@index');
         $router->post('/users/{id}/images/', 'API\ProfileImagesController@upload');
         $router->get('/users/{usersId}/images', 'API\ProfileImagesController@index');
-        $router->get('/users/{usersId}/thumbnail', 'API\ProfileImagesController@getThumbnail');
         $router->patch('/users/{usersId}/images/{id}', 'API\ProfileImagesController@update');
 
         /*

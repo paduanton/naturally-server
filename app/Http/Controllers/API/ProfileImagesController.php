@@ -14,11 +14,10 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 class ProfileImagesController extends Controller
 {
 
-    protected $defaultUserPicture;
 
     public function __construct()
     {
-        $this->defaultUserPicture = config('app.default_user_picture');
+        //
     }
 
     public function index($usersId)
@@ -37,21 +36,6 @@ class ProfileImagesController extends Controller
     {
         $image = ProfileImages::findOrFail($id);
         return new ProfileImagesResource($image);
-    }
-
-    public function getThumbnail($usersId)
-    {
-        Users::findOrFail($usersId);
-        $userThumbnail = ProfileImages::where('users_id', $usersId)->where('thumbnail', true)->first();
-
-        if (!$userThumbnail) {
-            return response()->json([
-                'thumbnail' => false,
-                'picture_url' => $this->defaultUserPicture
-            ], 200);
-        }
-
-        return new ProfileImagesResource($userThumbnail);
     }
 
     public function upload(Request $request, $usersId)

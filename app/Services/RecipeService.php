@@ -14,6 +14,19 @@ class RecipeService implements RecipeInterface
         //
     }
 
+    public function getRecipeCategories(): array
+    {
+        return [
+            'diabetic', 'low-carb', 'heart-healthy', 'low-calorie', 'low-cholesterol', 'low-fat', 'weight-loss', 'high-fiber', 'keto',
+            'gluten-free', 'healthy', 'vegan', 'vegetarian', 'fitness', 'dairy-free', 'healthy-fried', 'vegetable', 'quick-&-Easy', 'other',
+        ];
+    }
+
+    public function getRecipeMealTypes(): array
+    {
+        return ['breakfast', 'brunch', 'dessert', 'dinner', 'lunch', 'other'];
+    }
+
     public function convertGenericObjectToRecipeModel($recipeArray)
     {
         foreach ($recipeArray as $recipe) {

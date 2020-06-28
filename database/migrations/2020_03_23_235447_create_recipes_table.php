@@ -1,11 +1,19 @@
 <?php
 
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Services\RecipeService;
 
 class CreateRecipesTable extends Migration
 {
+    protected $recipeService;
+
+    public function __construct()
+    {
+        $this->recipeService = new RecipeService();
+    }
 
     public function up()
     {
@@ -15,8 +23,8 @@ class CreateRecipesTable extends Migration
             $table->string('title');
             $table->string('description');
             $table->timeTz('cooking_time', 0);
-            $table->enum('category', ['vegan', 'chinese', 'italian', 'mexican', 'other']);
-            $table->enum('meal_type', ['breakfast', 'dessert', 'dinner', 'lunch', 'other']);
+            $table->enum('category', $this->recipeService->getRecipeCategories());
+            $table->enum('meal_type', $this->recipeService->getRecipeMealTypes());
             $table->string('youtube_video_url')->nullable();
             $table->double('yields');
             $table->tinyInteger('cost');

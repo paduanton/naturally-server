@@ -6,12 +6,21 @@ use eloquentFilter\QueryFilter\ModelFilters\ModelFilters;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Resources\RecipesResource;
 use App\Http\Controllers\Controller;
+use Illuminate\Validation\Rule;
+use App\Services\RecipeService;
 use Illuminate\Http\Request;
 use App\Recipes;
 use App\Users;
 
 class RecipesController extends Controller
 {
+
+    protected $recipeService;
+
+    public function __construct()
+    {
+        $this->recipeService = new RecipeService();
+    }
 
     public function index(ModelFilters $filters)
     {
@@ -56,7 +65,7 @@ class RecipesController extends Controller
 
     public function search(ModelFilters $filters, $title)
     {
-        
+
         $recipes = Recipes::where('title', 'LIKE', "%{$title}%");
 
         if ($filters->filters()) {
@@ -78,8 +87,16 @@ class RecipesController extends Controller
             'title' => 'required|string',
             'description' => 'required|string',
             'cooking_time' => 'required',
-            'category' => 'required|string',
-            'meal_type' => 'required|string',
+            'category' => [
+                'required',
+                'string',
+                Rule::in($this->recipeService->getRecipeCategories())
+            ],
+            'meal_type' => [
+                'required',
+                'string',
+                Rule::in($this->recipeService->getRecipeMealTypes())
+            ],
             'youtube_video_url' => 'nullable|active_url',
             'yields' => 'required|numeric',
             'cost' => 'required|integer|between:1,5',
@@ -107,15 +124,23 @@ class RecipesController extends Controller
             'title' => 'nullable|string',
             'description' => 'nullable|string',
             'cooking_time' => 'nullable',
-            'category' => 'nullable|string',
-            'meal_type' => 'nullable|string',
+            'category' => [
+                'nullable',
+                'string',
+                Rule::in($this->recipeService->getRecipeCategories())
+            ],
+            'meal_type' => [
+                'nullable',
+                'string',
+                Rule::in($this->recipeService->getRecipeMealTypes())
+            ],
             'youtube_video_url' => 'nullable|active_url',
             'yields' => 'nullable|numeric',
             'cost' => 'nullable|integer|between:1,5',
             'complexity' => 'nullable|integer|between:1,5',
             'notes' => 'nullable|string'
         ]);
-        
+
         Recipes::findOrFail($id);
 
         $update = Recipes::where('id', $id)->update($request->all());

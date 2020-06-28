@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Askedio\SoftCascade\Traits\SoftCascadeTrait;
+use App\Http\Resources\ProfileImagesResource;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
@@ -137,5 +138,32 @@ class Users extends Authenticatable
     public function users_ratings_images()
     {
         return $this->hasManyThrough(RatingsImages::class, Ratings::class);
+    }
+
+    public function thumbnail()
+    {
+        Users::findOrFail($this->getKey());
+        $userThumbnail = ProfileImages::where('users_id', $this->getKey())->where('thumbnail', true)->first();
+
+        if (!$userThumbnail) {
+            $userThumbnail = new ProfileImages();
+
+            $userThumbnail->id = 0;
+            $userThumbnail->users_id = 0;
+            $userThumbnail->title = "Main picture of user: {$this->name}";
+            $userThumbnail->alt = "Main picture of user: {$this->name}";
+            $userThumbnail->thumbnail = false;
+            $userThumbnail->picture_url = config('app.default_user_picture');
+            $userThumbnail->filename = basename(config('app.default_user_picture'));
+            $userThumbnail->path = "uploads/users/images/default-picture.png";
+            $userThumbnail->mime = "image/png";
+            $userThumbnail->original_filename = basename(config('app.default_user_picture'));;
+            $userThumbnail->original_extension = "png";
+            $userThumbnail->created_at = now();
+            $userThumbnail->updated_at = now();
+
+        }
+
+        return $userThumbnail;
     }
 }
