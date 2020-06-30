@@ -64,6 +64,18 @@ class RecipesController extends Controller
         return RecipesResource::collection($userRecipes);
     }
 
+    public function getMealTypes()
+    {
+        $categories = $this->recipeService->getRecipeMealTypes();
+        return response()->json($categories);
+    }
+
+    public function getCategories()
+    {
+        $categories = $this->recipeService->getRecipeCategories();
+        return response()->json($categories);
+    }
+
     public function search(ModelFilters $filters, $title)
     {
 
