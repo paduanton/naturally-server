@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use eloquentFilter\QueryFilter\ModelFilters\ModelFilters;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Resources\FullRecipeResource;
 use App\Http\Resources\RecipesResource;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rule;
@@ -42,7 +43,7 @@ class RecipesController extends Controller
     public function show($id)
     {
         $recipe = Recipes::findOrFail($id);
-        return new RecipesResource($recipe);
+        return new FullRecipeResource($recipe);
     }
 
     public function getRecipesByUsersId(ModelFilters $filters, $usersId)
