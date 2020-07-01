@@ -63,7 +63,7 @@ class Recipes extends Model
 
     public function favorites()
     {
-        return $this->hasMany(UsersFavoritesRecipes::class);
+        return $this->hasMany(UsersFavoriteRecipes::class);
     }
 
     public function ratings()

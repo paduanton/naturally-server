@@ -96,7 +96,7 @@ class Users extends Authenticatable
 
     public function favorite_recipes()
     {
-        return $this->hasMany(UsersFavoritesRecipes::class);
+        return $this->hasMany(UsersFavoriteRecipes::class);
     }
 
     public function ratings()

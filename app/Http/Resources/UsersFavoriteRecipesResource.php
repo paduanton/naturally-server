@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UsersFavoritesRecipesResource extends JsonResource
+class UsersFavoriteRecipesResource extends JsonResource
 {
 
     public function toArray($request)

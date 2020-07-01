@@ -1,78 +1,81 @@
-<p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
+# Overview
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+Naturally, it is an open source project that implements social media and social networking concepts. It was developed in PHP using the Laravel Framework and MySQL database with the MVC design pattern. This repository is the  backend  REST API only. The frontend is written in Angular 9 and can be seen here:
 
-## About Laravel
+[Naturally Frontend](https://github.com/paduanton/naturally)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The entities that this API has are: Users, Recipes, ProfileImages, Ratings, RatingsImages, RecipesImages, SocialNetworkAccounts, Phones, Followers, Comments, UsersFavoriteRecipes, PasswordResets, RestoredAccounts, EmailVerifications, Likes, Reports, Instructions, Ingredients, RecipesTags, Tags, OAuthAuthCodes, OAuthAccessTokens, OAuthRefreshTokens, OAuthClients, OAuthPersonalAccessClients and Migrations. 
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+#### Entity Relationship:
+- Users 1 - N Recipes
+- Users N - Followers - N Users
+- Users 1 - N Phones
+- Users 1 - N ProfileImages
+- Users 1 - N SocialNetworkAccounts
+- Users N - Likes - N Recipes
+- Users N - Comments - N Recipes
+- Users 1 - N Reports
+- Users 1 - N PasswordResets
+- Users 1 - N RestoredAccounts
+- Users 1 - N EmailVerifications
+- Users 1 - N OAuthClients
+- Users N - UsersFavoriteRecipes - N Recipes
+- Users N - OAuthAuthCodes - N OAuthClients
+- Users N - OAuthAccessTokens - N OAuthClients
+- OAuthAccessTokens 1 - 1 OAuthRefreshTokens
+- OAuthPersonalAccessClients 1 - 1 OAuthClients
+- Recipes N - RecipesTags - N Tags
+- Recipes 1 - N RecipesImages
+- Recipes 1 - N Instructions
+- Recipes 1 - N Ingredients
+- Migrations
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+The functionalities that cover this application consist of allowing the user to create an account, authenticate with social networks, create a recipe, add images to a recipe, embed an youtube video, add profile images, add rating to a recipe, comment on a recipe and reply to comments, follow other users, register phone number, like/dislike recipes, list recipes, add hashtag to recipes, restore user accounts and more...
 
-## Learning Laravel
+All available endpoints do the CRUD operations in all entities and relationships in database.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## ER database diagram
+![](https://raw.githubusercontent.com/paduanton/naturally-server/master/public/docs/ER-diagram.png)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## System requirements (Mac OS, Windows or Linux)
+* [Docker](https://www.docker.com/get-started)
+* [Docker Compose](https://docs.docker.com/compose/install)
 
-## Laravel Sponsors
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## Setup do projeto
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
-- [Hyper Host](https://hyper.host)
-- [Appoly](https://www.appoly.co.uk)
-- [OP.GG](https://op.gg)
+Add the following line in the /etc/hosts of your system:
+```
+127.0.0.1       api.naturally.cooking
+```
 
-## Contributing
+After clonning the repo, run the following commands on bash, inside the root directory:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Copy environment variables of the project:
+```
+cp .env.example .env
+```
 
-## Code of Conduct
+Build container and start development environment:
+```
+ docker-compose up --build
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Install dependencies and set directory permissões and cache:
+```
+docker exec -it todosweb /bin/sh bootstrap.sh
+```
 
-## Security Vulnerabilities
+To view changes in the database, go to http://api.naturally.cooking:8181/ on browser.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+#### OAuth2 user authentication:
 
-## License
+In this API, through Laravel Framework it has been built OAuth2 authentication using the library [Passport](https://laravel.com/docs/7.x/passport), then it's possible to consume server side authentication using [JWT](https://jwt.io).
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+#### Notes
+
+In **./bootstrap.sh** file are all the commands required to build the project, so to make any changes inside the container you must run this script and update this file, if you wish do run any other commands. 
+
+After all this steps, this project is running on port 80: http://api.naturally.cooking:80. All http requests send and receive JSON data.
+
+## Authentication

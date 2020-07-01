@@ -4,18 +4,18 @@ namespace App\Http\Controllers\API;
 
 use App\Users;
 use App\Recipes;
-use App\UsersFavoritesRecipes;
+use App\UsersFavoriteRecipes;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\FavoritesRecipesResource;
-use App\Http\Resources\UsersFavoritesRecipesResource;
+use App\Http\Resources\UsersFavoriteRecipesResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class UsersFavoritesRecipesController extends Controller
+class UsersFavoriteRecipesController extends Controller
 {
 
     public function index()
     {
-        $favoriteRecipes = UsersFavoritesRecipes::all();
+        $favoriteRecipes = UsersFavoriteRecipes::all();
         if ($favoriteRecipes->isEmpty()) {
             throw new ModelNotFoundException();
         }
@@ -25,8 +25,8 @@ class UsersFavoritesRecipesController extends Controller
 
     public function show($id)
     {
-        $favoriteRecipe = UsersFavoritesRecipes::findOrFail($id);
-        return new UsersFavoritesRecipesResource($favoriteRecipe);
+        $favoriteRecipe = UsersFavoriteRecipes::findOrFail($id);
+        return new UsersFavoriteRecipesResource($favoriteRecipe);
     }
 
     public function getFavoritesRecipesByUserId($userId) {
@@ -37,7 +37,7 @@ class UsersFavoritesRecipesController extends Controller
             throw new ModelNotFoundException;
         }
 
-        return UsersFavoritesRecipesResource::collection($userFavoriteRecipes);
+        return UsersFavoriteRecipesResource::collection($userFavoriteRecipes);
     }
 
     public function getFavoritesByRecipesId($recipeId)
@@ -57,7 +57,7 @@ class UsersFavoritesRecipesController extends Controller
         Users::findOrFail($userId);
         Recipes::findOrFail($recipeId);
         
-        $userHasFavoritedRecipe = UsersFavoritesRecipes::where("users_id", $userId)->where("recipes_id", $recipeId)->first();
+        $userHasFavoritedRecipe = UsersFavoriteRecipes::where("users_id", $userId)->where("recipes_id", $recipeId)->first();
         
         if($userHasFavoritedRecipe) {
             return response()->json([
@@ -71,7 +71,7 @@ class UsersFavoritesRecipesController extends Controller
             'recipes_id' => $recipeId,
         ];
 
-        $favoriteRecipe = UsersFavoritesRecipes::create($favoriteRecipe);
+        $favoriteRecipe = UsersFavoriteRecipes::create($favoriteRecipe);
 
         if ($favoriteRecipe) {
             return new FavoritesRecipesResource($favoriteRecipe);
@@ -84,7 +84,7 @@ class UsersFavoritesRecipesController extends Controller
 
     public function destroy($id)
     {
-        $favoriteRecipe = UsersFavoritesRecipes::where('id', $id)->first();
+        $favoriteRecipe = UsersFavoriteRecipes::where('id', $id)->first();
         
         if(!$favoriteRecipe) {
             throw new ModelNotFoundException;

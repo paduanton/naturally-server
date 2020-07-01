@@ -179,13 +179,13 @@ Route::group(['prefix' => '/v1', 'middleware' => 'throttle:150|250,1'], function
         $router->post('/users/{usersId}/recipes/{recipesId}/likes', 'API\LikesController@store');
 
         /*
-            UsersFavoritesRecipes Routes
+            UsersFavoriteRecipes Routes
         */
 
-        $router->apiResource('/favorites', 'API\UsersFavoritesRecipesController');
-        $router->get('/recipe/{recipeId}/favorites', 'API\UsersFavoritesRecipesController@getFavoritesByRecipesId');
-        $router->get('/user/{userId}/favorites', 'API\UsersFavoritesRecipesController@getFavoritesRecipesByUserId');
-        $router->post('/user/{userId}/recipe/{recipeId}/favorite', 'API\UsersFavoritesRecipesController@store');
+        $router->apiResource('/favorites', 'API\UsersFavoriteRecipesController');
+        $router->get('/recipe/{recipeId}/favorites', 'API\UsersFavoriteRecipesController@getFavoritesByRecipesId');
+        $router->get('/user/{userId}/favorites', 'API\UsersFavoriteRecipesController@getFavoritesRecipesByUserId');
+        $router->post('/user/{userId}/recipe/{recipeId}/favorite', 'API\UsersFavoriteRecipesController@store');
 
         /*
             Ratings Routes
