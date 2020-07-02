@@ -5,7 +5,7 @@ do
   sleep 10
 done
 
-# Install php dependencies set basic Laravel config
+# Install composer dependencies and set basic Laravel config
 composer install
 php artisan key:generate
 php artisan config:cache

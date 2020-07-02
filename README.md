@@ -39,7 +39,7 @@ All available endpoints do the CRUD operations in all entities and relationships
 
 ## ER Database Diagram
 (click the image to zoom it or just download the image and zoom it by yourself so you can see better all tables relationships =D)
-[![](https://raw.githubusercontent.com/paduanton/naturally-server/master/public/docs/ER-diagram.short.png)](https://raw.githubusercontent.com/paduanton/naturally-server/master/public/docs/ER-diagram.png)
+[![](https://raw.githubusercontent.com/paduanton/naturally-server/master/public/docs/ER-diagram.png)](https://raw.githubusercontent.com/paduanton/naturally-server/master/public/docs/ER-diagram.png)
 
 
 ## System Requirements (Mac OS, Windows or Linux)
@@ -60,7 +60,10 @@ Copy environment variables of the project:
 ```
 cp .env.example .env
 ```
-#### Note: Set mail environment variables so you can receive emails sent through the application (in my case, I used mailtrap.io in dev environment)
+#### Notes: 
+- Set the mail environment variables so you can receive emails sent through the application (in my case, I used mailtrap.io in dev environment)
+- Also, set the Twitter oauth1 environment variables from your [developer account application](https://developer.twitter.com/en/apps), then you will be able to handle twitter login on this API
+
 
 Build container and start development environment:
 ```
@@ -69,7 +72,7 @@ Build container and start development environment:
 
 Install dependencies and set directory permissions and cache:
 ```
-docker exec -it todosweb /bin/sh bootstrap.sh
+docker exec -it naturallyweb /bin/sh bootstrap.sh
 ```
 
 To view changes in the database, go to http://api.naturally.cooking:8181/ on browser.
@@ -78,7 +81,7 @@ To view changes in the database, go to http://api.naturally.cooking:8181/ on bro
 
 In this API, through Laravel Framework it has been built OAuth2 authentication using the library [Passport](https://laravel.com/docs/7.x/passport), then it's possible to consume server side authentication using [JWT](https://jwt.io).
 
-#### Notes
+#### Notes:
 
 In **./bootstrap.sh** file are all the commands required to build the project, so to make any changes inside the container you must run this script and update this file, if you wish do run any other commands. 
 
@@ -86,9 +89,9 @@ After all this steps, this project is running on port 80: http://api.naturally.c
 
 ## Authentication
 
-Para **todos** endpoints é necessário fazer requisições com `header Accept:application/json` e `Content-Type:application/json` 
+In **all** endpoints you must have to make http requests with the header `Accept:application/json` and with http verbs: POST, PUT, PATCH you need to set the header `Content-Type:application/json`.
 
-Para cadastrar um usuário, envie uma requisição POST para `/v1/signup` com os dados:
+To signup and user into our application, send a HTTP POST Request to `/v1/signup` with the json body:
 ```json
 {
     "name": "Antonio de Pádua",
@@ -99,7 +102,7 @@ Para cadastrar um usuário, envie uma requisição POST para `/v1/signup` com os
 	"remember_me": true
 }
 ```
-Para autenticar um usuário existente, envie uma requisição POST `/v1/login` com os dados:
+To authenticate an existing user, send POST `/v1/login` with the data:
 
 Send request with **username** ou **email** field
 ```json
@@ -110,21 +113,48 @@ Send request with **username** ou **email** field
 }
 ```
 
-Em sucesso, um API access token será retornado com o tipo do token e a expiração dele:
+To signup or login an user with Facebook, Twitter or Google account in this application, send POST `/v1/oauth/social`
+
 ```json
 {
-    "access_token": "eyJ0eXAiOiJKV1QiL.CJhbGciOiJSUzI1NiIm.p0aSI6Ic4ZDAwNG",
-    "token_type": "Bearer",
-    "expires_at": "2021-05-02 21:47:23"
+	"provider": "twitter", // facebook, google, twitter
+	"access_token" : "1273178-jk9z175IJWdF154gZCrIM6ZryY2Alk",
+	"access_token_secret": "OBd4QjDpvhfpOOUQpaYQPfC0cU1ZG34bLXRQIaoS6wN52", // only required when provider = twitter
+	"remember_me" : true
 }
 ```
 
-Todas requisições subsequentes **devem incluir esse token no `cabeçalho HTTP` para identificação de usuários**. O indíce do cabeçalho deve ser `Authorization` com o valor **Bearer** seguido de espaço simples com o valor do token:
+On sucess, an user entity and auth resource will be returned with http code 200:
+```json
+{
+    "id": 1000000,
+    "name": "Antonio de Pádua",
+    "username": "antonio.padua",
+    "email": "antonio.junior.h@gmail.com",
+    "email_verified_at": null,
+    "birthday": "1999/09/22",
+    "created_at": "2020-07-02 00:22:37",
+    "updated_at": "2020-07-02 00:22:37",
+    "auth_resource": {
+        "token_type": "Bearer",
+        "expires_in": "2021-08-02 00:22:44",
+        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwihwIjoxNjIdWIiOiIxIiwic2NvcGVzIjpbXX0.RblTxPGNSRsSPJ3LhZVz2hDbHO-YpOGYkrSAaeC9d9F_Gen0fI",
+        "created_at": "2020-07-02 00:22:44",
+        "refresh_token": "8cad9a8560f10d5270720?mFaMWmcnNRyX57x7u2smHnXlJW7Jc",
+        "remember_token": "jpTynwS4d8daSSMmfM94XpetGjegs6iVE9myY896LOvojwKUe9V4tnKNM"
+    }
+}
+```
+Most subsequent http requests must include this token in the HTTP header for user identification, so save it to sent in all http requests. Header key will be Authorization with value'Bearer' followed by a single space and then token string:
+
+#### Note:
+To view routes that needs authentication go to files [./routes/web.php](https://github.com/paduanton/naturally-server/blob/master/routes/web.php) and [./routes/api.php](https://github.com/paduanton/naturally-server/blob/master/routes/api.php)
+
 ```
 Authorization: Bearer eyJ0eXAiOiJKV1QiL.CJhbGciOiJSUzI1NiIm.p0aSI6Ic4ZDAwNG
 ```
 
-Para buscar usuário autenticado, envie requisição GET para `/v1/user` somente com cabeçalho de autenticação e será retornado o seguinte response:
+To get the authenticated user, send GET `/v1/user` with the access_token in the header:
 
 ```json
 HTTP - 200
@@ -140,48 +170,48 @@ HTTP - 200
 }
 ```
 
-Para criar um Todo, envie requisição POST para `/v1/users/{userId}/todos` com os dados:
+To create a Recipe, send POST `/v1/users/{userId}/recipes`:
 
 ```json
 {
-	"title": "Uma tarefa",
-	"description": "tarefa dos guri",
-	"completed": 1
+	"title": "Orange Cake",
+	"description": "A very good cake",
+	"cooking_time": "01:35:00",
+	"category": "vegan",
+	"meal_type": "breakfast",
+	"youtube_video_url": "https://www.youtube.com/watch?v=_D0ZQPqeJkk",
+	"yields": 2.5,
+	"cost" : 1,
+	"complexity": 5,
+	"notes": "Good luck"
 }
 ```
-Para buscar todos os Todos, envie requisição GET para `/v1/todos` e será recebido o response:
+To get all Recipes, send GET `/v1/recipes` :
 
 ```json
 HTTP - 200
-
 {
     "data": [
         {
-            "id": 4,
+            "id": 2,
             "users_id": 1,
-            "title": "Uma tarefa",
-            "description": "Lorem ipsum",
-            "completed": 1,
-            "images": [],
-            "comments": [],
-            "created_at": "2020-05-03T06:37:29.000000Z",
-            "updated_at": "2020-05-03T06:37:29.000000Z"
-        },
-        {
-            "id": 5,
-            "users_id": 1,
-            "title": "Segunda tarefa",
-            "description": "Lorem ipsum 2",
-            "completed": 1,
-            "images": [],
-            "comments": [],
-            "created_at": "2020-05-03T06:40:52.000000Z",
-            "updated_at": "2020-05-03T06:40:52.000000Z"
+            "title": "Orange Cake",
+            "description": "A very good cake",
+            "cooking_time": "01:35:00",
+            "category": "vegan",
+            "meal_type": "breakfast",
+            "youtube_video_url": null,
+            "yields": 2.5,
+            "cost": 1,
+            "complexity": 5,
+            "notes": "Good luck",
+            "created_at": "2020-07-02 01:01:30",
+            "updated_at": "2020-07-02 01:01:30"
         }
     ],
     "links": {
-        "first": "http://api.todos.social/v1/todos?page=1",
-        "last": "http://api.todos.social/v1/todos?page=1",
+        "first": "http://api.naturally.cooking/v1/recipes?page=1",
+        "last": "http://api.naturally.cooking/v1/recipes?page=1",
         "prev": null,
         "next": null
     },
@@ -189,100 +219,122 @@ HTTP - 200
         "current_page": 1,
         "from": 1,
         "last_page": 1,
-        "path": "http://api.todos.social/v1/todos",
+        "path": "http://api.naturally.cooking/v1/recipes",
         "per_page": 15,
-        "to": 2,
-        "total": 2
+        "to": 4,
+        "total": 4
     }
 }
 ```
-- Para páginar passe o argumento **?page=1**
-- É possível filtrar Todos através dos atributos **completed** e **title** passando como argumentos: **?completed=1&title=Uma tarefa**
+- To paginete result add query string: **?page=1**
+- It's also possible to filter elements with the recipe attributes: 'cooking_time', 'meal_type', 'category', 'yields', 'cost', 'complexity'
+like: **?category=vegan&meal_type=breakfast**
+- Its also possible to filter elements with **order_by** and **limit** like: **?f_params[orderBy][field]=categoryd&f_params[orderBy][type]=desc&f_params[limit]=2**
 
-Para atualizar um Todo, envie requisição PUT para `/v1/todos/{todosId}` com os dados:
+To update a Recipe, send PUT `/v1/recipes/{recipeId}`:
 
 ```json
 {
-	"title": "Lorem ipsum",
-	"description": "É uma description",
-	"completed": false
+	"description": "A very good cake",
+    "cooking_time": "01:35:00",
+    "category": "vegan",
+    "meal_type": "breakfast",
+    "youtube_video_url": null,
+    "yields": 2.5,
+    "cost": 1,
 }
 ```
 
-Para deletar um Todo, envie requisição DELETE para `/v1/todos/{todosId}` e receba o response:
+To delete a Recipe,send DELETE `/v1/recipes/{recipeId}`:
 
 ```json
 HTTP - 204
 ```
 
-## Tratamento de responses e erros
+## Handling responses and errors
 
-Parte dos responses já foram exemplificados, mas aqui será explicado os responses para cada tipo de requisição e os erros para todos eles.
+Part of the responses have already been exemplified, but here it will be explained the responses for each type of request and the errors for all of them.
 
 #### HTTP POST
 
-Em caso de sucesso será retornado `HTTP CODE 201 - 200` com body do objeto da requisição
+On success will be returned `HTTP CODE 201 - 200` with the body of the entity:
 
-Ex:
+e.g:
 
 ```json
 {
-        "id": 4,
-        "users_id": 1,
-        "title": "Uma Tarefa",
-        "description": "descrição tarefa",
-        "completed": 1,
-        "images": [],
-        "comments": [],
-        "created_at": "2020-05-03T06:37:29.000000Z",
-        "updated_at": "2020-05-03T06:37:29.000000Z"
+    "id": 4,
+    "users_id": 1,
+    "title": "Orange Cake",
+    "description": "A very good cake",
+    "cooking_time": "01:35:00",
+    "category": "vegan",
+    "meal_type": "breakfast",
+    "youtube_video_url": "https://www.youtube.com/watch?v=_D0ZQPqeJkk",
+    "yields": 2.5,
+    "cost": 1,
+    "complexity": 5,
+    "notes": "Good luck",
+    "created_at": "2020-07-02 01:08:11",
+    "updated_at": "2020-07-02 01:08:11"
 }
 ```
 
 #### HTTP PUT - PATCH
 
-Em caso de sucesso será retornado `HTTP CODE 200` com body do objeto da requisição
+On success will be returned `HTTP CODE 200` with the body of the entity:
 
 ```json
 {
-        "id": 4,
-        "users_id": 1,
-        "title": "Uma Tarefa",
-        "description": "descrição tarefa",
-        "completed": 1,
-        "images": [],
-        "comments": [],
-        "created_at": "2020-05-03T06:37:29.000000Z",
-        "updated_at": "2020-05-03T06:37:29.000000Z"
+    "id": 4,
+    "users_id": 1,
+    "title": "Orange Cake",
+    "description": "A very good cake",
+    "cooking_time": "01:35:00",
+    "category": "vegan",
+    "meal_type": "breakfast",
+    "youtube_video_url": "https://www.youtube.com/watch?v=_D0ZQPqeJkk",
+    "yields": 2.5,
+    "cost": 1,
+    "complexity": 5,
+    "notes": "Good luck",
+    "created_at": "2020-07-02 01:08:11",
+    "updated_at": "2020-07-02 01:08:11"
 }
 ```
 
 #### HTTP GET
 
-Em caso de sucesso será retornado `HTTP CODE 200` com um body de array de objetos do objeto alvo da requisição ou um body somente o objeto filtrado na requisição feitas (ex: `/v1/todos/{todosId}`).
+On success will be returned  `HTTP CODE 200` with array of objects of the target model or just body with one object of the target model (e.g `/v1/recipes/{recipesId}`).
+
 ```json
 [
     {
         "id": 4,
         "users_id": 1,
-        "title": "Uma Tarefa",
-        "description": "descrição tarefa",
-        "completed": 1,
-        "images": [],
-        "comments": [],
-        "created_at": "2020-05-03T06:37:29.000000Z",
-        "updated_at": "2020-05-03T06:37:29.000000Z"
+        "title": "Orange Cake",
+        "description": "A very good cake",
+        "cooking_time": "01:35:00",
+        "category": "vegan",
+        "meal_type": "breakfast",
+        "youtube_video_url": "https://www.youtube.com/watch?v=_D0ZQPqeJkk",
+        "yields": 2.5,
+        "cost": 1,
+        "complexity": 5,
+        "notes": "Good luck",
+        "created_at": "2020-07-02 01:08:11",
+        "updated_at": "2020-07-02 01:08:11"
     }
 ]
 ```
 
 #### HTTP DELETE
 
-Em caso de sucesso será retornado `HTTP CODE 204`
+On success will be returned  `HTTP CODE 204`
 
 ### Erros
 
-Caso não possua token no cabeçalho será retornado um html informado exception de Route: login ou na maioria do casos, o seguinte:
+In case of the route needs authentication and your request does not have the access_token in the header, it will return:
 
 ```json
 HTTP - 401
@@ -291,7 +343,7 @@ HTTP - 401
 }
 ```
 
-Caso o seu body não esteja formatado corretamente
+In case of your body is not formatted correctly:
 
 ```json
 HTTP - 422
@@ -305,7 +357,7 @@ HTTP - 422
 }
 ```
 
-Caso o servidor não consiga achar informações com a requisição passada 
+In case the server can not find the info you are looking for: 
 
 ```json
 HTTP - 404
@@ -315,7 +367,7 @@ HTTP - 404
 }
 ```
 
-Caso o servidor não consiga processar sua requisição 
+In case the server could not process the request properly: 
 
 Ex:
 ```json
@@ -325,7 +377,7 @@ HTTP - 400
 }
 ```
 
-Caso o servidor gere uma exception que não foi tratada
+If the server gets an exception that has not been handled:
 
 Ex:
 ```json
@@ -337,20 +389,16 @@ HTTP - 500
 }
 ```
 
-Lembrando que todas requisições **devem** conter o cabeçalho de autenticação com o token de usuário. Outro ponto a ser levantado é que é usado Soft Deletes para deletar informações, então ao consultar o banco de dados, a coluna **deleted_at** populada corresponde aos dados deletados das entidades.
+The application uses Soft Deletes to delete all of the info in HTTP DELETE requests, so when you do a **select** in database, the column **deleted_at** will not be null if the resource has been already deleted.
 
-## Testes Unitários
+## Unit and Integration tests
 
-O código dos testes ficam no diretório /tests e para rodá-los use o comando:
-
-```
-docker exec -it todosweb php ./vendor/bin/phpunit
-```
+Coming...
 
 ## Postman
 
-Se você usa o postman, pode usar o link abaixo para importar uma **Collection** com grande parte das requisições da API. Atualmente o link contém 28 requisições documentadas.
+If you use postman client, you can use the link below to import a **Collection** with most of the requests already documented. Currently the link has more than 110 http requests.
 
-Somente substitua o cabeçalho de autenticação pelo token gerado no seu ambiente local.
+Just replace the auth header by your own token created in local en environment.
 
-https://www.getpostman.com/collections/18009794791e5384e19a
+https://www.getpostman.com/collections/b098ba6ee5df79e9ae01
