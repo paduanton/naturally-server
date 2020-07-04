@@ -123,7 +123,7 @@ To signup or login an user with Facebook, Twitter or Google account in this appl
 	"remember_me" : true
 }
 ```
-Ps: access_token_secret is required only when when provider is twitter
+Ps: access_token_secret is required only when provider is twitter
 
 On sucess, an user entity and auth resource will be returned with http code 200:
 ```json
