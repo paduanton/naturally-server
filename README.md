@@ -118,11 +118,12 @@ To signup or login an user with Facebook, Twitter or Google account in this appl
 ```json
 {
 	"provider": "twitter",
-	"access_token" : "1273178-jk9z175IJWdF154gZCrIM6ZryY2Alk",
-	"access_token_secret": "OBd4QjDpvhfpOOUQpaYQPfC0cU1ZG34bLXRQIaoS6wN52", /* only required when provider = twitter */
+	"access_token" : "1273378-jk9z175IJWdF154gZCrIM6ZryY2Alk",
+	"access_token_secret": "OBd4QjDpvhfpO8fj1YQPfC0c4bLXRQIaoS6wN52",
 	"remember_me" : true
 }
 ```
+Ps: access_token_secret is required only when when provider is twitter
 
 On sucess, an user entity and auth resource will be returned with http code 200:
 ```json
@@ -138,7 +139,7 @@ On sucess, an user entity and auth resource will be returned with http code 200:
     "auth_resource": {
         "token_type": "Bearer",
         "expires_in": "2021-08-02 00:22:44",
-        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwihwIjoxNjIdWIiOiIxIiwic2NvcGVzIjpbXX0.RblTxPGNSRsSPJ3LhZVz2hDbHO-YpOGYkrSAaeC9d9F_Gen0fI",
+        "access_token": "eyJiJSUzI1NiJ9.eyJIiOivcGVzIjpbXX0.RbF_Gen0fI",
         "created_at": "2020-07-02 00:22:44",
         "refresh_token": "8cad9a8560f10d5270720?mFaMWmcnNRyX57x7u2smHnXlJW7Jc",
         "remember_token": "jpTynwS4d8daSSMmfM94XpetGjegs6iVE9myY896LOvojwKUe9V4tnKNM"
