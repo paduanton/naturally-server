@@ -117,9 +117,9 @@ To signup or login an user with Facebook, Twitter or Google account in this appl
 
 ```json
 {
-	"provider": "twitter", // facebook, google, twitter
+	"provider": "twitter",
 	"access_token" : "1273178-jk9z175IJWdF154gZCrIM6ZryY2Alk",
-	"access_token_secret": "OBd4QjDpvhfpOOUQpaYQPfC0cU1ZG34bLXRQIaoS6wN52", // only required when provider = twitter
+	"access_token_secret": "OBd4QjDpvhfpOOUQpaYQPfC0cU1ZG34bLXRQIaoS6wN52", /* only required when provider = twitter */
 	"remember_me" : true
 }
 ```
@@ -402,3 +402,7 @@ If you use postman client, you can use the link below to import a **Collection**
 Just replace the auth header by your own token created in local environment.
 
 https://www.getpostman.com/collections/b098ba6ee5df79e9ae01
+
+## License
+
+The Naturally project is open-sourced software licensed under the [MIT license](LICENSE.md).
