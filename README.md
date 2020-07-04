@@ -94,7 +94,7 @@ In **all** endpoints you must have to make http requests with the header `Accept
 To signup an user into our application, send a HTTP POST Request to `/v1/signup` with the json body:
 ```json
 {
-    "name": "Antonio de Pádua",
+        "name": "Antonio de Pádua",
 	"email" : "antonio.junior.h@gmail.com",
 	"password" : "201125",
 	"password_confirmation" : "201125",
