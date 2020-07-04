@@ -12,7 +12,8 @@ return [
     | as the size rules. Feel free to tweak each of these messages here.
     |
     */
-    
+
+    'youtube_url' => 'The :attribute is not a valid Youtube URL.',
     'phone' => 'The :attribute field contains an invalid number.',
     'accepted' => 'The :attribute must be accepted.',
     'active_url' => 'The :attribute is not a valid URL.',

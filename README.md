@@ -1,13 +1,13 @@
 # Overview
 
-Naturally, it is an open source project that implements social media and social networking concepts. It was developed in PHP using the Laravel Framework and MySQL database with the MVC design pattern. This repository is the  backend  REST API only. The frontend is written in Angular 9 and can be seen here:
+Naturally is an open source project that implements social media and social networking concepts. It was developed in PHP using the Laravel Framework, MySQL database and MVC design pattern. This repository is a REST API backend only. The frontend is written in Angular 9 and can be seen here:
 
 [Naturally Frontend](https://github.com/paduanton/naturally)
 
 ## Application Architecture
 ![](https://raw.githubusercontent.com/paduanton/naturally-server/master/public/docs/Application-Architecture.png)
 
-The entities that this API has are: Users, Recipes, ProfileImages, Ratings, RatingsImages, RecipesImages, SocialNetworkAccounts, Phones, Followers, Comments, UsersFavoriteRecipes, PasswordResets, RestoredAccounts, EmailVerifications, Likes, Reports, Instructions, Ingredients, RecipesTags, Tags, OAuthAuthCodes, OAuthAccessTokens, OAuthRefreshTokens, OAuthClients, OAuthPersonalAccessClients and Migrations. 
+This API has the following entities: Users, Recipes, ProfileImages, Ratings, RatingsImages, RecipesImages, SocialNetworkAccounts, Phones, Followers, Comments, UsersFavoriteRecipes, PasswordResets, RestoredAccounts, EmailVerifications, Likes, Reports, Instructions, Ingredients, RecipesTags, Tags, OAuthAuthCodes, OAuthAccessTokens, OAuthRefreshTokens, OAuthClients, OAuthPersonalAccessClients and Migrations.
 
 #### Entity Relationship:
 - Users 1 - N Recipes
@@ -33,7 +33,7 @@ The entities that this API has are: Users, Recipes, ProfileImages, Ratings, Rati
 - Recipes 1 - N Ingredients
 - Migrations
 
-The functionalities that cover this application consist of allowing the user to create an account, authenticate with social networks, create a recipe, add images to a recipe, embed an youtube video, add profile images, add rating to a recipe, comment on a recipe and reply to comments, follow other users, register phone number, like/dislike recipes, list recipes, add hashtag to recipes, restore user accounts and more...
+The functionalities that cover this application are allowing the user to create an account, authenticate with social networks, create a recipe, add images to a recipe, embed an youtube video, add profile images, add rating to a recipe, comment on a recipe and reply to comments, follow other users, register phone number, like/dislike recipes, list recipes, add hashtag to recipes, restore user accounts and some more.
 
 All available endpoints do the CRUD operations in all entities and relationships in database.
 
@@ -62,7 +62,7 @@ cp .env.example .env
 ```
 #### Notes: 
 - Set the mail environment variables so you can receive emails sent through the application (in my case, I used mailtrap.io in dev environment)
-- Also, set the Twitter oauth1 environment variables from your [developer account application](https://developer.twitter.com/en/apps), then you will be able to handle twitter login on this API
+- Also, set the Twitter oauth1 environment variables from your [developer account application](https://developer.twitter.com/), then you will be able to handle twitter login on this API
 
 
 Build container and start development environment:
@@ -83,15 +83,15 @@ In this API, through Laravel Framework it has been built OAuth2 authentication u
 
 #### Notes:
 
-In **./bootstrap.sh** file are all the commands required to build the project, so to make any changes inside the container you must run this script and update this file, if you wish do run any other commands. 
+In **./bootstrap.sh** file are all the commands required to build this project, so, in order to make any changes inside the container, or if you wish to run any other commands, you must run this script and update this file.
 
 After all this steps, this project is running on port 80: http://api.naturally.cooking:80. All http requests send and receive JSON data.
 
 ## Authentication
 
-In **all** endpoints you must have to make http requests with the header `Accept:application/json` and with http verbs: POST, PUT, PATCH you need to set the header `Content-Type:application/json`.
+In **all** endpoints you must have to make http requests with the header `Accept:application/json`. In http requests made with http verbs: POST, PUT, PATCH you need to set the header `Content-Type:application/json`.
 
-To signup and user into our application, send a HTTP POST Request to `/v1/signup` with the json body:
+To signup an user into our application, send a HTTP POST Request to `/v1/signup` with the json body:
 ```json
 {
     "name": "Antonio de Pádua",
@@ -104,7 +104,7 @@ To signup and user into our application, send a HTTP POST Request to `/v1/signup
 ```
 To authenticate an existing user, send POST `/v1/login` with the data:
 
-Send request with **username** ou **email** field
+Send request with **username** or **email** field
 ```json
 {
 	"username" : "antonio.padua",
@@ -145,14 +145,14 @@ On sucess, an user entity and auth resource will be returned with http code 200:
     }
 }
 ```
-Most subsequent http requests must include this token in the HTTP header for user identification, so save it to sent in all http requests. Header key will be Authorization with value'Bearer' followed by a single space and then token string:
-
-#### Note:
-To view routes that needs authentication go to files [./routes/web.php](https://github.com/paduanton/naturally-server/blob/master/routes/web.php) and [./routes/api.php](https://github.com/paduanton/naturally-server/blob/master/routes/api.php)
+Most of subsequent http requests must include this token in the HTTP header for user identification, so save it and sent it in all http requests. Header key will be Authorization with value 'Bearer' followed by a single space and then token string:
 
 ```
 Authorization: Bearer eyJ0eXAiOiJKV1QiL.CJhbGciOiJSUzI1NiIm.p0aSI6Ic4ZDAwNG
 ```
+
+#### Note:
+To view routes that needs authentication go to files [./routes/web.php](https://github.com/paduanton/naturally-server/blob/master/routes/web.php) and [./routes/api.php](https://github.com/paduanton/naturally-server/blob/master/routes/api.php)
 
 To get the authenticated user, send GET `/v1/user` with the access_token in the header:
 
@@ -226,7 +226,7 @@ HTTP - 200
     }
 }
 ```
-- To paginete result add query string: **?page=1**
+- To get paginate data add query string: **?page=1**
 - It's also possible to filter elements with the recipe attributes: 'cooking_time', 'meal_type', 'category', 'yields', 'cost', 'complexity'
 like: **?category=vegan&meal_type=breakfast**
 - Its also possible to filter elements with **order_by** and **limit** like: **?f_params[orderBy][field]=categoryd&f_params[orderBy][type]=desc&f_params[limit]=2**
@@ -389,7 +389,7 @@ HTTP - 500
 }
 ```
 
-The application uses Soft Deletes to delete all of the info in HTTP DELETE requests, so when you do a **select** in database, the column **deleted_at** will not be null if the resource has been already deleted.
+The application uses Soft Deletes to delete all of the info in HTTP DELETE requests, so when you do a **select** in database, the column **deleted_at** is not going to be null if the resource has been already deleted.
 
 ## Unit and Integration tests
 
@@ -399,6 +399,6 @@ Coming...
 
 If you use postman client, you can use the link below to import a **Collection** with most of the requests already documented. Currently the link has more than 110 http requests.
 
-Just replace the auth header by your own token created in local en environment.
+Just replace the auth header by your own token created in local environment.
 
 https://www.getpostman.com/collections/b098ba6ee5df79e9ae01

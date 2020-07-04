@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rule;
 use App\Services\RecipeService;
 use Illuminate\Http\Request;
+use App\Rules\YoutubeURL;
 use App\Recipes;
 use App\Users;
 
@@ -110,7 +111,7 @@ class RecipesController extends Controller
                 'string',
                 Rule::in($this->recipeService->getRecipeMealTypes())
             ],
-            'youtube_video_url' => 'nullable|active_url',
+            'youtube_video_url' => ['nullable', 'active_url', new YoutubeURL],
             'yields' => 'required|numeric',
             'cost' => 'required|integer|between:1,5',
             'complexity' => 'required|integer|between:1,5',
@@ -147,7 +148,7 @@ class RecipesController extends Controller
                 'string',
                 Rule::in($this->recipeService->getRecipeMealTypes())
             ],
-            'youtube_video_url' => 'nullable|active_url',
+            'youtube_video_url' => ['nullable', 'active_url', new YoutubeURL],
             'yields' => 'nullable|numeric',
             'cost' => 'nullable|integer|between:1,5',
             'complexity' => 'nullable|integer|between:1,5',
