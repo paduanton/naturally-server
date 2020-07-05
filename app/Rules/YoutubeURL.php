@@ -16,29 +16,23 @@ class YoutubeURL implements Rule
     {
         $parsedURL = parse_url($value);
 
-        if (in_array($parsedURL['scheme'], ['https', 'http'])) {
-            return true;
-        } else {
+        if (!in_array($parsedURL['scheme'], ['https', 'http'])) {
             return false;
         }
 
-        if (in_array($parsedURL['path'], ['watch', '/watch'])) {
-            return true;
-        } else {
+        if (!in_array($parsedURL['path'], ['watch', '/watch'])) {
             return false;
         }
 
-        if (startsWith($parsedURL['query'], 'v=')) {
-            return true;
-        } else {
+        if (!$this->startsWith($parsedURL['query'], 'v=')) {
             return false;
         }
 
-        if (endsWith($parsedURL['host'], 'youtube.com') || endsWith($parsedURL['host'], 'youtube.com.br')) {
-            return true;
+        if (!$this->endsWith($parsedURL['host'], 'youtube.com') && $this->endsWith($parsedURL['host'], 'youtube.com.br')) {
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     public function message()
