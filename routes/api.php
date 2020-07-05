@@ -22,7 +22,6 @@ Route::group(['prefix' => '/v1', 'middleware' => 'throttle:150|250,1'], function
     $router->get('/recipe/categories', 'API\RecipesController@getCategories');
     $router->get('/recipe/meals', 'API\RecipesController@getMealTypes');
 
-
     // Users
 
     $router->get('/public/{login}/profile', 'API\UsersController@getPublicProfile');

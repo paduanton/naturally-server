@@ -47,11 +47,15 @@ class Handler extends ExceptionHandler
 
         if ($exception instanceof ModelNotFoundException) {
             $message = $exception->getMessage() ? $exception->getMessage() : 'There is no data';
-            
-            return response()->json([
-                'message' => $message,
-                'error' => 'Model not found in the server'
-            ], 404);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $message,
+                    'error' => 'Model not found in the server'
+                ], 404);
+            }
+
+            return redirect('/v1/notfound');
         }
 
         if ($exception instanceof AuthenticationException) {
@@ -61,11 +65,15 @@ class Handler extends ExceptionHandler
         }
 
         if ($exception instanceof NotFoundHttpException) {
-            return response()->json([
-                'message' => 'Invalid route',
-            ], 404);
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Invalid route',
+                ], 404);
+            }
+
+            return redirect('/v1/fallback');
         }
-        
+
         return parent::render($request, $exception);
     }
 }
