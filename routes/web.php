@@ -19,7 +19,7 @@ Route::group(['prefix' => '/v1', 'middleware' => 'throttle:150|250,1'], function
         return view('notfound');
     });
     
-    $router->get('/recipe/{id}/pdf', 'API\RecipesController@getRecipePDF');
+    $router->get('/recipe/{id}/pdf', 'RecipeController@getRecipePDF');
 });
 /*
     Terms of Use, Data Policy and Cookies Policy.

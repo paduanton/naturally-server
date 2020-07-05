@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 use App\Rules\YoutubeURL;
 use App\Recipes;
 use App\Users;
-use PDF;
 
 class RecipesController extends Controller
 {
@@ -94,10 +93,6 @@ class RecipesController extends Controller
         }
 
         return RecipesResource::collection($recipes);
-    }
-
-    public function getRecipePDF($id) {
-
     }
 
     public function store(Request $request, $usersId)
