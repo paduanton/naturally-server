@@ -2,24 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use PDF;
 use App\Recipes;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class RecipeController extends Controller
 {
+    public function __construct()
+    {
+        
+    }
 
     public function getRecipePDF($id)
     {
         $recipe = Recipes::findOrFail($id);
 
-        return view('recipe.pdf', $recipe);
+        // return view('recipe', $recipe);
 
-        // $pdf->loadHTML('<h1>Test</h1>');
-        // return $pdf->stream();
+        $data = ['title' => 'Welcome to HDTuto.com'];
+        $pdf = PDF::loadView('recipe', $data);
+  
+        return $pdf->download('itsolutionstuff.pdf');
 
-        // $pdf = PDF::loadView('pdf.invoice', $data);
-        // return $pdf->download('invoice.pdf');
     }
 
     public function downloadRecipePDF($id)
