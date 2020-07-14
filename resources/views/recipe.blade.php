@@ -124,15 +124,16 @@
             background: #ededed;
         }
 
-        #name h1 {
+        #title-subject h1 {
             font-size: 2.5em;
             font-weight: 700;
             font-family: 'Rokkitt', Helvetica, Arial, sans-serif;
             margin-bottom: -6px;
         }
 
-        #name h2 {
-            font-size: 2em;
+        #title-subject h2 {
+            margin-top: 0.2em;
+            font-size: 1.5em;
             margin-left: 2px;
             font-family: 'Rokkitt', Helvetica, Arial, sans-serif;
         }
@@ -154,7 +155,7 @@
             border-radius: 50px;
         }
 
-        #name {
+        #title-subject {
             float: left;
         }
 
@@ -262,7 +263,7 @@
                 display: none;
             }
 
-            #name,
+            #title-subject,
             #contactDetails {
                 float: none;
                 width: 100%;
@@ -307,7 +308,7 @@
                 column-count: 1;
             }
 
-            #name h1 {
+            #title-subject h1 {
                 line-height: .8em;
                 margin-bottom: 4px;
             }
@@ -319,19 +320,18 @@
     <div id="cv">
         <div class="mainDetails">
             <div id="headshot">
-                <!-- <img src="{{url('logo.jpg')}}" alt="Alan Smith" /> -->
+                <!-- <img src="" alt="recipe" /> -->
             </div>
 
-            <div id="name">
-                <h1 class=" ">Joe Bloggs</h1>
-                <h2 class=" ">Job Title</h2>
+            <div id="title-subject">
+                <h1>{{ $title }}</h1>
+                <h2>from {{ config('app.name') }} App</h2>
             </div>
 
-            <div id="contactDetails" class=" ">
+            <div id="contactDetails">
                 <ul>
-                    <li>e: <a href="mailto:joe@bloggs.com" target="_blank">joe@bloggs.com</a></li>
-                    <li>w: <a href="http://www.bloggs.com">www.bloggs.com</a></li>
-                    <li>m: 01234567890</li>
+                    <li>Made by: {{ $author['name'] }}</a></li>
+                    <li>Email: {{ $author['email'] }}</a></li>
                 </ul>
             </div>
             <div class="clear"></div>
@@ -341,11 +341,11 @@
             <section>
                 <article>
                     <div class="sectionTitle">
-                        <h1>Personal Profile</h1>
+                        <h1>Description</h1>
                     </div>
 
                     <div class="sectionContent">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer dolor metus, interdum at scelerisque in, porta at lacus. Maecenas dapibus luctus cursus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies massa et erat luctus hendrerit. Curabitur non consequat enim. Vestibulum bibendum mattis dignissim. Proin id sapien quis libero interdum porttitor.</p>
+                        <p>{{ $description }}</p>
                     </div>
                 </article>
                 <div class="clear"></div>

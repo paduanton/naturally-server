@@ -14,6 +14,21 @@ class RecipeService implements RecipeInterface
         //
     }
 
+    public function parseRecipeData(Recipes $recipe): array
+    {
+
+        $recipeData = [
+            'author' => [
+                'name' => $recipe->users->name,
+                'email' => $recipe->users->email
+            ],
+            'title' => $recipe->title,
+            'description' => $recipe->description
+        ];
+
+        return $recipeData;
+    }
+
     public function getRecipeCategories(): array
     {
         return [

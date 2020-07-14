@@ -4,30 +4,45 @@ namespace App\Http\Controllers;
 
 use App\Recipes;
 use Illuminate\Http\Request;
+use App\Services\RecipeService;
 use Barryvdh\DomPDF\Facade as PDF;
 
 class RecipeController extends Controller
 {
-    public function __construct()
+    protected $recipeService;
+
+    public function __construct(RecipeService $recipeService)
     {
-        
+        $this->recipeService = $recipeService;
     }
 
     public function getRecipePDF($id)
     {
         $recipe = Recipes::findOrFail($id);
+        $recipeData = $this->recipeService->parseRecipeData($recipe);
 
-        // return view('recipe', $recipe);
-
-        $data = ['title' => 'Welcome to HDTuto.com'];
-        $pdf = PDF::loadView('recipe', $data);
-  
-        return $pdf->download('itsolutionstuff.pdf');
-
+        return view('recipe', $recipeData);
     }
 
     public function downloadRecipePDF($id)
     {
         $recipe = Recipes::findOrFail($id);
+        $recipeData = $this->recipeService->parseRecipeData($recipe);
+
+        $pdf = PDF::loadView('recipe', $recipeData);
+        $recipePDFName = config('app.name') . ".Recipe.pdf";
+
+        return $pdf->download($recipePDFName);
+    }
+
+    protected function getBase64ApplicationLogo()
+    {
+        $applicationImagePath =  public_path('logo.jpg');
+        $logoMime = pathinfo($applicationImagePath, PATHINFO_EXTENSION);
+
+        $dataImage = file_get_contents($applicationImagePath);
+        $base64 = 'data:image/' . $logoMime . ';base64,' . base64_encode($dataImage);
+
+        return $base64;
     }
 }
