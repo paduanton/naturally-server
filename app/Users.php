@@ -146,17 +146,18 @@ class Users extends Authenticatable
 
         if (!$userThumbnail) {
             $userThumbnail = new ProfileImages();
-
+            $defaultUserPicture = config('app.default_user_picture');
+            
             $userThumbnail->id = 0;
             $userThumbnail->users_id = 0;
-            $userThumbnail->title = "Main picture of user: {$this->name}";
+            $userThumbnail->title = "Default picture of unknown user";
             $userThumbnail->alt = "Main picture of user: {$this->name}";
-            $userThumbnail->thumbnail = false;
-            $userThumbnail->picture_url = config('app.default_user_picture');
-            $userThumbnail->filename = basename(config('app.default_user_picture'));
+            $userThumbnail->thumbnail = true;
+            $userThumbnail->picture_url = $defaultUserPicture;
+            $userThumbnail->filename = basename($defaultUserPicture);
             $userThumbnail->path = "uploads/users/images/default-picture.png";
             $userThumbnail->mime = "image/png";
-            $userThumbnail->original_filename = basename(config('app.default_user_picture'));;
+            $userThumbnail->original_filename = basename($defaultUserPicture);
             $userThumbnail->original_extension = "png";
             $userThumbnail->created_at = now();
             $userThumbnail->updated_at = now();

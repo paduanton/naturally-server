@@ -301,7 +301,6 @@
                 padding: 0 25px;
             }
 
-
             .keySkills {
                 -moz-column-count: 1;
                 -webkit-column-count: 1;
@@ -312,6 +311,23 @@
                 line-height: .8em;
                 margin-bottom: 4px;
             }
+        }
+
+        .rating {
+            unicode-bidi: bidi-override;
+            direction: rtl;
+        }
+
+        .rating>span {
+            display: inline-block;
+            position: relative;
+            width: 1.1em;
+        }
+
+        .rating-selected:before,
+        .rating-selected~span:before {
+            content: "\2605";
+            position: absolute;
         }
     </style>
 </head>
@@ -337,7 +353,7 @@
             <div class="clear"></div>
         </div>
 
-        <div id="mainArea" class=" ">
+        <div id="mainArea">
             <section>
                 <article>
                     <div class="sectionTitle">
@@ -351,6 +367,41 @@
                 <div class="clear"></div>
             </section>
 
+            <section>
+                <div class="sectionContent">
+                    <ul class="keySkills">
+                        <li>Cooking time: {{ $cookingTime }}</li>
+                        <li>Category: {{ $category }}</li>
+                        <li>Meal type: {{ $mealType }}</li>
+                        <li>Yields: {{ $yields }}</li>
+                        <li>.</li>
+                        <li>Cost:
+                            <div class="rating">
+                                @for ($i = 5; $i >= 1; $i--)
+                                    @if ($cost == $i)
+                                        <span class="rating-selected">☆</span>                            
+                                    @else
+                                        <span>☆</span>                            
+                                    @endif
+                                @endfor
+                            </div>
+                        </li>
+                        <li>.</li>
+                        <li>Complexity:
+                            <div class="rating">
+                                @for ($i = 5; $i >= 1; $i--)
+                                    @if ($complexity == $i)
+                                        <span class="rating-selected">☆</span>                            
+                                    @else
+                                        <span>☆</span>                            
+                                    @endif
+                                @endfor
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="clear"></div>
+            </section>
 
             <section>
                 <div class="sectionTitle">
@@ -379,28 +430,6 @@
                 <div class="clear"></div>
             </section>
 
-
-            <section>
-                <div class="sectionTitle">
-                    <h1>Key Skills</h1>
-                </div>
-
-                <div class="sectionContent">
-                    <ul class="keySkills">
-                        <li>A Key Skill</li>
-                        <li>A Key Skill</li>
-                        <li>A Key Skill</li>
-                        <li>A Key Skill</li>
-                        <li>A Key Skill</li>
-                        <li>A Key Skill</li>
-                        <li>A Key Skill</li>
-                        <li>A Key Skill</li>
-                    </ul>
-                </div>
-                <div class="clear"></div>
-            </section>
-
-
             <section>
                 <div class="sectionTitle">
                     <h1>Education</h1>
@@ -422,6 +451,17 @@
                 <div class="clear"></div>
             </section>
 
+            <section>
+                <article>
+                    <div class="sectionTitle">
+                        <h1>notes</h1>
+                    </div>
+
+                    <div class="sectionContent">
+                        <p>{{ $notes }}</p>
+                    </div>
+                </article>
+            </section>
         </div>
     </div>
     </div>
