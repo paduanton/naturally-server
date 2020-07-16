@@ -31,18 +31,9 @@ class Users extends Authenticatable
         'favorite_recipes', 'ratings', 'password_resets', 'email_verifications', 'restored_accounts', 'phones'
     ];
 
-    public static function getAuthorAccount(): Users
-    {
-        $AUTHOR_EMAIL = config('app.author');
-
-        if (!$AUTHOR_EMAIL) {
-            $author = Users::find(1);
-        } else {
-            $author = Users::where('email', $AUTHOR_EMAIL)->first();
-        }
-
-        return $author;
-    }
+    /*
+    *   Model relationships
+    **/
 
     public function recipes()
     {
@@ -139,6 +130,10 @@ class Users extends Authenticatable
         return $this->hasManyThrough(RatingsImages::class, Ratings::class);
     }
 
+    /*
+    *   Model queries
+    **/
+
     public function thumbnail()
     {
         Users::findOrFail($this->getKey());
@@ -147,10 +142,10 @@ class Users extends Authenticatable
         if (!$userThumbnail) {
             $userThumbnail = new ProfileImages();
             $defaultUserPicture = config('app.default_user_picture');
-            
+
             $userThumbnail->id = 0;
             $userThumbnail->users_id = 0;
-            $userThumbnail->title = "Default picture of unknown user";
+            $userThumbnail->title = "Default John Doe picture";
             $userThumbnail->alt = "Main picture of user: {$this->name}";
             $userThumbnail->thumbnail = true;
             $userThumbnail->picture_url = $defaultUserPicture;
@@ -161,9 +156,21 @@ class Users extends Authenticatable
             $userThumbnail->original_extension = "png";
             $userThumbnail->created_at = now();
             $userThumbnail->updated_at = now();
-
         }
 
         return $userThumbnail;
+    }
+
+    public static function getAuthorAccount(): Users
+    {
+        $AUTHOR_EMAIL = config('app.author');
+
+        if (!$AUTHOR_EMAIL) {
+            $author = Users::find(1);
+        } else {
+            $author = Users::where('email', $AUTHOR_EMAIL)->first();
+        }
+
+        return $author;
     }
 }

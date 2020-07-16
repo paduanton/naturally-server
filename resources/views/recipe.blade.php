@@ -336,7 +336,6 @@
     <div id="cv">
         <div class="mainDetails">
             <div id="headshot">
-                <!-- <img src="" alt="recipe" /> -->
             </div>
 
             <div id="title-subject">
@@ -346,8 +345,12 @@
 
             <div id="contactDetails">
                 <ul>
-                    <li>Made by: {{ $author['name'] }}</a></li>
-                    <li>Email: {{ $author['email'] }}</a></li>
+                    <li>Made by: {{ $author['name'] }} at {{$createdAt}}</li>
+                    <li>Email: {{ $author['email'] }}</li>
+                    <li> {{ '@' . $author['username'] }}</li>
+                    @if ($youtubeVideoURL)
+                    <li>YouTube Video: {{ $youtubeVideoURL }}</li>
+                    @endif
                 </ul>
             </div>
             <div class="clear"></div>
@@ -374,87 +377,65 @@
                         <li>Category: {{ $category }}</li>
                         <li>Meal type: {{ $mealType }}</li>
                         <li>Yields: {{ $yields }}</li>
-                        <li>.</li>
-                        <li>Cost:
-                            <div class="rating">
-                                @for ($i = 5; $i >= 1; $i--)
-                                    @if ($cost == $i)
-                                        <span class="rating-selected">☆</span>                            
-                                    @else
-                                        <span>☆</span>                            
-                                    @endif
-                                @endfor
-                            </div>
-                        </li>
-                        <li>.</li>
-                        <li>Complexity:
-                            <div class="rating">
-                                @for ($i = 5; $i >= 1; $i--)
-                                    @if ($complexity == $i)
-                                        <span class="rating-selected">☆</span>                            
-                                    @else
-                                        <span>☆</span>                            
-                                    @endif
-                                @endfor
-                            </div>
-                        </li>
+                        <li>Cost: Evaluated in {{ $cost }} of 5 stars</li>
+                        <li>Complexity: Evaluated in {{ $complexity }} of 5 stars</li>
                     </ul>
                 </div>
                 <div class="clear"></div>
             </section>
 
+            @if ($tags)
             <section>
                 <div class="sectionTitle">
-                    <h1>Work Experience</h1>
+                    <h1>Tags</h1>
                 </div>
 
                 <div class="sectionContent">
-                    <article>
-                        <h2>Job Title at Company</h2>
-                        <p class="subDetails">April 2011 - Present</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies massa et erat luctus hendrerit. Curabitur non consequat enim. Vestibulum bibendum mattis dignissim. Proin id sapien quis libero interdum porttitor.</p>
-                    </article>
+                    <ul class="keySkills">
+                        @foreach ($tags as $tag)
+                        <li>#{{ $tag['hashtag'] }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                <div class="clear"></div>
+            </section>
+            @endif
 
-                    <article>
-                        <h2>Job Title at Company</h2>
-                        <p class="subDetails">Janruary 2007 - March 2011</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies massa et erat luctus hendrerit. Curabitur non consequat enim. Vestibulum bibendum mattis dignissim. Proin id sapien quis libero interdum porttitor.</p>
-                    </article>
+            <section>
+                <div class="sectionTitle">
+                    <h1>Ingredients</h1>
+                </div>
 
+                <div class="sectionContent">
+                    @foreach ($ingredients as $ingredient)
                     <article>
-                        <h2>Job Title at Company</h2>
-                        <p class="subDetails">October 2004 - December 2006</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies massa et erat luctus hendrerit. Curabitur non consequat enim. Vestibulum bibendum mattis dignissim. Proin id sapien quis libero interdum porttitor.</p>
+                        <p>* {{ $ingredient['measure'] }} {{ $ingredient['description'] }}</p>
                     </article>
+                    @endforeach
                 </div>
                 <div class="clear"></div>
             </section>
 
             <section>
                 <div class="sectionTitle">
-                    <h1>Education</h1>
+                    <h1>Instructions</h1>
                 </div>
 
                 <div class="sectionContent">
+                    @foreach ($instructions as $key => $instruction)
                     <article>
-                        <h2>College/University</h2>
-                        <p class="subDetails">Qualification</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies massa et erat luctus hendrerit. Curabitur non consequat enim.</p>
+                        <p>{{ $key + 1 }}. {{ $instruction['description'] }}</p>
                     </article>
-
-                    <article>
-                        <h2>College/University</h2>
-                        <p class="subDetails">Qualification</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies massa et erat luctus hendrerit. Curabitur non consequat enim.</p>
-                    </article>
+                    @endforeach
                 </div>
                 <div class="clear"></div>
             </section>
 
+            @if ($notes)
             <section>
                 <article>
                     <div class="sectionTitle">
-                        <h1>notes</h1>
+                        <h1>Notes</h1>
                     </div>
 
                     <div class="sectionContent">
@@ -462,9 +443,10 @@
                     </div>
                 </article>
             </section>
+            @endif
+
         </div>
     </div>
     </div>
 </body>
-
 </html>

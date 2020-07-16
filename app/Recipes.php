@@ -14,7 +14,7 @@ class Recipes extends Model
     protected $table = 'recipes';
 
     protected $fillable = [
-        'users_id', 'title', 'description', 'cooking_time', 'category', 
+        'users_id', 'title', 'description', 'cooking_time', 'category',
         'meal_type', 'youtube_video_url', 'yields', 'cost', 'complexity', 'notes'
     ];
 
@@ -30,6 +30,10 @@ class Recipes extends Model
         'images', 'ingredients', 'comments', 'instructions',
         'likes', 'favorites', 'ratings', 'recipes_tags'
     ];
+
+    /*
+    * Model relationships
+    **/
 
     public function users()
     {
@@ -84,5 +88,17 @@ class Recipes extends Model
     public function tags()
     {
         return $this->belongsToMany(Tags::class)->withPivot('created_at', 'updated_at')->wherePivot('deleted_at', null)->as('relationship');
+    }
+
+    /*
+    *   Model queries
+    **/
+
+    public function getRecipeInstructionsOrderByOrder($orderBy = "asc")
+    {
+        Recipes::findOrFail($this->getKey());
+        $recipeInstructions = Instructions::where('recipes_id', $this->getKey())->orderBy('order', $orderBy)->get();
+
+        return $recipeInstructions;
     }
 }

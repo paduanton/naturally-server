@@ -20,18 +20,24 @@ class RecipeService implements RecipeInterface
         $recipeData = [
             'author' => [
                 'name' => $recipe->users->name,
-                'email' => $recipe->users->email
+                'email' => $recipe->users->email,
+                'username' => $recipe->users->username
             ],
             'title' => $recipe->title,
             'description' => $recipe->description,
             'category' => $recipe->category,
             'cookingTime' => $recipe->cooking_time,
             'mealType' => $recipe->meal_type,
-            'youtubeVideo' => $recipe->youtube_video_url,
+            'youtubeVideoURL' => $recipe->youtube_video_url,
             'yields' => $recipe->yields,
             'cost' => $recipe->cost,
             'complexity' => $recipe->complexity,
             'notes' => $recipe->notes,
+            'createdAt' => $recipe->created_at,
+            'tags' => $recipe->tags,
+            'ingredients' => $recipe->ingredients,
+            'instructions' => $recipe->instructions,
+
         ];
 
         return $recipeData;

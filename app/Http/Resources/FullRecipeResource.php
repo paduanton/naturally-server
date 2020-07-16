@@ -26,7 +26,7 @@ class FullRecipeResource extends JsonResource
             'images' => RecipesImagesResource::collection($this->images),
             'tags' => TagResource::collection($this->tags),
             'ingredients' => IngredientsResource::collection($this->ingredients),
-            'instructions' => InstructionsResource::collection($this->instructions),
+            'instructions' => InstructionsResource::collection($this->getRecipeInstructionsOrderByOrder()),
             'comments' => CommentsResource::collection($this->comments),
             'likes' => RecipesLikesResource::collection($this->likes),
             'favorites' => FavoritesRecipesResource::collection($this->favorites),
