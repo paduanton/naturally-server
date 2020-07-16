@@ -37,7 +37,6 @@ class RecipeService implements RecipeInterface
             'tags' => $recipe->tags,
             'ingredients' => $recipe->ingredients,
             'instructions' => $recipe->instructions,
-
         ];
 
         return $recipeData;

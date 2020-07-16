@@ -6,6 +6,7 @@ use App\Recipes;
 use Illuminate\Http\Request;
 use App\Services\RecipeService;
 use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\File;
 
 class RecipeController extends Controller
 {
@@ -21,7 +22,10 @@ class RecipeController extends Controller
         $recipe = Recipes::findOrFail($id);
         $recipeData = $this->recipeService->parseRecipeData($recipe);
 
-        return view('recipe', $recipeData);
+        $PDFView = view('recipe', $recipeData);
+        $pdf = PDF::loadHTML($PDFView);
+
+        return $pdf->stream();
     }
 
     public function downloadRecipePDF($id)

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="PDF generated from recipe " />
 
-    <title>{{ config('app.name') }}</title>
+    <title>{{ config('app.name') }} - Recipe PDF </title>
 
     <style>
         html,
@@ -140,19 +140,6 @@
 
         #mainArea {
             padding: 0 40px;
-        }
-
-        #headshot {
-            width: 12.5%;
-            float: left;
-            margin-right: 30px;
-        }
-
-        #headshot img {
-            width: 100%;
-            height: auto;
-            -webkit-border-radius: 50px;
-            border-radius: 50px;
         }
 
         #title-subject {
