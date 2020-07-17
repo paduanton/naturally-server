@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Recipes;
+use App\PDFDownloads;
 use Illuminate\Http\Request;
 use App\Services\RecipeService;
 use Barryvdh\DomPDF\Facade as PDF;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Auth;
 
 class RecipeController extends Controller
 {
@@ -17,13 +19,28 @@ class RecipeController extends Controller
         $this->recipeService = $recipeService;
     }
 
-    public function getRecipePDF($id)
+    public function getRecipePDF(Request $request, $id)
     {
-        $recipe = Recipes::findOrFail($id);
-        $recipeData = $this->recipeService->parseRecipeData($recipe);
+        try {
+            $recipe = Recipes::findOrFail($id);
+            $recipeData = $this->recipeService->parseRecipeData($recipe);
 
-        $PDFView = view('recipe', $recipeData);
-        $pdf = PDF::loadHTML($PDFView);
+            $PDFView = view('recipe', $recipeData);
+            $pdf = PDF::loadHTML($PDFView);
+        } catch (Exception $e) {
+            return redirect('/v1/notfound');
+        }
+
+        $downloadLog = [
+            'users_id' => $request->user('api')->id ?? null,
+            'recipes_id' => $recipe->id,
+            'ip' => $request->ip() . ':' . $_SERVER['REMOTE_PORT'],
+            'user_agent' => $request->header('User-Agent'),
+            'hostname' => $request->header('Origin'),
+            'created_at' => now()
+        ];
+
+        PDFDownloads::create($downloadLog);
 
         return $pdf->stream();
     }

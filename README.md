@@ -33,7 +33,7 @@ This API has the following entities: Users, Recipes, ProfileImages, Ratings, Rat
 - Recipes 1 - N Ingredients
 - Migrations
 
-The functionalities that cover this application are allowing the user to create an account, authenticate with social networks, create a recipe, add images to a recipe, embed an youtube video, add profile images, add rating to a recipe, comment on a recipe and reply to comments, follow other users, register phone number, like/dislike recipes, list recipes, add hashtag to recipes, restore user accounts and some more.
+The functionalities that cover this application are allowing the user to create an account, authenticate with social networks, create a recipe, add images to a recipe, embed an youtube video, download recipe in pdf format, add profile images, add rating to a recipe, comment on a recipe and reply to comments, follow other users, register phone number, like/dislike recipes, list recipes, add hashtag to recipes, restore user accounts and some more.
 
 All available endpoints do the CRUD operations in all entities and relationships in database.
 
