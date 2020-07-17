@@ -90,6 +90,11 @@ class Recipes extends Model
         return $this->belongsToMany(Tags::class)->withPivot('created_at', 'updated_at')->wherePivot('deleted_at', null)->as('relationship');
     }
 
+    public function pdf_downloads()
+    {
+        return $this->hasMany(PDFDownloads::class);
+    }
+
     /*
     *   Model queries
     **/

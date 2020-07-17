@@ -130,6 +130,11 @@ class Users extends Authenticatable
         return $this->hasManyThrough(RatingsImages::class, Ratings::class);
     }
 
+    public function pdf_downloads()
+    {
+        return $this->hasMany(PDFDownloads::class);
+    }
+
     /*
     *   Model queries
     **/
