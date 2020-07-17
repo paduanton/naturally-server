@@ -366,12 +366,15 @@
                         <li>Yields: {{ $yields }}</li>
                         <li>Cost: Evaluated in {{ $cost }} of 5 stars</li>
                         <li>Complexity: Evaluated in {{ $complexity }} of 5 stars</li>
+                        <!-- Yes, plus 1 because user just downloaded again, right?
+                            So, database count plus 1 that user just downloaded -->
+                        <li>- Recipe downloaded {{ count($PDFDownloads) + 1 }} times -</li>
                     </ul>
                 </div>
                 <div class="clear"></div>
             </section>
 
-            @if ($tags)
+            @if(count($tags) >= 1)
             <section>
                 <div class="sectionTitle">
                     <h1>Tags</h1>
@@ -436,4 +439,5 @@
     </div>
     </div>
 </body>
+
 </html>

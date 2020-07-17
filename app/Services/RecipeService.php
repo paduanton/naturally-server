@@ -16,7 +16,6 @@ class RecipeService implements RecipeInterface
 
     public function parseRecipeData(Recipes $recipe): array
     {
-
         $recipeData = [
             'author' => [
                 'name' => $recipe->users->name,
@@ -37,6 +36,7 @@ class RecipeService implements RecipeInterface
             'tags' => $recipe->tags,
             'ingredients' => $recipe->ingredients,
             'instructions' => $recipe->instructions,
+            'PDFDownloads' => $recipe->pdf_downloads,
         ];
 
         return $recipeData;
