@@ -27,7 +27,7 @@ class RecipeController extends Controller
 
             $PDFView = view('recipe', $recipeData);
             $pdf = PDF::loadHTML($PDFView);
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             return redirect('/v1/notfound');
         }
 
@@ -36,7 +36,6 @@ class RecipeController extends Controller
             'recipes_id' => $recipe->id,
             'ip' => $request->ip() . ':' . $_SERVER['REMOTE_PORT'],
             'user_agent' => $request->header('User-Agent'),
-            'hostname' => $request->header('Origin'),
             'created_at' => now()
         ];
 
@@ -45,14 +44,27 @@ class RecipeController extends Controller
         return $pdf->stream();
     }
 
-    public function downloadRecipePDF($id)
+    public function downloadRecipePDF(Request $request, $id)
     {
-        $recipe = Recipes::findOrFail($id);
-        $recipeData = $this->recipeService->parseRecipeData($recipe);
+        try {
+            $recipe = Recipes::findOrFail($id);
+            $recipeData = $this->recipeService->parseRecipeData($recipe);
 
-        $pdf = PDF::loadView('recipe', $recipeData);
-        $recipePDFName = config('app.name') . ".Recipe.pdf";
+            $pdf = PDF::loadView('recipe', $recipeData);
+            $recipePDFName = config('app.name') . ".Recipe.pdf";
+        } catch (Exception $exception) {
+            return redirect('/v1/notfound');
+        }
 
+        $downloadLog = [
+            'users_id' => $request->user('api')->id ?? null,
+            'recipes_id' => $recipe->id,
+            'ip' => $request->ip() . ':' . $_SERVER['REMOTE_PORT'],
+            'user_agent' => $request->header('User-Agent'),
+            'created_at' => now()
+        ];
+
+        PDFDownloads::create($downloadLog);
         return $pdf->download($recipePDFName);
     }
 
