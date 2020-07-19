@@ -394,21 +394,21 @@ The application uses Soft Deletes to delete all of the info in HTTP DELETE reque
 
 ## Documentation
 
-You can access the Restful API public documentarion in the link below or [clicking here](https://documenter.getpostman.com/view/5889563/T1DjkzV3):
+You can access the Restful API public documentarion in the link below or [clicking here](https://documenter.getpostman.com/view/5889563/T1DjkzV3). Currently the documentation has more than 110 http requests documented.
 
 https://documenter.getpostman.com/view/5889563/T1DjkzV3
 
-## Unit and Integration tests
+### Postman
 
-Coming...
-
-## Postman
-
-If you use postman client, you can use the link below to import a **Collection** with most of the requests already documented. Currently the link has more than 110 http requests.
+If you use postman client, you can use the link below to import a **Collection** with most of the requests already documented. 
 
 Just replace the auth header by your own token created in local environment.
 
 https://www.getpostman.com/collections/b098ba6ee5df79e9ae01
+
+## Unit and Integration tests
+
+Coming...
 
 ## License
 
