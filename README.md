@@ -392,6 +392,12 @@ HTTP - 500
 
 The application uses Soft Deletes to delete all of the info in HTTP DELETE requests, so when you do a **select** in database, the column **deleted_at** is not going to be null if the resource has been already deleted.
 
+## Documentation
+
+You can access the Restful API public documentarion in the link below or [clicking here](https://documenter.getpostman.com/view/5889563/T1DjkzV3):
+
+https://documenter.getpostman.com/view/5889563/T1DjkzV3
+
 ## Unit and Integration tests
 
 Coming...
