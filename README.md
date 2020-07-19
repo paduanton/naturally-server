@@ -39,7 +39,7 @@ All available endpoints do the CRUD operations in all entities and relationships
 
 ## ER Database Diagram
 (click the image to zoom it or just download the image and zoom it by yourself so you can see better all tables relationships =D)
-[![](https://raw.githubusercontent.com/paduanton/naturally-server/master/public/docs/ER-diagram.png)](https://raw.githubusercontent.com/paduanton/naturally-server/master/public/docs/ER-diagram.png)
+[![](https://raw.githubusercontent.com/paduanton/naturally-server/master/public/docs/ER-diagram.png)](https://raw.githubusercontent.com/paduanton/naturally-server/master/public/docs/Naturally.ER-diagram.png)
 
 
 ## System Requirements (Mac OS, Windows or Linux)
