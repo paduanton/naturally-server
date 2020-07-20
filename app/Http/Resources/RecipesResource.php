@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Comments;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class RecipesResource extends JsonResource

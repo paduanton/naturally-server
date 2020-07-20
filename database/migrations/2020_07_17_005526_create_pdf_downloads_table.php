@@ -15,7 +15,7 @@ class CreatePdfDownloadsTable extends Migration
             $table->foreignId('recipes_id');
             $table->ipAddress('ip');
             $table->string('user_agent');
-            $table->timestamp('created_at');
+            $table->timestamp('created_at')->useCurrent();
             $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('recipes_id')->references('id')->on('recipes')->onDelete('cascade');
         });

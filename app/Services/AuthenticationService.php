@@ -152,11 +152,25 @@ class AuthenticationService implements AuthenticationInterface
 
         $user = Users::where('username', $username)->withTrashed()->first();
 
-        while ($user) {
-            $randomNumber = mt_rand();
-            $username = $username . $randomNumber;
+        return $this->generateUsername($user, $username);
+    }
 
-            $user = Users::where('username', $username)->withTrashed()->first();
+    /*
+    * While there is a user in database with same username or the username length > 60 
+    * we keep trying to generate another valid username
+    **/
+    public function generateUsername($user, string $username): string
+    {
+        if ($user || strlen($username) > 60) {
+            $defaultUsername = $username;
+
+            while (!(!$user && strlen($username) <= 60)) {
+                $maxLength = (int) 999999999999999999999999999999; // 30 digits
+                $randomNumber = mt_rand(1, $maxLength);
+
+                $username = $defaultUsername . $randomNumber;
+                $user = Users::where('username', $username)->withTrashed()->first();
+            }
         }
 
         return $username;

@@ -10,10 +10,13 @@ class PDFDownloads extends Model
 
     protected $fillable = [
         'recipes_id', 'users_id', 'ip', 
-        'user_agent', 'hostname', 'created_at'
+        'user_agent', 'created_at'
     ];
 
     public $timestamps = false;
+
+    protected $dates = ['created_at'];
+
     
     public function users()
     {

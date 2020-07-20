@@ -230,17 +230,6 @@ class SocialNetworkAccountService implements SocialNetworkAccountsInterface
 
         $user = Users::where('username', $username)->withTrashed()->first();
 
-        while ($user) {
-            $randomNumber = mt_rand();
-            $newUsername = $username . $randomNumber;
-
-            $user = Users::where('username', $newUsername)->withTrashed()->first();
-        }
-
-        if (isset($newUsername)) {
-            return $newUsername;
-        }
-
-        return $username;
+        return $this->defaultAuthService->generateUsername($user, $username);
     }
 }

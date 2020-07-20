@@ -7,7 +7,7 @@ Naturally is an open source project that implements social media and social netw
 ## Application Architecture
 ![](https://raw.githubusercontent.com/paduanton/naturally-server/master/public/docs/Application-Architecture.png)
 
-This API has the following entities: Users, Recipes, ProfileImages, Ratings, RatingsImages, RecipesImages, SocialNetworkAccounts, Phones, Followers, Comments, UsersFavoriteRecipes, PasswordResets, RestoredAccounts, EmailVerifications, Likes, Reports, Instructions, Ingredients, RecipesTags, Tags, OAuthAuthCodes, OAuthAccessTokens, OAuthRefreshTokens, OAuthClients, OAuthPersonalAccessClients and Migrations.
+This API has the following entities: Users, Recipes, ProfileImages, Ratings, RatingsImages, RecipesImages, SocialNetworkAccounts, Phones, Followers, Comments, UsersFavoriteRecipes, PasswordResets, RestoredAccounts, EmailVerifications, Likes, Reports, Instructions, Ingredients, RecipesTags, Tags, Reports, Phones, PDFDownloads, OAuthAuthCodes, OAuthAccessTokens, OAuthRefreshTokens, OAuthClients, OAuthPersonalAccessClients and Migrations.
 
 #### Entity Relationship:
 - Users 1 - N Recipes
@@ -31,7 +31,10 @@ This API has the following entities: Users, Recipes, ProfileImages, Ratings, Rat
 - Recipes 1 - N RecipesImages
 - Recipes 1 - N Instructions
 - Recipes 1 - N Ingredients
-- Migrations
+- Recipes 1 - N Ingredients
+- Recipes N - PDFDownloads - N Users
+- Reports
+- PDFDownloads
 
 The functionalities that cover this application are allowing the user to create an account, authenticate with social networks, create a recipe, add images to a recipe, embed an youtube video, download recipe in pdf format, add profile images, add rating to a recipe, comment on a recipe and reply to comments, follow other users, register phone number, like/dislike recipes, list recipes, add hashtag to recipes, restore user accounts and some more.
 

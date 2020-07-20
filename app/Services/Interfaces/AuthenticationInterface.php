@@ -11,6 +11,7 @@ interface AuthenticationInterface
     public function revokeAllUserActiveTokens(Users $user);
     public function revokeAllUserAccessTokensExceptCurrentOne(Users $user, Token $currentAccessToken);
     public function getUsernamePattern();
+    public function generateUsername($user, string $username) : string;
     public function getUserAgeLimitDate();
     public function isEmail($input);
     public function sendPasswordChangingAlert(Users $user);

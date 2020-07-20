@@ -53,7 +53,7 @@ class AuthController extends Controller
             'message' => "couldn't sign user up"
         ], 400);
     }
-    
+
     public function getRefreshTokenInfo($token)
     {
         $parseToken = explode("?", $token);

@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Comments;
+use App\PDFDownloads;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class FullRecipeResource extends JsonResource
@@ -23,6 +24,7 @@ class FullRecipeResource extends JsonResource
             'cost' => $this->cost,
             'complexity' => $this->complexity,
             'notes' => $this->notes,
+            'pdf_downloads' => PDFDownloadsResource::collection($this->pdf_downloads),
             'images' => RecipesImagesResource::collection($this->images),
             'tags' => TagResource::collection($this->tags),
             'ingredients' => IngredientsResource::collection($this->ingredients),
