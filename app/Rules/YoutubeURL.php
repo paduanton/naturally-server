@@ -20,15 +20,11 @@ class YoutubeURL implements Rule
             return false;
         }
 
-        if (!in_array($parsedURL['path'], ['watch', '/watch'])) {
-            return false;
-        }
-
-        if (!$this->startsWith($parsedURL['query'], 'v=')) {
-            return false;
-        }
-
-        if (!$this->endsWith($parsedURL['host'], 'youtube.com') && $this->endsWith($parsedURL['host'], 'youtube.com.br')) {
+        if (
+            !$this->endsWith($parsedURL['host'], 'youtube.com')
+            && !$this->endsWith($parsedURL['host'], 'youtube.com.br')
+            && !$this->endsWith($parsedURL['host'], 'youtu.be')
+        ) {
             return false;
         }
 
