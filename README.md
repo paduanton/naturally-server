@@ -88,7 +88,7 @@ In this API, through Laravel Framework it has been built OAuth2 authentication u
 
 In **./bootstrap.sh** file are all the commands required to build this project, so, in order to make any changes inside the container, or if you wish to run any other commands, you must run this script and update this file.
 
-After all this steps, this project is running on port 80: http://api.naturally.cooking:80. All http requests send and receive JSON data.
+After all this steps, this project is running on port 8080: http://api.naturally.cooking:8080. All http requests send and receive JSON data.
 
 ## Authentication
 

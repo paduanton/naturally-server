@@ -6,7 +6,7 @@ networks:
 
 services:
   db:
-    container_name: naturallydb
+    container_name: naturally-server-db
     environment:
       MYSQL_ROOT_PASSWORD: "e2CS#TjE=Zs3AA"
       MYSQL_PASSWORD: ${DB_PASSWORD}
@@ -23,18 +23,18 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: naturallymyadmin
+    container_name: naturally-server-phpmyadmin
     networks:
       - naturally
     ports:
       - 8181:80
 
   nginx-server:
-    container_name: naturallyserver
+    container_name: naturally-server-nginx
     build: ./docker/nginx
     restart: always
     ports:
-      - "80:80"
+      - "8080:80"
     volumes: 
       - ./:/var/www
     depends_on: 
@@ -43,7 +43,7 @@ services:
       - naturally
 
   php-fpm:
-    container_name: naturallyweb
+    container_name: naturally-server-php_fpm
     restart: always
     build: ./docker/php-fpm
     volumes: 
