@@ -1,6 +1,6 @@
 # Overview
 
-Naturally is an open source project that implements social media and social networking concepts. It was developed in PHP using the Laravel Framework, MySQL database and MVC design pattern. This repository is the Restful API backend only. The frontend is written in Angular 9 and can be seen here:
+Naturally is an open source project that implements social media and social networking concepts. It was developed in PHP using the Laravel Framework 7, MySQL database and MVC design pattern. This repository is the Restful API backend only. The frontend is written in Angular 10 and can be seen here:
 
 [Naturally Frontend](https://github.com/paduanton/naturally)
 
