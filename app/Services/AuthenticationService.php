@@ -156,7 +156,7 @@ class AuthenticationService implements AuthenticationInterface
     }
 
     /*
-    * While there is a user in database with same username or the username length > 60 
+    * While there is a user in database with same username or the given username has length > 60 
     * we keep trying to generate another valid username
     **/
     public function generateUsername($user, string $username): string
