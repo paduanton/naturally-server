@@ -16,7 +16,7 @@ Todo commit e push exige resumo e aprovação explícita do usuário para um inc
 - 9c6edd5 — docs(agents): define workflow and migration tracking. AGENTS.md e este registro;
   commit e push para origin/codex/modernize-naturally aprovados e concluídos.
 
-## Incremento em revisão: inventário do legado
+## Inventário do legado
 
 Base fixa: 4e96fcfd35ad5534f70352ba6b4a79c739b40849. O inventário enumera os 210 arquivos
 versionados nessa base, inclusive arquivos de configuração, assets e documentação. Todos
@@ -31,13 +31,21 @@ Requer Node.js 22+ e Git com o commit-base disponível; clones rasos precisam ob
 Validação local em 17/09/2026: 18 testes do verificador passaram; 210 arquivos encontrados,
 zero componentes concluídos. Comandos: `node scripts/inventory.mjs --check` e
 `node --test scripts/tests/inventory.test.mjs`. Nenhum teste da aplicação Laravel é
-contabilizado nesse resultado. Commit/push deste incremento ainda dependem de aprovação.
+contabilizado nesse resultado. Incremento aprovado e enviado em 5da8dd5 —
+`chore(inventory): validate legacy migration tracking` (cinco arquivos do inventário).
+
+## Incremento em revisão: registro inicial de bugs
+
+docs/modernization/bugs.md registra 12 achados de inspeção estática, com referências
+ao código e critérios de regressão. Nenhuma correção funcional ou reprodução da aplicação
+foi concluída neste incremento. Credenciais não foram testadas nem reproduzidas no relatório.
+O registro e esta atualização de progresso ainda dependem de aprovação para commit/push.
 
 ## Estado técnico
 
-As entregas acima são documentais. Inventário, skills e runtime possuem rascunhos locais,
-mas ainda não constituem entregas aceitas na branch. A cobertura global de 90% não foi
-atingida nem demonstrada. Nenhum módulo funcional está concluído.
+As entregas aceitas compreendem documentação e o verificador do inventário. Skills e runtime
+ainda possuem rascunhos locais sem entrega aceita na branch. A cobertura global de 90%
+não foi atingida nem demonstrada. Nenhum módulo funcional está concluído.
 
 ## Etapas
 
