@@ -34,12 +34,27 @@ zero componentes concluídos. Comandos: `node scripts/inventory.mjs --check` e
 contabilizado nesse resultado. Incremento aprovado e enviado em 5da8dd5 —
 `chore(inventory): validate legacy migration tracking` (cinco arquivos do inventário).
 
-## Incremento em revisão: registro inicial de bugs
+## Registro inicial de bugs
 
 docs/modernization/bugs.md registra 12 achados de inspeção estática, com referências
 ao código e critérios de regressão. Nenhuma correção funcional ou reprodução da aplicação
 foi concluída neste incremento. Credenciais não foram testadas nem reproduzidas no relatório.
-O registro e esta atualização de progresso ainda dependem de aprovação para commit/push.
+Incremento aprovado e enviado em de0f47d — `docs(security): record initial legacy findings`
+(registro de bugs e atualização de progresso).
+
+## Incremento em revisão: CI do inventário
+
+.github/workflows/quality.yml executa a conferência do inventário e os testes do verificador
+em pushes e pull requests. Usa Node.js 22, Ubuntu 24.04, histórico Git completo para acessar
+a base, permissões somente de leitura e actions fixadas por SHA. O checkout não persiste
+credenciais; o job tem limite de cinco minutos e execuções anteriores da mesma referência
+são canceladas quando substituídas.
+
+Validação local em 17/09/2026: actionlint 1.7.12 sem erros (arquivo oficial com SHA-256
+conferido), inventário com 210 arquivos e zero concluídos, 18 testes passando. ShellCheck
+e Pyflakes não foram executados. O workflow e esta atualização aguardam aprovação para
+commit/push; ainda não há resultado de execução desse workflow no GitHub Actions.
+Este CI inicial não executa a aplicação Laravel nem mede sua cobertura.
 
 ## Estado técnico
 
