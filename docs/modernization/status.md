@@ -13,6 +13,25 @@ Todo commit e push exige resumo e aprovação explícita do usuário para um inc
   commit e push para origin/codex/modernize-naturally aprovados e concluídos.
 - b926784 — docs(architecture): define modular BFF boundaries. Somente docs/architecture.md;
   commit e push para origin/codex/modernize-naturally aprovados e concluídos.
+- 9c6edd5 — docs(agents): define workflow and migration tracking. AGENTS.md e este registro;
+  commit e push para origin/codex/modernize-naturally aprovados e concluídos.
+
+## Incremento em revisão: inventário do legado
+
+Base fixa: 4e96fcfd35ad5534f70352ba6b4a79c739b40849. O inventário enumera os 210 arquivos
+versionados nessa base, inclusive arquivos de configuração, assets e documentação. Todos
+permanecem pendentes. Módulo, camada e ação são destinos propostos, sujeitos à análise
+de comportamento; o inventário ainda não representa uma auditoria funcional concluída.
+
+O verificador é somente leitura. Rejeita omissões, duplicações, caminhos extras, estados
+inválidos e conclusões sem referências de evidência existentes. Remoções exigem justificativa.
+Ele não executa as evidências referenciadas, não certifica cobertura nem substitui revisão.
+Requer Node.js 22+ e Git com o commit-base disponível; clones rasos precisam obter essa base.
+
+Validação local em 17/09/2026: 18 testes do verificador passaram; 210 arquivos encontrados,
+zero componentes concluídos. Comandos: `node scripts/inventory.mjs --check` e
+`node --test scripts/tests/inventory.test.mjs`. Nenhum teste da aplicação Laravel é
+contabilizado nesse resultado. Commit/push deste incremento ainda dependem de aprovação.
 
 ## Estado técnico
 

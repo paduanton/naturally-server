@@ -24,3 +24,8 @@ The private PLANO-MODERNIZACAO.md is locally excluded; do not add it to Git.
 - Use only commands introduced and verified by an approved increment. Local untracked drafts do not establish available tooling for other contributors.
 - Add inventory, test and runtime commands here when their respective tooling lands; record actual results in docs/modernization/status.md.
 - Until the modern runtime is accepted, the existing README describes the legacy setup and must not be treated as the modern deployment guide.
+
+Inventory tooling (Node.js 22+, Git with the baseline commit available):
+
+- `node scripts/inventory.mjs --check` validates baseline completeness and evidence references without rewriting the inventory.
+- `node --test scripts/tests/inventory.test.mjs` tests the inventory validator; this is not the Laravel application test suite.
