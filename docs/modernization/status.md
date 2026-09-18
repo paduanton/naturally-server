@@ -58,7 +58,7 @@ A [execução 35263717315](https://github.com/paduanton/naturally-server/actions
 desse commit terminou com sucesso no GitHub Actions.
 Este CI inicial não executa a aplicação Laravel nem mede sua cobertura.
 
-## Incremento em revisão: skills de arquitetura e domínio
+## Skills de arquitetura e domínio
 
 As entradas codebase-design e domain-modeling foram adaptadas para contratos, camadas,
 invariantes e cenários de aceitação do Naturally. docs/agents/provenance.md registra o
@@ -69,12 +69,27 @@ propostos não apresentam espaços ao final das linhas. A licença foi conferida
 Revisão de conteúdo realizada contra a arquitetura e o protocolo de aprovação do projeto.
 A validação estrutural não comprova comportamento de agentes; nenhum teste da aplicação
 ou medição de cobertura faz parte deste incremento exclusivamente documental.
-Este incremento ainda depende de aprovação para commit/push.
+Incremento aprovado e enviado em 974ad53 —
+`docs(skills): adapt architecture and domain modeling guidance` (cinco arquivos).
+O CI de inventário desse commit passou na
+[execução 35292931073](https://github.com/paduanton/naturally-server/actions/runs/35292931073).
+
+## Incremento em revisão: skills de qualidade
+
+As entradas tdd, diagnosing-bugs e code-review foram adaptadas para regressões anteriores
+às correções, integrações reais, evidências de cobertura e revisão de requisitos e padrões.
+São autocontidas e preservam o protocolo de aprovação; sua origem e adaptações constam
+em docs/agents/provenance.md. O incremento contém as três entradas, a proveniência e este
+registro de progresso. As três entradas passaram no quick_validate.py da skill-creator;
+o conteúdo foi revisado contra a arquitetura e AGENTS.md. Essa validação estrutural
+não comprova comportamento de agentes; não houve alteração funcional nem medição de
+cobertura da aplicação. Aguarda aprovação para commit/push.
 
 ## Estado técnico
 
-As entregas aceitas compreendem documentação, verificador do inventário e seu CI. Skills e runtime
-ainda possuem rascunhos locais sem entrega aceita na branch. A cobertura global de 90%
+As entregas aceitas compreendem documentação, verificador do inventário, seu CI e as duas
+skills de arquitetura e domínio. As demais skills e o runtime ainda possuem rascunhos
+locais sem entrega aceita na branch. A cobertura global de 90%
 não foi atingida nem demonstrada. Nenhum módulo funcional está concluído.
 
 ## Etapas
