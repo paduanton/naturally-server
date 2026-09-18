@@ -42,7 +42,7 @@ foi concluída neste incremento. Credenciais não foram testadas nem reproduzida
 Incremento aprovado e enviado em de0f47d — `docs(security): record initial legacy findings`
 (registro de bugs e atualização de progresso).
 
-## Incremento em revisão: CI do inventário
+## CI do inventário
 
 .github/workflows/quality.yml executa a conferência do inventário e os testes do verificador
 em pushes e pull requests. Usa Node.js 22, Ubuntu 24.04, histórico Git completo para acessar
@@ -52,13 +52,28 @@ são canceladas quando substituídas.
 
 Validação local em 17/09/2026: actionlint 1.7.12 sem erros (arquivo oficial com SHA-256
 conferido), inventário com 210 arquivos e zero concluídos, 18 testes passando. ShellCheck
-e Pyflakes não foram executados. O workflow e esta atualização aguardam aprovação para
-commit/push; ainda não há resultado de execução desse workflow no GitHub Actions.
+e Pyflakes não foram executados. Incremento aprovado e enviado em c7e70ca —
+`ci(inventory): run migration checks on pushes and pull requests` (workflow e progresso).
+A [execução 35263717315](https://github.com/paduanton/naturally-server/actions/runs/35263717315)
+desse commit terminou com sucesso no GitHub Actions.
 Este CI inicial não executa a aplicação Laravel nem mede sua cobertura.
+
+## Incremento em revisão: skills de arquitetura e domínio
+
+As entradas codebase-design e domain-modeling foram adaptadas para contratos, camadas,
+invariantes e cenários de aceitação do Naturally. docs/agents/provenance.md registra o
+escopo, a origem e as diferenças; upstream-LICENSE.txt preserva a licença MIT original.
+As duas entradas são autocontidas e não exigem os arquivos auxiliares dos rascunhos locais.
+Validação local: ambas passaram no quick_validate.py da skill-creator; os cinco arquivos
+propostos não apresentam espaços ao final das linhas. A licença foi conferida com a origem.
+Revisão de conteúdo realizada contra a arquitetura e o protocolo de aprovação do projeto.
+A validação estrutural não comprova comportamento de agentes; nenhum teste da aplicação
+ou medição de cobertura faz parte deste incremento exclusivamente documental.
+Este incremento ainda depende de aprovação para commit/push.
 
 ## Estado técnico
 
-As entregas aceitas compreendem documentação e o verificador do inventário. Skills e runtime
+As entregas aceitas compreendem documentação, verificador do inventário e seu CI. Skills e runtime
 ainda possuem rascunhos locais sem entrega aceita na branch. A cobertura global de 90%
 não foi atingida nem demonstrada. Nenhum módulo funcional está concluído.
 
