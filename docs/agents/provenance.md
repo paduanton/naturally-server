@@ -16,6 +16,7 @@ Fonte: [mattpocock/skills](https://github.com/mattpocock/skills), commit fixo
 | `.agents/skills/grill-with-docs/SKILL.md` | `skills/engineering/grill-with-docs/SKILL.md` | Esclarecimento proporcional às dúvidas restantes e registro de decisões |
 | `.agents/skills/to-spec/SKILL.md` | `skills/engineering/to-spec/SKILL.md` | Especificação local com contratos e critérios de aceite |
 | `.agents/skills/to-tickets/SKILL.md` | `skills/engineering/to-tickets/SKILL.md` | Tarefas locais com dependências e incrementos de uma responsabilidade |
+| `.agents/skills/improve-codebase-architecture/SKILL.md` | `skills/engineering/improve-codebase-architecture/SKILL.md` | Refatoração por fluxo, evidências de acoplamento e rastreabilidade do legado |
 
 As entradas foram reescritas com apoio de skill-creator e são autocontidas: não dependem
 dos arquivos auxiliares do upstream, de scripts geradores, de trackers ou de subagentes.
@@ -40,6 +41,12 @@ não exigem listas extensas de histórias nem nova confirmação de fronteiras j
 Tarefas de infraestrutura podem ser independentes de fluxos funcionais; a sequência
 preserva as etapas do projeto e o protocolo de aprovação individual dos commits e pushes.
 
+Na refatoração, a ordem de migração prevalece sobre uma seleção baseada apenas no histórico
+de alterações. A análise conecta chamadores, contratos, responsabilidades e testes antes
+de propor movimentações. Relatório HTML, entrevistas e subagentes não são obrigatórios;
+a entrada não depende do scaffold HTML importado. Remoção de legado exige comprovar sua
+substituição, e correções de segurança não são tratadas como compatibilidade a preservar.
+
 ## Uso e manutenção
 
 Use `codebase-design` quando contratos ou responsabilidades de camadas mudarem; use
@@ -52,6 +59,9 @@ confirmações já resolvidas. O protocolo de aprovação do repositório perman
 Use `grill-with-docs` para resolver ambiguidades relevantes, `to-spec` para consolidar
 uma mudança discutida e `to-tickets` para dividi-la em entregas. Esses passos não precisam
 ser executados em sequência quando o requisito ou a divisão já estiverem definidos.
+
+Use `improve-codebase-architecture` para analisar e migrar um fluxo existente. Ela complementa
+`codebase-design`, voltada à definição dos contratos, sem exigir uma chamada a outra skill.
 
 Atualizações da origem devem ser revisadas manualmente, preservando licença e registrando
 o novo commit de referência. Não substituir adaptações locais por uma atualização automática.

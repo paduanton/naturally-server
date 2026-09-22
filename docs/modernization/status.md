@@ -88,7 +88,7 @@ cobertura da aplicação. Incremento aprovado e enviado em 1c697a6 —
 O CI de inventário desse commit passou na
 [execução 35295003977](https://github.com/paduanton/naturally-server/actions/runs/35295003977).
 
-## Incremento em revisão: skills de planejamento
+## Skills de planejamento
 
 As entradas grill-with-docs, to-spec e to-tickets orientam a resolução de ambiguidades,
 especificações locais e a divisão do trabalho em incrementos com dependências e critérios
@@ -97,12 +97,26 @@ de commit/push. O escopo contém essas três entradas, proveniência e este regi
 As três entradas passaram no quick_validate.py da skill-creator. O conteúdo foi revisado
 contra a ordem de migração, a arquitetura e o protocolo de aprovação de AGENTS.md.
 Esta validação estrutural não comprova comportamento de agentes nem cobertura da aplicação.
-Não houve alteração funcional. O incremento aguarda aprovação para commit/push.
+Não houve alteração funcional. Incremento aprovado e enviado em 526293b —
+`docs(skills): adapt requirements and incremental planning guidance` (cinco arquivos).
+O CI de inventário desse commit passou na
+[execução 35726829157](https://github.com/paduanton/naturally-server/actions/runs/35726829157).
+
+## Incremento em revisão: skill de refatoração arquitetural
+
+A entrada improve-codebase-architecture orienta análise por fluxo, separação entre refactor
+e correção de bugs e migração com evidências no inventário. É a nona adaptação de engenharia
+prevista no plano; sua preparação não conclui a etapa 2, que ainda inclui skills específicas
+e verificações pendentes. O incremento contém a entrada, proveniência e este registro.
+Validação em 22/09/2026: a entrada passou no quick_validate.py da skill-creator; seu conteúdo
+foi revisado contra AGENTS.md, arquitetura e ordem de migração. Essa validação estrutural
+não comprova comportamento de agentes nem cobertura. Não houve refactor da aplicação
+neste incremento documental. Aguarda aprovação para commit/push.
 
 ## Estado técnico
 
-As entregas aceitas compreendem documentação, verificador do inventário, seu CI e cinco
-skills de arquitetura, domínio e qualidade. As demais skills e o runtime ainda possuem rascunhos
+As entregas aceitas compreendem documentação, verificador do inventário, seu CI e oito
+skills de arquitetura, domínio, qualidade e planejamento. As demais skills e o runtime ainda possuem rascunhos
 locais sem entrega aceita na branch. A cobertura global de 90%
 não foi atingida nem demonstrada. Nenhum módulo funcional está concluído.
 
