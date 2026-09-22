@@ -13,6 +13,9 @@ Fonte: [mattpocock/skills](https://github.com/mattpocock/skills), commit fixo
 | `.agents/skills/tdd/SKILL.md` | `skills/engineering/tdd/SKILL.md` | Ciclo de regressão, integrações reais e evidências de linhas e branches |
 | `.agents/skills/diagnosing-bugs/SKILL.md` | `skills/engineering/diagnosing-bugs/SKILL.md` | Reprodução mínima, hipóteses verificáveis e correção rastreável |
 | `.agents/skills/code-review/SKILL.md` | `skills/engineering/code-review/SKILL.md` | Revisão local de requisitos e padrões, com achados fundamentados |
+| `.agents/skills/grill-with-docs/SKILL.md` | `skills/engineering/grill-with-docs/SKILL.md` | Esclarecimento proporcional às dúvidas restantes e registro de decisões |
+| `.agents/skills/to-spec/SKILL.md` | `skills/engineering/to-spec/SKILL.md` | Especificação local com contratos e critérios de aceite |
+| `.agents/skills/to-tickets/SKILL.md` | `skills/engineering/to-tickets/SKILL.md` | Tarefas locais com dependências e incrementos de uma responsabilidade |
 
 As entradas foram reescritas com apoio de skill-creator e são autocontidas: não dependem
 dos arquivos auxiliares do upstream, de scripts geradores, de trackers ou de subagentes.
@@ -30,6 +33,13 @@ regressão executada antes de corrigir; hipóteses não precisam de uma quantida
 A revisão usa referências e requisitos disponíveis na conversa e no repositório, sem
 tracker obrigatório, publicação de comentários ou delegação automática.
 
+No planejamento, o fluxo original de entrevista e publicação em trackers foi substituído
+por investigação no repositório e documentação local. grill-with-docs é autocontida e
+dispensa as chamadas obrigatórias a outras skills da entrada original. Especificações
+não exigem listas extensas de histórias nem nova confirmação de fronteiras já aprovadas.
+Tarefas de infraestrutura podem ser independentes de fluxos funcionais; a sequência
+preserva as etapas do projeto e o protocolo de aprovação individual dos commits e pushes.
+
 ## Uso e manutenção
 
 Use `codebase-design` quando contratos ou responsabilidades de camadas mudarem; use
@@ -38,6 +48,10 @@ comportamentos, `diagnosing-bugs` para investigar falhas e `code-review` para re
 incrementos. Todas seguem AGENTS.md e docs/architecture.md. Não autorizam commits,
 pushes ou publicação e não exigem
 confirmações já resolvidas. O protocolo de aprovação do repositório permanece aplicável.
+
+Use `grill-with-docs` para resolver ambiguidades relevantes, `to-spec` para consolidar
+uma mudança discutida e `to-tickets` para dividi-la em entregas. Esses passos não precisam
+ser executados em sequência quando o requisito ou a divisão já estiverem definidos.
 
 Atualizações da origem devem ser revisadas manualmente, preservando licença e registrando
 o novo commit de referência. Não substituir adaptações locais por uma atualização automática.
