@@ -49,6 +49,22 @@ substituição, e correções de segurança não são tratadas como compatibilid
 
 ## Uso e manutenção
 
+### Skill específica do projeto: runtime-secrets
+
+`.agents/skills/runtime-secrets/SKILL.md` é uma orientação própria do Naturally, não uma
+cópia do repositório upstream. Deriva das decisões de configuração sem .env do projeto:
+JSON não sensível, segredos montados, validação central, desenvolvimento independente
+de Azure e rotação aplicada por rollout. Não indica que esse runtime já esteja entregue.
+
+Referências oficiais conferidas em 22/09/2026:
+[configuração Laravel](https://laravel.com/docs/13.x/configuration#configuration-caching),
+[rotação de chaves Laravel](https://laravel.com/docs/13.x/encryption#gracefully-rotating-encryption-keys)
+e [rotação do CSI no AKS](https://learn.microsoft.com/en-us/azure/aks/csi-secrets-store-configuration-options).
+Os exemplos oficiais que usam .env devem ser adaptados ao contrato de arquivos do projeto.
+A licença upstream preservada neste diretório corresponde às nove adaptações listadas acima.
+
+### Seleção e atualização
+
 Use `codebase-design` quando contratos ou responsabilidades de camadas mudarem; use
 `domain-modeling` quando regras ou termos do negócio mudarem. Use `tdd` para implementar
 comportamentos, `diagnosing-bugs` para investigar falhas e `code-review` para revisar
@@ -59,6 +75,9 @@ confirmações já resolvidas. O protocolo de aprovação do repositório perman
 Use `grill-with-docs` para resolver ambiguidades relevantes, `to-spec` para consolidar
 uma mudança discutida e `to-tickets` para dividi-la em entregas. Esses passos não precisam
 ser executados em sequência quando o requisito ou a divisão já estiverem definidos.
+
+Use `runtime-secrets` ao alterar configuração, startup ou rotação; não para tarefas que
+apenas consomem contratos de configuração já estabelecidos.
 
 Use `improve-codebase-architecture` para analisar e migrar um fluxo existente. Ela complementa
 `codebase-design`, voltada à definição dos contratos, sem exigir uma chamada a outra skill.

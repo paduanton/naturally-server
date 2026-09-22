@@ -102,7 +102,7 @@ Não houve alteração funcional. Incremento aprovado e enviado em 526293b —
 O CI de inventário desse commit passou na
 [execução 35726829157](https://github.com/paduanton/naturally-server/actions/runs/35726829157).
 
-## Incremento em revisão: skill de refatoração arquitetural
+## Skill de refatoração arquitetural
 
 A entrada improve-codebase-architecture orienta análise por fluxo, separação entre refactor
 e correção de bugs e migração com evidências no inventário. É a nona adaptação de engenharia
@@ -111,12 +111,26 @@ e verificações pendentes. O incremento contém a entrada, proveniência e este
 Validação em 22/09/2026: a entrada passou no quick_validate.py da skill-creator; seu conteúdo
 foi revisado contra AGENTS.md, arquitetura e ordem de migração. Essa validação estrutural
 não comprova comportamento de agentes nem cobertura. Não houve refactor da aplicação
-neste incremento documental. Aguarda aprovação para commit/push.
+neste incremento documental. Incremento aprovado e enviado em 64dc770 —
+`docs(skills): adapt incremental architecture refactoring guidance` (três arquivos).
+O CI de inventário desse commit passou na
+[execução 35761907792](https://github.com/paduanton/naturally-server/actions/runs/35761907792).
+
+## Incremento em revisão: skill de configuração e segredos
+
+A entrada runtime-secrets documenta o contrato sem .env, fontes por ambiente, validação
+antes do bootstrap, proteção do cache de configuração e rotação com rollout e tratamento
+específico para APP_KEY. É uma skill própria do projeto, com fontes oficiais registradas
+na proveniência. O incremento contém a entrada, proveniência e este registro; não altera
+o runtime, não gera credenciais nem executa deploy. Validação em 22/09/2026: passou no
+quick_validate.py da skill-creator; conteúdo revisado contra o plano e documentação oficial.
+Validação estrutural não demonstra startup, rotação real ou cobertura. Aguarda aprovação
+para commit/push.
 
 ## Estado técnico
 
-As entregas aceitas compreendem documentação, verificador do inventário, seu CI e oito
-skills de arquitetura, domínio, qualidade e planejamento. As demais skills e o runtime ainda possuem rascunhos
+As entregas aceitas compreendem documentação, verificador do inventário, seu CI e nove
+skills de engenharia. As skills específicas e o runtime ainda possuem rascunhos
 locais sem entrega aceita na branch. A cobertura global de 90%
 não foi atingida nem demonstrada. Nenhum módulo funcional está concluído.
 
