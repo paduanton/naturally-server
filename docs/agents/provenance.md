@@ -63,6 +63,20 @@ e [rotação do CSI no AKS](https://learn.microsoft.com/en-us/azure/aks/csi-secr
 Os exemplos oficiais que usam .env devem ser adaptados ao contrato de arquivos do projeto.
 A licença upstream preservada neste diretório corresponde às nove adaptações listadas acima.
 
+### Skill específica do projeto: bff-security
+
+`.agents/skills/bff-security/SKILL.md` também é específica do Naturally. Consolida as decisões
+do plano para sessões, CSRF, autorização e identidade social; não indica que Identity esteja
+implementado. Tempos de sessão, recuperação e política de senha são decisões do projeto,
+não valores padrão automaticamente fornecidos pelos pacotes.
+
+Referências conferidas em 22/09/2026: [Sanctum SPA](https://laravel.com/docs/13.x/sanctum#spa-authentication),
+[autenticação Laravel](https://laravel.com/docs/13.x/authentication),
+[CSRF](https://laravel.com/docs/13.x/csrf), [Socialite](https://laravel.com/docs/13.x/socialite)
+e [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700.html). Exemplos dos provedores devem
+respeitar a vinculação explícita e o contrato de sessão do BFF, sem reproduzir vinculação
+automática por e-mail ou desabilitar state.
+
 ### Seleção e atualização
 
 Use `codebase-design` quando contratos ou responsabilidades de camadas mudarem; use
@@ -78,6 +92,7 @@ ser executados em sequência quando o requisito ou a divisão já estiverem defi
 
 Use `runtime-secrets` ao alterar configuração, startup ou rotação; não para tarefas que
 apenas consomem contratos de configuração já estabelecidos.
+Use `bff-security` ao alterar autenticação, permissões, dados de identidade ou login social.
 
 Use `improve-codebase-architecture` para analisar e migrar um fluxo existente. Ela complementa
 `codebase-design`, voltada à definição dos contratos, sem exigir uma chamada a outra skill.

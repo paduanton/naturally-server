@@ -116,7 +116,7 @@ neste incremento documental. Incremento aprovado e enviado em 64dc770 —
 O CI de inventário desse commit passou na
 [execução 35761907792](https://github.com/paduanton/naturally-server/actions/runs/35761907792).
 
-## Incremento em revisão: skill de configuração e segredos
+## Skill de configuração e segredos
 
 A entrada runtime-secrets documenta o contrato sem .env, fontes por ambiente, validação
 antes do bootstrap, proteção do cache de configuração e rotação com rollout e tratamento
@@ -124,13 +124,26 @@ específico para APP_KEY. É uma skill própria do projeto, com fontes oficiais 
 na proveniência. O incremento contém a entrada, proveniência e este registro; não altera
 o runtime, não gera credenciais nem executa deploy. Validação em 22/09/2026: passou no
 quick_validate.py da skill-creator; conteúdo revisado contra o plano e documentação oficial.
-Validação estrutural não demonstra startup, rotação real ou cobertura. Aguarda aprovação
-para commit/push.
+Validação estrutural não demonstra startup, rotação real ou cobertura. Incremento aprovado
+e enviado em 269e66c — `docs(skills): define runtime configuration and secrets guidance`
+(três arquivos).
+O CI de inventário desse commit passou na
+[execução 35762385369](https://github.com/paduanton/naturally-server/actions/runs/35762385369).
+
+## Incremento em revisão: skill de segurança do BFF
+
+A entrada bff-security orienta sessões, CSRF, credenciais, autorização por recurso e login
+social, com atenção a concorrência e regressões. Os limites e escolhas de autenticação
+seguem o plano; as referências oficiais constam na proveniência. O incremento contém
+a entrada, proveniência e este registro; não implementa nem valida endpoints de Identity.
+Validação em 22/09/2026: passou no quick_validate.py da skill-creator; conteúdo revisado
+contra o plano, arquitetura e fontes oficiais. Essa validação não comprova a segurança
+da aplicação nem sua cobertura. Aguarda aprovação para commit/push.
 
 ## Estado técnico
 
 As entregas aceitas compreendem documentação, verificador do inventário, seu CI e nove
-skills de engenharia. As skills específicas e o runtime ainda possuem rascunhos
+skills de engenharia e runtime-secrets. As demais skills específicas e o runtime possuem rascunhos
 locais sem entrega aceita na branch. A cobertura global de 90%
 não foi atingida nem demonstrada. Nenhum módulo funcional está concluído.
 
