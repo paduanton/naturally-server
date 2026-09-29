@@ -130,7 +130,7 @@ e enviado em 269e66c — `docs(skills): define runtime configuration and secrets
 O CI de inventário desse commit passou na
 [execução 35762385369](https://github.com/paduanton/naturally-server/actions/runs/35762385369).
 
-## Incremento em revisão: skill de segurança do BFF
+## Skill de segurança do BFF
 
 A entrada bff-security orienta sessões, CSRF, credenciais, autorização por recurso e login
 social, com atenção a concorrência e regressões. Os limites e escolhas de autenticação
@@ -138,12 +138,25 @@ seguem o plano; as referências oficiais constam na proveniência. O incremento 
 a entrada, proveniência e este registro; não implementa nem valida endpoints de Identity.
 Validação em 22/09/2026: passou no quick_validate.py da skill-creator; conteúdo revisado
 contra o plano, arquitetura e fontes oficiais. Essa validação não comprova a segurança
-da aplicação nem sua cobertura. Aguarda aprovação para commit/push.
+da aplicação nem sua cobertura. Incremento aprovado e enviado em 4b0e0b9 —
+`docs(skills): define BFF authentication and authorization guidance` (três arquivos).
+O CI de inventário desse commit passou na
+[execução 35919702170](https://github.com/paduanton/naturally-server/actions/runs/35919702170).
+
+## Incremento em revisão: skill de cache e consistência
+
+A entrada cache-consistency orienta cache de DTOs públicos, normalização de parâmetros,
+TTLs, revisões transacionais, invalidação e recomputação concorrente. Distingue falhas
+de cache da proteção contra abuso e exige testes reais de MySQL/Redis. O incremento
+contém a entrada, proveniência e este registro. Não implementa cache nem mede desempenho.
+Validação em 23/09/2026: a entrada passou no quick_validate.py da skill-creator; conteúdo
+revisado contra o plano, arquitetura e referências oficiais. A validação estrutural não
+comprova consistência, ganho de desempenho ou cobertura. Aguarda aprovação para commit/push.
 
 ## Estado técnico
 
 As entregas aceitas compreendem documentação, verificador do inventário, seu CI e nove
-skills de engenharia e runtime-secrets. As demais skills específicas e o runtime possuem rascunhos
+skills de engenharia, runtime-secrets e bff-security. As demais skills específicas e o runtime possuem rascunhos
 locais sem entrega aceita na branch. A cobertura global de 90%
 não foi atingida nem demonstrada. Nenhum módulo funcional está concluído.
 

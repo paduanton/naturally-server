@@ -77,7 +77,22 @@ e [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700.html). Exemplos dos provedor
 respeitar a vinculação explícita e o contrato de sessão do BFF, sem reproduzir vinculação
 automática por e-mail ou desabilitar state.
 
+### Skill específica do projeto: cache-consistency
+
+`.agents/skills/cache-consistency/SKILL.md` é própria do Naturally. Traduz o plano de
+cache-aside para leituras públicas, TTLs por conteúdo, revisões na transação do banco,
+locks de recomputação e isolamento de dados pessoais. A invalidação requer evidências
+de concorrência e falhas; a existência desta orientação não comprova consistência real.
+
+Referências conferidas em 23/09/2026: [cache e locks Laravel](https://laravel.com/docs/13.x/cache#atomic-locks)
+e [limitações de cache-aside](https://learn.microsoft.com/en-us/azure/architecture/patterns/cache-aside).
+Os TTLs e a estratégia de revisões são decisões do projeto para dados mutáveis deste BFF;
+seus efeitos sobre desempenho e consistência precisam ser verificados na implementação.
+
 ### Seleção e atualização
+
+Use `cache-consistency` ao alterar cache de leituras públicas, chaves, expiração,
+invalidação ou comportamento perante falhas do Redis.
 
 Use `codebase-design` quando contratos ou responsabilidades de camadas mudarem; use
 `domain-modeling` quando regras ou termos do negócio mudarem. Use `tdd` para implementar
