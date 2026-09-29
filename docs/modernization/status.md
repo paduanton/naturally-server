@@ -143,7 +143,7 @@ da aplicação nem sua cobertura. Incremento aprovado e enviado em 4b0e0b9 —
 O CI de inventário desse commit passou na
 [execução 35919702170](https://github.com/paduanton/naturally-server/actions/runs/35919702170).
 
-## Incremento em revisão: skill de cache e consistência
+## Skill de cache e consistência
 
 A entrada cache-consistency orienta cache de DTOs públicos, normalização de parâmetros,
 TTLs, revisões transacionais, invalidação e recomputação concorrente. Distingue falhas
@@ -151,12 +151,29 @@ de cache da proteção contra abuso e exige testes reais de MySQL/Redis. O incre
 contém a entrada, proveniência e este registro. Não implementa cache nem mede desempenho.
 Validação em 23/09/2026: a entrada passou no quick_validate.py da skill-creator; conteúdo
 revisado contra o plano, arquitetura e referências oficiais. A validação estrutural não
-comprova consistência, ganho de desempenho ou cobertura. Aguarda aprovação para commit/push.
+comprova consistência, ganho de desempenho ou cobertura. Incremento aprovado e enviado
+em a5dbd7c — `docs(skills): define public cache consistency guidance` (três arquivos).
+O CI de inventário desse commit passou na
+[execução 36514357593](https://github.com/paduanton/naturally-server/actions/runs/36514357593).
+
+## Incremento em revisão: skill de entrega no AKS
+
+A entrada aks-delivery orienta Bicep/Kustomize, identidades, imagem por digest, configuração
+montada, migrations, probes, rollout e recuperação. Preserva a revisão de recursos/custos
+antes de implantação real. O incremento contém a entrada, proveniência e este registro;
+não cria manifests, pipelines de CD ou recursos Azure. Validação em 28/09/2026: passou
+no quick_validate.py da skill-creator; conteúdo revisado contra o plano e referências
+oficiais. Essa validação não comprova funcionamento do AKS, segurança do pipeline ou
+cobertura da aplicação. Aguarda aprovação para commit/push.
+
+Com este incremento, as 13 entradas de skills previstas estarão preparadas. A etapa 2
+continua em andamento: o CI aceito verifica somente o inventário, e a validação do padrão
+de commits e os demais controles de qualidade do plano ainda não foram entregues.
 
 ## Estado técnico
 
 As entregas aceitas compreendem documentação, verificador do inventário, seu CI e nove
-skills de engenharia, runtime-secrets e bff-security. As demais skills específicas e o runtime possuem rascunhos
+skills de engenharia, runtime-secrets, bff-security e cache-consistency. A skill de AKS e o runtime possuem rascunhos
 locais sem entrega aceita na branch. A cobertura global de 90%
 não foi atingida nem demonstrada. Nenhum módulo funcional está concluído.
 

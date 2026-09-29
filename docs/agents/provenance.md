@@ -89,7 +89,23 @@ e [limitações de cache-aside](https://learn.microsoft.com/en-us/azure/architec
 Os TTLs e a estratégia de revisões são decisões do projeto para dados mutáveis deste BFF;
 seus efeitos sobre desempenho e consistência precisam ser verificados na implementação.
 
+### Skill específica do projeto: aks-delivery
+
+`.agents/skills/aks-delivery/SKILL.md` consolida decisões próprias do projeto: Bicep/Kustomize,
+imagens por digest, OIDC/Workload Identity, configuração montada, migrations por Job e
+recuperação compatível com o schema. Distingue preparação local de implantação real e
+preserva a revisão obrigatória antes de publicar ou criar recursos faturáveis.
+
+Referências conferidas em 28/09/2026: [OIDC GitHub](https://docs.github.com/en/actions/reference/security/oidc),
+[probes Kubernetes](https://kubernetes.io/docs/concepts/workloads/pods/probes/)
+e [Gateway API no AKS](https://learn.microsoft.com/en-us/azure/aks/app-routing-gateway-api).
+A skill exige verificar suporte, requisitos e custo no momento da implementação; não
+certifica disponibilidade na assinatura ou região do usuário nem garante deploy sem falhas.
+
 ### Seleção e atualização
+
+Use `aks-delivery` ao preparar ou revisar infraestrutura AKS, manifests, imagens de produção
+e pipelines de entrega; não para mudanças comuns de lógica do BFF.
 
 Use `cache-consistency` ao alterar cache de leituras públicas, chaves, expiração,
 invalidação ou comportamento perante falhas do Redis.
