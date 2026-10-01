@@ -156,7 +156,7 @@ em a5dbd7c — `docs(skills): define public cache consistency guidance` (três a
 O CI de inventário desse commit passou na
 [execução 36514357593](https://github.com/paduanton/naturally-server/actions/runs/36514357593).
 
-## Incremento em revisão: skill de entrega no AKS
+## Skill de entrega no AKS
 
 A entrada aks-delivery orienta Bicep/Kustomize, identidades, imagem por digest, configuração
 montada, migrations, probes, rollout e recuperação. Preserva a revisão de recursos/custos
@@ -164,17 +164,49 @@ antes de implantação real. O incremento contém a entrada, proveniência e est
 não cria manifests, pipelines de CD ou recursos Azure. Validação em 28/09/2026: passou
 no quick_validate.py da skill-creator; conteúdo revisado contra o plano e referências
 oficiais. Essa validação não comprova funcionamento do AKS, segurança do pipeline ou
-cobertura da aplicação. Aguarda aprovação para commit/push.
+cobertura da aplicação. Incremento aprovado e enviado em c4b21e6 —
+`docs(skills): define AKS delivery and recovery guidance` (três arquivos).
+O CI de inventário desse commit passou na
+[execução 36514641566](https://github.com/paduanton/naturally-server/actions/runs/36514641566).
 
-Com este incremento, as 13 entradas de skills previstas estarão preparadas. A etapa 2
+Com este incremento, as 13 entradas de skills previstas foram entregues. A etapa 2
 continua em andamento: o CI aceito verifica somente o inventário, e a validação do padrão
 de commits e os demais controles de qualidade do plano ainda não foram entregues.
+
+## Incremento em revisão: validação de Conventional Commits
+
+O novo job commits usa commitlint 21.2.3 com dependências isoladas e lockfile em
+tools/commitlint. Exige tipo permitido, um único escopo permitido, descrição e marcação
+consistente de mudanças incompatíveis. CONTRIBUTING.md documenta o formato e os comandos;
+AGENTS.md registra a validação. O incremento contém nove arquivos, restritos a essa política.
+
+O job verifica mensagens no intervalo de push/PR e exclui o histórico já alcançável de
+c4b21e67bdb4b4f254e91e4a8e6210f10ec652c2, preservando commits aprovados. Em PRs, usa
+o head real; na criação de branches, considera o histórico posterior à base de adoção.
+Mensagens de merge, fixup e versão não recebem dispensa. Referências inválidas ou ausentes
+fazem o job falhar. A coerência do incremento e a descrição em inglês exigem revisão humana.
+
+Validação local concluída em 29/09/2026, usando Node.js 24.19.0 e npm 10.9.4 isolados:
+
+- Instalação reproduzida com npm ci e scripts de instalação desativados; npm audit sem
+  vulnerabilidades nas dependências desta ferramenta, sem incluir os pacotes do legado.
+- 17 testes da política passaram usando a CLI real de commitlint.
+- Nove cenários do script Bash passaram em ensaio local: exclusão do histórico aprovado,
+  seleção em push, criação de branch e PR, rejeição de referências inválidas/ausentes e
+  falha por mensagem inválida. O ensaio usa commits existentes e não cria commits.
+- Inventário validado: 210 arquivos, zero concluídos; seus 18 testes passaram.
+- actionlint 1.7.12 sem erros; ShellCheck e Pyflakes não foram executados.
+
+O novo job usa Node.js 22 no GitHub Actions; sua execução remota depende do commit/push
+ainda não aprovados. Proteção de branch/rulesets não foi configurada. Não houve alteração
+funcional, teste Laravel ou medição de cobertura da aplicação neste incremento.
 
 ## Estado técnico
 
 As entregas aceitas compreendem documentação, verificador do inventário, seu CI e nove
-skills de engenharia, runtime-secrets, bff-security e cache-consistency. A skill de AKS e o runtime possuem rascunhos
-locais sem entrega aceita na branch. A cobertura global de 90%
+skills de engenharia, runtime-secrets, bff-security, cache-consistency e aks-delivery.
+A validação de commits aguarda aprovação; o runtime possui rascunhos locais sem entrega
+aceita na branch. A cobertura global de 90%
 não foi atingida nem demonstrada. Nenhum módulo funcional está concluído.
 
 ## Etapas

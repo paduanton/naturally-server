@@ -29,3 +29,10 @@ Inventory tooling (Node.js 22+, Git with the baseline commit available):
 
 - `node scripts/inventory.mjs --check` validates baseline completeness and evidence references without rewriting the inventory.
 - `node --test scripts/tests/inventory.test.mjs` tests the inventory validator; this is not the Laravel application test suite.
+
+Commit message tooling (Node.js >=22.12, npm >=10; run from the repository root):
+
+- `npm ci --prefix tools/commitlint --ignore-scripts --no-audit --no-fund` installs the locked, isolated tooling.
+- `git log -1 --format=%B | npm --prefix tools/commitlint run lint --` validates the latest message without modifying Git.
+- `npm --prefix tools/commitlint test` tests the policy through the real commitlint CLI; it is not an application test suite.
+- CI checks new push/PR commits, excluding history reachable from c4b21e67bdb4b4f254e91e4a8e6210f10ec652c2. See CONTRIBUTING.md for the policy and adoption boundary.
