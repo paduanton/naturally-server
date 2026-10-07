@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         cacheDirectory="/tmp/naturally-phpunit"
+         recordTestRunHistory="false"
+         colors="false"
+         failOnAllIssues="true"
+         failOnEmptyTestSuite="true"
+         requireCoverageMetadata="true"
+         beStrictAboutCoverageMetadata="true"
+         beStrictAboutOutputDuringTests="true"
+         displayDetailsOnAllIssues="true">
+    <testsuites>
+        <testsuite name="Runtime">
+            <file>tests/Unit/RuntimeConfigurationTest.php</file>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory suffix=".php">app</directory>
+        </include>
+    </source>
+    <coverage branchCoverage="true" includeUncoveredFiles="true" disableCodeCoverageIgnore="true"/>
+</phpunit>
