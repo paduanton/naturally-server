@@ -44,3 +44,9 @@ Secret scanning tooling (Node.js 22+, Git and Gitleaks 8.30.1):
 - `gitleaks git . --pre-commit --config tools/gitleaks/config.toml --gitleaks-ignore-path tools/gitleaks/no-ignore --ignore-gitleaks-allow --redact=100 --no-banner --no-color` scans unstaged changes. The no-ignore path must not exist.
 - Add `--staged` to the previous command to scan the index. Do not expand staging beyond approved files.
 - CI scans the versioned head tree and history after 4fc7496b28e007d19f9a0ca2e3994d7b8334f45c. Historical findings and undetected literal passwords remain open; see docs/security/secret-scanning.md. These tests do not measure application coverage.
+
+Development tool image (Docker with a Linux engine; run from the repository root):
+
+- `docker build --target development -f docker/runtime/Dockerfile -t naturally-php-development:local docker/runtime` builds the PHP/Composer tool image without application source.
+- `docker run --rm --network none --mount type=bind,source=./scripts/tests/runtime-image.php,target=/runtime-image.php,readonly naturally-php-development:local php /runtime-image.php` checks extensions, image formats, Composer, the default user and disabled Xdebug.
+- `docker run --rm --network none -e XDEBUG_MODE=coverage --mount type=bind,source=./scripts/tests/runtime-image.php,target=/runtime-image.php,readonly naturally-php-development:local php /runtime-image.php --coverage` additionally checks real branch/path collection. It does not measure Laravel coverage or validate application startup.
