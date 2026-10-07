@@ -8,6 +8,9 @@ use App\Shared\Infrastructure\RuntimeConfiguration;
 use App\Shared\Infrastructure\LoadRuntimeEnvironment;
 use Illuminate\Container\Container;
 use Illuminate\Encryption\Encrypter;
+use Illuminate\Mail\MailManager;
+use Illuminate\Log\LogManager;
+use Illuminate\Mail\Transport\ArrayTransport;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Bootstrap\LoadConfiguration;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
@@ -17,10 +20,15 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use Symfony\Component\Mime\Email;
 
 #[CoversClass(LoadRuntimeEnvironment::class)]
 #[CoversFile(__DIR__.'/../../config/app.php')]
 #[CoversFile(__DIR__.'/../../config/database.php')]
+#[CoversFile(__DIR__.'/../../config/cache.php')]
+#[CoversFile(__DIR__.'/../../config/session.php')]
+#[CoversFile(__DIR__.'/../../config/mail.php')]
+#[CoversFile(__DIR__.'/../../config/logging.php')]
 #[UsesClass(RuntimeConfiguration::class)]
 final class RuntimeEnvironmentTest extends TestCase
 {
@@ -42,6 +50,9 @@ final class RuntimeEnvironmentTest extends TestCase
         mkdir($this->directory.'/secrets', 0700);
         symlink(__DIR__.'/../../config/app.php', $this->directory.'/config/app.php');
         symlink(__DIR__.'/../../config/database.php', $this->directory.'/config/database.php');
+        foreach (['cache', 'session', 'mail', 'logging'] as $name) {
+            symlink(__DIR__.'/../../config/'.$name.'.php', $this->directory.'/config/'.$name.'.php');
+        }
         $this->key = 'base64:'.base64_encode(random_bytes(32));
         $this->password = bin2hex(random_bytes(24));
         file_put_contents($this->directory.'/secrets/app_key', $this->key);
@@ -124,7 +135,11 @@ final class RuntimeEnvironmentTest extends TestCase
 
     public function test_ambient_variables_do_not_override_validated_settings(): void
     {
-        $overrides = ['APP_ENV' => 'production', 'APP_DEBUG' => 'true', 'DB_HOST' => 'ambient-db'];
+        $overrides = [
+            'APP_ENV' => 'production', 'APP_DEBUG' => 'true', 'DB_HOST' => 'ambient-db',
+            'CACHE_STORE' => 'file', 'SESSION_DRIVER' => 'cookie', 'SESSION_SECURE_COOKIE' => 'false',
+            'MAIL_MAILER' => 'log', 'MAIL_HOST' => 'ambient-smtp', 'LOG_CHANNEL' => 'single',
+        ];
         $previous = [];
         foreach ($overrides as $name => $value) {
             $previous[$name] = [getenv($name), $_ENV[$name] ?? null, $_SERVER[$name] ?? null];
@@ -137,6 +152,12 @@ final class RuntimeEnvironmentTest extends TestCase
             self::assertSame('testing', $application->environment());
             self::assertFalse($application->make('config')->get('app.debug'));
             self::assertSame('db', $application->make('config')->get('database.connections.mysql.host'));
+            self::assertSame('redis', $application->make('config')->get('cache.default'));
+            self::assertSame('database', $application->make('config')->get('session.driver'));
+            self::assertTrue($application->make('config')->get('session.secure'));
+            self::assertSame('array', $application->make('config')->get('mail.default'));
+            self::assertSame('mailpit', $application->make('config')->get('mail.mailers.smtp.host'));
+            self::assertSame('stderr', $application->make('config')->get('logging.default'));
         } finally {
             foreach ($previous as $name => [$process, $environment, $server]) {
                 putenv($process === false ? $name : $name.'='.$process);
@@ -196,6 +217,92 @@ final class RuntimeEnvironmentTest extends TestCase
             'missing database password' => ['missing-password'],
             'unsafe production' => ['unsafe-production'],
         ];
+    }
+
+    #[DataProvider('serviceEnvironments')]
+    public function test_service_configuration_preserves_security_and_environment_isolation(
+        string $environment, string $url, bool $secureCookie, string $mailer, bool $requireTls,
+    ): void {
+        $path = $this->directory.'/settings.json';
+        $data = json_decode(file_get_contents($path), true, flags: JSON_THROW_ON_ERROR);
+        $data['environment'] = $environment;
+        $data['url'] = $url;
+        file_put_contents($path, json_encode($data, JSON_THROW_ON_ERROR));
+        $application = $this->application();
+        $this->bootstrap($application);
+        $config = $application->make('config');
+
+        self::assertSame('redis', $config->get('cache.default'));
+        self::assertSame('cache', $config->get('cache.stores.redis.connection'));
+        self::assertSame('naturally:'.$environment.':cache:', $config->get('cache.prefix'));
+        self::assertSame('database', $config->get('session.driver'));
+        self::assertSame('mysql', $config->get('session.connection'));
+        self::assertSame(120, $config->get('session.lifetime'));
+        self::assertTrue($config->get('session.encrypt'));
+        self::assertSame($secureCookie, $config->get('session.secure'));
+        self::assertTrue($config->get('session.http_only'));
+        self::assertSame('lax', $config->get('session.same_site'));
+        self::assertNull($config->get('session.domain'));
+        self::assertFalse($config->get('session.partitioned'));
+        self::assertSame($mailer, $config->get('mail.default'));
+        self::assertSame('mailpit', $config->get('mail.mailers.smtp.host'));
+        self::assertSame(1025, $config->get('mail.mailers.smtp.port'));
+        $transport = (new MailManager($application))->createSymfonyTransport($config->get('mail.mailers.smtp'));
+        self::assertSame($requireTls, $transport->isTlsRequired());
+        self::assertSame('stderr', $config->get('logging.default'));
+        self::assertSame('php://stderr', $config->get('logging.channels.stderr.with.stream'));
+        self::assertSame('stderr', $config->get('logging.deprecations.channel'));
+        self::assertFalse($config->get('logging.deprecations.trace'));
+        self::assertSame('php://stderr', $config->get('logging.channels.emergency.path'));
+    }
+
+    public static function serviceEnvironments(): array
+    {
+        return [
+            'local HTTP' => ['local', 'http://localhost:8000', false, 'smtp', false],
+            'local HTTPS' => ['local', 'https://naturally.test', true, 'smtp', false],
+            'testing HTTP' => ['testing', 'http://naturally.test', false, 'array', false],
+            'testing HTTPS' => ['testing', 'https://naturally.test', true, 'array', false],
+            'production HTTPS' => ['production', 'HTTPS://naturally.test', true, 'smtp', true],
+        ];
+    }
+
+    public function test_testing_mail_is_retained_in_memory_without_smtp(): void
+    {
+        $application = $this->application();
+        $this->bootstrap($application);
+        $config = $application->make('config');
+        $transport = (new MailManager($application))->createSymfonyTransport(
+            $config->get('mail.mailers.'.$config->get('mail.default')),
+        );
+        self::assertInstanceOf(ArrayTransport::class, $transport);
+        $message = (new Email())->from($config->get('mail.from.address'))->to('recipient@naturally.test')
+            ->subject('Runtime transport check')->text('Synthetic test message');
+        $transport->send($message);
+        self::assertCount(1, $transport->messages());
+        self::assertSame('Runtime transport check', $transport->messages()->first()->getOriginalMessage()->getSubject());
+    }
+
+    public function test_configured_logger_emits_json_at_info_level(): void
+    {
+        $application = $this->application();
+        $this->bootstrap($application);
+        $stream = fopen('php://memory', 'w+');
+        try {
+            $application->make('config')->set('logging.channels.stderr.with.stream', $stream);
+            $logger = (new LogManager($application))->channel();
+            $logger->debug('Below configured level');
+            $logger->info('Runtime ready', ['component' => 'runtime']);
+            rewind($stream);
+            $output = stream_get_contents($stream);
+            $entry = json_decode($output, true, flags: JSON_THROW_ON_ERROR);
+            self::assertSame('INFO', $entry['level_name']);
+            self::assertSame('Runtime ready', $entry['message']);
+            self::assertSame(['component' => 'runtime'], $entry['context']);
+            self::assertStringNotContainsString('Below configured level', $output);
+        } finally {
+            fclose($stream);
+        }
     }
 
     public function test_console_environment_cannot_override_validated_environment(): void
