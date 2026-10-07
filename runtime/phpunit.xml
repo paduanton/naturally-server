@@ -14,11 +14,13 @@
     <testsuites>
         <testsuite name="Runtime">
             <file>tests/Unit/RuntimeConfigurationTest.php</file>
+            <file>tests/Integration/RuntimeEnvironmentTest.php</file>
         </testsuite>
     </testsuites>
     <source>
         <include>
             <directory suffix=".php">app</directory>
+            <directory suffix=".php">config</directory>
         </include>
     </source>
     <coverage branchCoverage="true" includeUncoveredFiles="true" disableCodeCoverageIgnore="true"/>
