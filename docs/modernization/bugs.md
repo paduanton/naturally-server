@@ -22,6 +22,13 @@ As prioridades orientam a migração, não representam pontuação CVSS ou impac
 
 ## Limites e próximos passos
 
+- Atualização de SEC-001 em 01/10/2026: a [auditoria com Gitleaks](secrets-audit.md) reproduziu
+  quatro ocorrências na árvore da base 3ac5dff e dez no histórico. A correção proposta do
+  README substitui valores de senha/token por marcadores; a nova varredura do documento
+  não encontra ocorrências. O item permanece aberto: Compose, tratamento de credenciais
+  reais eventualmente identificadas e histórico não foram resolvidos. As regras padrão
+  do scanner não detectam todas as senhas literais já identificadas por inspeção.
+
 - A falha de rota API-001 interfere na reprodução HTTP de SEC-004. Corrigir a rota exige
   testar a autorização no mesmo fluxo; autenticação por si só não comprova propriedade.
 - O hash constante em `database/factories/UserFactory.php:25` é uma fixture previsível.

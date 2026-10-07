@@ -1,5 +1,11 @@
 # Overview
 
+> **Legacy reference:** this README describes the old application. Follow
+> [the architecture](docs/architecture.md) and [modernization status](docs/modernization/status.md)
+> for the replacement BFF. Authentication examples below are historical contracts, not
+> guidance for the new session-based API. Values between `<...>` are documentation markers,
+> not usable credentials; do not replace them with real secrets in source control.
+
 Naturally is an open source project that implements social media and social networking concepts. It was developed in PHP using the Laravel Framework 7, MySQL database and MVC design pattern. This repository is the Restful API backend only. The frontend is written in Angular 10 and can be seen here:
 
 [Naturally Frontend](https://github.com/paduanton/naturally)
@@ -98,8 +104,8 @@ To signup an user into our application, send a HTTP POST Request to `/v1/signup`
 {
         "name": "Antonio de Pádua",
 	"email" : "antonio.junior.h@gmail.com",
-	"password" : "201125",
-	"password_confirmation" : "201125",
+	"password": "<password>",
+	"password_confirmation": "<password-confirmation>",
 	"birthday": "1999/09/22",
 	"remember_me": true
 }
@@ -110,7 +116,7 @@ Send request with **username** or **email** field
 ```json
 {
 	"username" : "antonio.padua",
-	"password" : "nheac4257",
+	"password": "<password>",
 	"remember_me": false
 }
 ```
@@ -120,8 +126,8 @@ To signup or login an user with Facebook, Twitter or Google account in this appl
 ```json
 {
 	"provider": "twitter",
-	"access_token" : "1273378-jk9z175IJWdF154gZCrIM6ZryY2Alk",
-	"access_token_secret": "OBd4QjDpvhfpO8fj1YQPfC0c4bLXRQIaoS6wN52",
+	"access_token": "<access-token>",
+	"access_token_secret": "<access-token-secret>",
 	"remember_me" : true
 }
 ```
@@ -141,17 +147,17 @@ On sucess, an user entity and auth resource will be returned with http code 200:
     "auth_resource": {
         "token_type": "Bearer",
         "expires_in": "2021-08-02 00:22:44",
-        "access_token": "eyJiJSUzI1NiJ9.eyJIiOivcGVzIjpbXX0.RbF_Gen0fI",
+        "access_token": "<access-token>",
         "created_at": "2020-07-02 00:22:44",
-        "refresh_token": "8cad9a8560f10d5270720?mFaMWmcnNRyX57x7u2smHnXlJW7Jc",
-        "remember_token": "jpTynwS4d8daSSMmfM94XpetGjegs6iVE9myY896LOvojwKUe9V4tnKNM"
+        "refresh_token": "<refresh-token>",
+        "remember_token": "<remember-token>"
     }
 }
 ```
 Most of subsequent http requests must include this token in the HTTP header for user identification, so save it and sent it in all http requests. Header key will be Authorization with value 'Bearer' followed by a single space and then token string:
 
 ```
-Authorization: Bearer eyJ0eXAiOiJKV1QiL.CJhbGciOiJSUzI1NiIm.p0aSI6Ic4ZDAwNG
+Authorization: Bearer <access-token>
 ```
 
 #### Note:

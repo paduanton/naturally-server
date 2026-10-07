@@ -170,10 +170,10 @@ O CI de inventário desse commit passou na
 [execução 36514641566](https://github.com/paduanton/naturally-server/actions/runs/36514641566).
 
 Com este incremento, as 13 entradas de skills previstas foram entregues. A etapa 2
-continua em andamento: o CI aceito verifica somente o inventário, e a validação do padrão
-de commits e os demais controles de qualidade do plano ainda não foram entregues.
+continua em andamento: o CI aceito verifica inventário e, desde o incremento seguinte,
+mensagens de commits. Os demais controles de qualidade continuam pendentes.
 
-## Incremento em revisão: validação de Conventional Commits
+## Validação de Conventional Commits
 
 O novo job commits usa commitlint 21.2.3 com dependências isoladas e lockfile em
 tools/commitlint. Exige tipo permitido, um único escopo permitido, descrição e marcação
@@ -197,15 +197,35 @@ Validação local concluída em 29/09/2026, usando Node.js 24.19.0 e npm 10.9.4 
 - Inventário validado: 210 arquivos, zero concluídos; seus 18 testes passaram.
 - actionlint 1.7.12 sem erros; ShellCheck e Pyflakes não foram executados.
 
-O novo job usa Node.js 22 no GitHub Actions; sua execução remota depende do commit/push
-ainda não aprovados. Proteção de branch/rulesets não foi configurada. Não houve alteração
+O novo job usa Node.js 22 no GitHub Actions. Incremento aprovado e enviado em 3ac5dff —
+`ci(ci): enforce conventional commit messages` (nove arquivos). Os jobs de inventário e
+commits passaram na [execução 36936156116](https://github.com/paduanton/naturally-server/actions/runs/36936156116).
+Proteção de branch/rulesets não foi configurada. Não houve alteração
 funcional, teste Laravel ou medição de cobertura da aplicação neste incremento.
+
+## Incremento em revisão: credenciais nos exemplos do README
+
+Auditoria local em 01/10/2026, com Gitleaks 8.30.1 verificado por SHA-256, sobre a árvore
+versionada de 3ac5dff e o histórico disponível. Encontrou quatro ocorrências na árvore e
+dez no histórico; ambas as execuções retornaram 1. Metadados, método e limites estão em
+secrets-audit.md. Valores não foram utilizados para consultar provedores ou verificar validade.
+
+O README troca oito valores de campos de senha/token e um Bearer por marcadores e identifica
+os contratos como legado. A varredura do documento corrigido retornou 0, sem ocorrências.
+A árvore exportada com os quatro arquivos propostos também passou na varredura; a
+conferência adicional dos campos confirmou a substituição dos valores. Inventário válido:
+210 arquivos, zero concluídos. Não houve teste Laravel ou medição de cobertura.
+O incremento contém README.md, a auditoria, o registro de bugs e este progresso. SEC-001
+permanece aberto; as regras padrão não detectam todas as senhas literais conhecidas.
+Nenhuma revogação, reescrita de histórico, alteração de runtime ou configuração de scanner
+no CI foi realizada. A correção e seu registro aguardam aprovação para commit/push.
 
 ## Estado técnico
 
 As entregas aceitas compreendem documentação, verificador do inventário, seu CI e nove
 skills de engenharia, runtime-secrets, bff-security, cache-consistency e aks-delivery.
-A validação de commits aguarda aprovação; o runtime possui rascunhos locais sem entrega
+O CI também valida mensagens de commits. A correção dos exemplos do README aguarda
+aprovação; o runtime possui rascunhos locais sem entrega
 aceita na branch. A cobertura global de 90%
 não foi atingida nem demonstrada. Nenhum módulo funcional está concluído.
 
