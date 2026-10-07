@@ -50,3 +50,11 @@ Development tool image (Docker with a Linux engine; run from the repository root
 - `docker build --target development -f docker/runtime/Dockerfile -t naturally-php-development:local docker/runtime` builds the PHP/Composer tool image without application source.
 - `docker run --rm --network none --mount type=bind,source=./scripts/tests/runtime-image.php,target=/runtime-image.php,readonly naturally-php-development:local php /runtime-image.php` checks extensions, image formats, Composer, the default user and disabled Xdebug.
 - `docker run --rm --network none -e XDEBUG_MODE=coverage --mount type=bind,source=./scripts/tests/runtime-image.php,target=/runtime-image.php,readonly naturally-php-development:local php /runtime-image.php --coverage` additionally checks real branch/path collection. It does not measure Laravel coverage or validate application startup.
+
+Modern application dependencies (same tool image; run from the repository root):
+
+- `docker run --rm --mount type=bind,source=./runtime,target=/app naturally-php-development:local composer install --no-plugins --no-scripts --no-interaction --prefer-dist` installs the committed lockfile without bootstrapping the application or running dependency scripts/plugins.
+- `docker run --rm --network none --mount type=bind,source=./runtime,target=/app,readonly naturally-php-development:local composer validate --strict --no-plugins` checks the manifest and lockfile.
+- `docker run --rm --network none --mount type=bind,source=./runtime,target=/app,readonly naturally-php-development:local composer check-platform-reqs --no-plugins` checks installed dependencies against the real PHP/extensions, rather than the resolution platform.
+- `docker run --rm --mount type=bind,source=./runtime,target=/app,readonly naturally-php-development:local composer audit --locked --no-plugins` checks advisories and abandoned packages, including development dependencies.
+- `docker run --rm --network none --mount type=bind,source=./runtime,target=/app,readonly naturally-php-development:local php vendor/bin/phpunit --version` checks the installed runner. Application tests, startup and coverage are not established by these dependency checks.
