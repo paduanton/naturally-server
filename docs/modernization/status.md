@@ -203,7 +203,7 @@ commits passaram na [execução 36936156116](https://github.com/paduanton/natura
 Proteção de branch/rulesets não foi configurada. Não houve alteração
 funcional, teste Laravel ou medição de cobertura da aplicação neste incremento.
 
-## Incremento em revisão: credenciais nos exemplos do README
+## Credenciais nos exemplos do README
 
 Auditoria local em 01/10/2026, com Gitleaks 8.30.1 verificado por SHA-256, sobre a árvore
 versionada de 3ac5dff e o histórico disponível. Encontrou quatro ocorrências na árvore e
@@ -218,14 +218,43 @@ conferência adicional dos campos confirmou a substituição dos valores. Invent
 O incremento contém README.md, a auditoria, o registro de bugs e este progresso. SEC-001
 permanece aberto; as regras padrão não detectam todas as senhas literais conhecidas.
 Nenhuma revogação, reescrita de histórico, alteração de runtime ou configuração de scanner
-no CI foi realizada. A correção e seu registro aguardam aprovação para commit/push.
+no CI foi realizada neste incremento. Correção aprovada e enviada em 4fc7496 —
+`fix(security): remove credentials from legacy examples` (quatro arquivos).
+O CI passou na [execução 37556928127](https://github.com/paduanton/naturally-server/actions/runs/37556928127).
+
+## Incremento em revisão: detecção de segredos no CI
+
+O job secrets prepara Gitleaks 8.30.1 por download com SHA-256 fixado e executa testes de
+detecção/redação. Examina a árvore versionada do head e os diffs do histórico posterior
+a 4fc7496b28e007d19f9a0ca2e3994d7b8334f45c, inclusive merges. Falha por achados ou erros;
+não aceita comentários de dispensa ou arquivo de ignore do checkout. Relatórios são
+redigidos e não publicados como artifacts. Não cria baseline de supressão.
+
+O incremento contém sete arquivos: workflow, configuração, bloqueio de ignore na origem,
+testes Node, guia de varredura, AGENTS.md e este progresso. Mantém explícitos o recorte de adoção, as dez ocorrências
+históricas e as senhas literais não detectadas. SEC-001 não está concluído. Proteção de
+branch/rulesets e segurança do runtime permanecem pendentes.
+
+Validação local em 06/10/2026: a regressão reproduziu o carregamento adicional de `.gitleaksignore`
+da origem, mesmo com outro caminho explícito. O job agora rejeita esse arquivo antes de
+executar o scanner. Sete testes passaram (versão, validação da origem,
+marcadores, token genérico, token de provedor, redação e resistência a dispensa/ignore).
+Seis cenários do Bash passaram usando commits existentes: árvore limpa, bloqueio de árvore
+antiga, detecção em intervalo antigo com valores removidos, head inválido/ausente e base
+ausente. A árvore exportada com os sete arquivos propostos passou na varredura. Inventário
+válido com 210 arquivos e zero concluídos. Testes locais usaram Node.js 24.19.0 e Gitleaks
+Windows x64; a execução Linux/Node.js 22 do CI ainda está pendente.
+Os comandos locais de diff/staging retornaram 0; Git emitiu avisos de CRLF e acesso à sua
+configuração global, apresentados pelo scanner como ERR. O staging estava vazio.
+actionlint 1.7.12 sem erros; ShellCheck e Pyflakes não executados. A validação remota do novo job
+depende da aprovação de commit/push. Não há medição de cobertura Laravel neste incremento.
 
 ## Estado técnico
 
 As entregas aceitas compreendem documentação, verificador do inventário, seu CI e nove
 skills de engenharia, runtime-secrets, bff-security, cache-consistency e aks-delivery.
-O CI também valida mensagens de commits. A correção dos exemplos do README aguarda
-aprovação; o runtime possui rascunhos locais sem entrega
+O CI também valida mensagens de commits; os exemplos do README foram corrigidos.
+A detecção de segredos no CI aguarda aprovação; o runtime possui rascunhos locais sem entrega
 aceita na branch. A cobertura global de 90%
 não foi atingida nem demonstrada. Nenhum módulo funcional está concluído.
 

@@ -1,0 +1,4 @@
+title = "Naturally secret scanning"
+
+[extend]
+useDefault = true
