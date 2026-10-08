@@ -1,0 +1,55 @@
+name: Runtime
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: runtime-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  runtime:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      COMPOSE_DISABLE_ENV_FILE: '1'
+      COMPOSE_ENV_FILES: ''
+    steps:
+      - name: Check out source without persisted credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Build the pinned PHP tool image without application source
+        run: docker build --target development -f docker/runtime/Dockerfile -t naturally-php-development:local docker/runtime
+      - name: Verify extensions and the unprivileged image user
+        run: docker run --rm --network none --mount type=bind,source=./scripts/tests/runtime-image.php,target=/runtime-image.php,readonly naturally-php-development:local php /runtime-image.php
+      - name: Verify real Xdebug branch and path collection
+        run: docker run --rm --network none -e XDEBUG_MODE=coverage --mount type=bind,source=./scripts/tests/runtime-image.php,target=/runtime-image.php,readonly naturally-php-development:local php /runtime-image.php --coverage
+      - name: Validate Compose and initialize isolated secret volumes
+        run: |
+          docker compose -p naturally-modern-tests -f compose.modern.yml config --quiet
+          docker compose -p naturally-modern-tests -f compose.modern.yml run --rm init
+      - name: Install the lockfile without Composer plugins or scripts
+        run: docker compose -p naturally-modern-tests -f compose.modern.yml run --rm dependencies
+      - name: Validate dependencies and audit locked packages
+        run: |
+          docker compose -p naturally-modern-tests -f compose.modern.yml run --rm tools composer validate --strict --no-plugins
+          docker compose -p naturally-modern-tests -f compose.modern.yml run --rm tools composer check-platform-reqs --no-plugins
+          docker compose -p naturally-modern-tests -f compose.modern.yml run --rm tools composer audit --locked --no-plugins
+      - name: Test runtime and report lines and branches for every source file
+        # Include unexecuted files. Child-process coverage is not aggregated; this
+        # report does not certify legacy coverage or a completed functional module.
+        run: docker compose -p naturally-modern-tests -f compose.modern.yml run --rm -e XDEBUG_MODE=coverage tools php -d memory_limit=512M vendor/bin/phpunit --coverage-text
+      - name: Test secret generation and report tooling coverage separately
+        # init.php runs in child processes. Shell/PowerShell and child coverage
+        # are not part of this PHP report; never claim it is application coverage.
+        run: docker compose -p naturally-modern-tests -f compose.modern.yml run --rm -e XDEBUG_MODE=coverage volume-tests php -d memory_limit=512M vendor/bin/phpunit --configuration /development/phpunit.xml --coverage-text
+      - name: Start real isolated MySQL and Redis without published ports
+        run: docker compose -p naturally-modern-tests -f compose.modern.yml up -d --wait db redis
+      - name: Test real database transactions cache expiry and locks
+        run: docker compose -p naturally-modern-tests -f compose.modern.yml run --rm -e NATURALLY_CONFIG_PATH=/app/settings/testing.json tools php vendor/bin/phpunit --configuration phpunit.services.xml --no-coverage
+      - name: Stop isolated test containers even after a failure
+        if: ${{ always() }}
+        # Preserve volumes; GitHub-hosted runners discard the entire ephemeral
+        # machine after the job. Do not introduce deletion into local workflows.
+        run: docker compose -p naturally-modern-tests -f compose.modern.yml down
