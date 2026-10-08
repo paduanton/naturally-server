@@ -44,6 +44,7 @@ use Symfony\Component\Process\Process;
 #[UsesFile(__DIR__.'/../../config/logging.php')]
 #[UsesClass(LoadRuntimeEnvironment::class)]
 #[UsesClass(RuntimeConfiguration::class)]
+#[UsesClass(\App\Modules\Identity\Infrastructure\IdentityServiceProvider::class)]
 final class RuntimeBootstrapTest extends TestCase
 {
     private string $directory;

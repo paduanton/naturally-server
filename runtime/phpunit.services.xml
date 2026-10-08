@@ -14,6 +14,7 @@
     <testsuites>
         <testsuite name="RuntimeServices">
             <file>tests/Integration/RuntimeServicesTest.php</file>
+            <file>tests/Integration/IdentitySchemaTest.php</file>
         </testsuite>
     </testsuites>
     <source>

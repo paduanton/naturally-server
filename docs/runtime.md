@@ -107,8 +107,12 @@ a limpeza dos containers. Não compartilha o banco, os segredos nem o cache do d
 
 A aceitação valida autenticação MySQL, Unicode, commit/rollback em tabela temporária,
 restrição de acesso administrativo e cache Redis com expiração e locks reais.
-Chaves são aleatórias e removidas ao final; não há flush global ou migrations.
+Chaves são aleatórias e removidas ao final; não há flush global. A suíte também executa
+as migrations de Identity em tabelas com prefixo aleatório por teste, incluindo repetição,
+constraints, transações e rollback. A limpeza remove somente essas tabelas; o banco de
+desenvolvimento permanece separado.
 Os testes de volumes exercitam geração, permissões, reinícios, concorrência e falhas
 sem produzir credenciais no repositório. Essa aceitação operacional é separada da
-cobertura da aplicação. Sessões completas exigem schema e guard de Identity; ainda
-não há autenticação, readiness de dependências, homologação de email ou entrega AKS.
+cobertura da aplicação. As tabelas `users` e `sessions` são a fundação de Identity;
+guard, endpoints e revogação por exclusão lógica ainda serão implementados. Não há
+autenticação completa, readiness de dependências, homologação de email ou entrega AKS.
