@@ -1,0 +1,18 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Contracts\Console\Kernel;
+use Symfony\Component\Console\Input\ArgvInput;
+
+try {
+    require __DIR__.'/vendor/autoload.php';
+    $application = require __DIR__.'/bootstrap/app.php';
+    $application->make(Kernel::class)->bootstrap();
+} catch (Throwable) {
+    fwrite(STDERR, "Runtime startup failed.\n");
+    exit(1);
+}
+
+exit($application->handleCommand(new ArgvInput()));

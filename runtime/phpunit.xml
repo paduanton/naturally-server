@@ -15,12 +15,17 @@
         <testsuite name="Runtime">
             <file>tests/Unit/RuntimeConfigurationTest.php</file>
             <file>tests/Integration/RuntimeEnvironmentTest.php</file>
+            <file>tests/Integration/RuntimeBootstrapTest.php</file>
         </testsuite>
     </testsuites>
     <source>
         <include>
             <directory suffix=".php">app</directory>
             <directory suffix=".php">config</directory>
+            <directory suffix=".php">bootstrap</directory>
+            <directory suffix=".php">routes</directory>
+            <directory suffix=".php">public</directory>
+            <file>artisan</file>
         </include>
     </source>
     <coverage branchCoverage="true" includeUncoveredFiles="true" disableCodeCoverageIgnore="true"/>
