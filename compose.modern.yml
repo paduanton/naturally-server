@@ -89,7 +89,9 @@ services:
       - db-secrets:/run/secrets:ro
       - ./docker/runtime/mysql-entrypoint.sh:/naturally-mysql.sh:ro
     healthcheck:
-      test: [CMD, mysqladmin, ping, -h, localhost]
+      # The initialization server is socket-only; wait for the final TCP server.
+      # Application credentials are verified by the real service acceptance suite.
+      test: [CMD, mysqladmin, ping, --protocol=tcp, -h, 127.0.0.1]
       interval: 5s
       timeout: 3s
       retries: 30
