@@ -6,8 +6,7 @@ namespace Tests\Integration;
 
 use App\Shared\Infrastructure\RuntimeApplicationFactory;
 use Illuminate\Contracts\Console\Kernel;
-use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Testing\TestCase;
+use Tests\Support\DatabaseTestCase;
 use Illuminate\Database\QueryException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -18,6 +17,8 @@ use PHPUnit\Framework\Attributes\UsesFile;
 #[CoversClass(\App\Modules\Identity\Infrastructure\IdentityServiceProvider::class)]
 #[CoversFile(__DIR__.'/../../app/Modules/Identity/Infrastructure/Database/Migrations/2026_10_08_000000_create_identity_users_table.php')]
 #[CoversFile(__DIR__.'/../../app/Modules/Identity/Infrastructure/Database/Migrations/2026_10_08_000001_create_identity_sessions_table.php')]
+#[CoversFile(__DIR__.'/../../app/Modules/Identity/Infrastructure/Database/Migrations/2026_10_08_000002_create_social_accounts_table.php')]
+#[CoversFile(__DIR__.'/../../app/Modules/Identity/Infrastructure/Database/Migrations/2026_10_08_000003_create_password_reset_tokens_table.php')]
 #[UsesClass(RuntimeApplicationFactory::class)]
 #[UsesClass(\App\Shared\Infrastructure\RuntimeApplication::class)]
 #[UsesClass(\App\Shared\Infrastructure\RuntimeConfiguration::class)]
@@ -32,44 +33,8 @@ use PHPUnit\Framework\Attributes\UsesFile;
 #[UsesFile(__DIR__.'/../../config/logging.php')]
 #[UsesFile(__DIR__.'/../../config/view.php')]
 #[UsesFile(__DIR__.'/../../routes/health.php')]
-final class IdentitySchemaTest extends TestCase
+final class IdentitySchemaTest extends DatabaseTestCase
 {
-    public function createApplication(): Application
-    {
-        $application = RuntimeApplicationFactory::fromEnvironment(dirname(__DIR__, 2));
-        $application->make(Kernel::class)->bootstrap();
-        if (!$application->environment('testing')) {
-            throw new \RuntimeException('Identity schema tests require the isolated testing environment.');
-        }
-        // Migrations and cleanup own only these randomly prefixed tables.
-        $application->make('config')->set('database.connections.mysql.prefix', 'identity_test_'.bin2hex(random_bytes(6)).'_');
-        $application->make('config')->set('database.connections.mysql.prefix_indexes', true);
-
-        return $application;
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        self::assertSame(0, $this->app->make(Kernel::class)->call('migrate', ['--force' => true, '--no-interaction' => true]));
-    }
-
-    protected function tearDown(): void
-    {
-        try {
-            $connection = $this->app->make('db')->connection();
-            if (!preg_match('/^identity_test_[a-f0-9]{12}_$/D', $connection->getTablePrefix())) {
-                throw new \RuntimeException('Refusing schema cleanup without the isolated test prefix.');
-            }
-            $schema = $connection->getSchemaBuilder();
-            foreach (['sessions', 'users', 'migrations'] as $table) {
-                $schema->dropIfExists($table);
-            }
-        } finally {
-            parent::tearDown();
-        }
-    }
-
     public function testMigrationsCreateUserStorageWithUtf8AndOptionalSocialCredentials(): void
     {
         $connection = $this->app->make('db')->connection();
