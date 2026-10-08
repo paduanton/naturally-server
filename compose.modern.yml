@@ -1,0 +1,113 @@
+name: naturally-modern
+x-runtime: &runtime
+  image: naturally-php-development:local
+  build:
+    context: ./docker/runtime
+    dockerfile: Dockerfile
+    target: development
+  working_dir: /app
+  user: "33:33"
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  tmpfs: [/tmp:mode=1777]
+  volumes:
+    - ./runtime:/app:ro
+    - vendor:/app/vendor:ro
+    - app-secrets:/run/secrets:ro
+    - app-runtime:/run/runtime
+  environment:
+    NATURALLY_CONFIG_PATH: /app/settings/local.json
+    NATURALLY_SECRET_DIRECTORY: /run/secrets
+    NATURALLY_RUNTIME_DIRECTORY: /run/runtime
+services:
+  init:
+    image: naturally-php-development:local
+    user: "0:0"
+    profiles: [tools]
+    read_only: true
+    network_mode: none
+    cap_drop: [ALL]
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER]
+    security_opt: [no-new-privileges:true]
+    command: [php, /development/init.php]
+    volumes:
+      - ./docker/runtime:/development:ro
+      - app-secrets:/run/app-secrets
+      - db-secrets:/run/db-secrets
+      - app-runtime:/run/runtime
+      - vendor:/run/vendor
+      - db-data:/run/db-data:ro
+  dependencies:
+    <<: *runtime
+    profiles: [tools]
+    command: [composer, install, --no-plugins, --no-scripts, --no-interaction, --prefer-dist]
+    volumes:
+      - ./runtime:/app:ro
+      - vendor:/app/vendor
+  volume-tests:
+    <<: *runtime
+    profiles: [tools]
+    user: "0:0"
+    network_mode: none
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER]
+    command: [php, vendor/bin/phpunit, --configuration, /development/phpunit.xml, --no-coverage]
+    volumes:
+      - ./runtime:/app:ro
+      - vendor:/app/vendor:ro
+      - ./docker/runtime:/development:ro
+  tools:
+    <<: *runtime
+    profiles: [tools]
+    command: [php, artisan, env, --no-ansi]
+  api:
+    <<: *runtime
+    command: [php, -S, "0.0.0.0:8080", -t, public, public/index.php]
+    ports: ["127.0.0.1:8080:8080"]
+    depends_on:
+      db: {condition: service_healthy}
+      redis: {condition: service_healthy}
+      mailpit: {condition: service_started}
+    healthcheck:
+      test: [CMD, php, -r, "exit(@file_get_contents('http://127.0.0.1:8080/health/live') === '{\"status\":\"up\"}' ? 0 : 1);"]
+      interval: 5s
+      timeout: 10s
+      retries: 12
+      start_period: 30s
+  db:
+    image: mysql:8.4@sha256:6ea90827b1100f8f2ae306a539f86d2c264a26ed435a2a9f75551dd5c3aeb242
+    entrypoint: [bash, /naturally-mysql.sh]
+    command: [mysqld, --mysqlx=OFF]
+    environment:
+      MYSQL_DATABASE: naturally
+      MYSQL_USER: naturally
+      MYSQL_ROOT_HOST: localhost
+      MYSQL_PASSWORD_FILE: /run/secrets/db_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/root_password
+    volumes:
+      - db-data:/var/lib/mysql
+      - db-secrets:/run/secrets:ro
+      - ./docker/runtime/mysql-entrypoint.sh:/naturally-mysql.sh:ro
+    healthcheck:
+      test: [CMD, mysqladmin, ping, -h, localhost]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
+  redis:
+    image: redis:7.4-alpine@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499
+    command: [redis-server, --save, "", --appendonly, "no"]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+  mailpit:
+    image: axllent/mailpit:v1.27@sha256:e22dce5b36f93c77082e204a3942fb6b283b7896e057458400a4c88344c3df68
+    ports: ["127.0.0.1:8025:8025"]
+volumes:
+  vendor:
+  app-secrets:
+  db-secrets:
+  app-runtime:
+  db-data:

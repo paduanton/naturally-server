@@ -1,0 +1,19 @@
+{
+  "environment": "testing",
+  "debug": false,
+  "url": "https://naturally.test",
+  "database": {
+    "host": "db",
+    "port": 3306,
+    "name": "naturally",
+    "user": "naturally"
+  },
+  "redis": {
+    "host": "redis",
+    "port": 6379
+  },
+  "mail": {
+    "host": "mailpit",
+    "port": 1025
+  }
+}

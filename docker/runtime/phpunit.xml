@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="/app/vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="/app/vendor/autoload.php" cacheDirectory="/tmp/naturally-volume-tests"
+         recordTestRunHistory="false" failOnAllIssues="true" failOnEmptyTestSuite="true"
+         requireCoverageMetadata="true" beStrictAboutCoverageMetadata="true"
+         beStrictAboutOutputDuringTests="true" displayDetailsOnAllIssues="true">
+    <testsuites>
+        <testsuite name="DevelopmentVolumes"><directory>tests</directory></testsuite>
+    </testsuites>
+    <source><include><file>DevelopmentVolumes.php</file><file>init.php</file></include></source>
+    <coverage branchCoverage="true" includeUncoveredFiles="true" disableCodeCoverageIgnore="true"/>
+</phpunit>
