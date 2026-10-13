@@ -28,6 +28,7 @@
             <file>tests/Integration/IdentityCredentialsSchemaTest.php</file>
             <file>tests/Integration/IdentityPersistenceTest.php</file>
             <file>tests/Integration/IdentityPhoneSchemaTest.php</file>
+            <file>tests/Integration/RecipeSchemaTest.php</file>
         </testsuite>
     </testsuites>
     <source>
