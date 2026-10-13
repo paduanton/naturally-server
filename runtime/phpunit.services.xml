@@ -18,6 +18,7 @@
             <file>tests/Integration/DatabaseFixtureTest.php</file>
             <file>tests/Integration/IdentityCredentialsSchemaTest.php</file>
             <file>tests/Integration/IdentityPersistenceTest.php</file>
+            <file>tests/Integration/IdentityPhoneSchemaTest.php</file>
         </testsuite>
     </testsuites>
     <source>

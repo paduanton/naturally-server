@@ -35,6 +35,7 @@ use Illuminate\Support\Carbon;
 #[\PHPUnit\Framework\Attributes\UsesFile(__DIR__.'/../../app/Modules/Identity/Infrastructure/Database/Migrations/2026_10_08_000001_create_identity_sessions_table.php')]
 #[\PHPUnit\Framework\Attributes\UsesFile(__DIR__.'/../../app/Modules/Identity/Infrastructure/Database/Migrations/2026_10_08_000002_create_social_accounts_table.php')]
 #[\PHPUnit\Framework\Attributes\UsesFile(__DIR__.'/../../app/Modules/Identity/Infrastructure/Database/Migrations/2026_10_08_000003_create_password_reset_tokens_table.php')]
+#[\PHPUnit\Framework\Attributes\UsesDirectoryRecursively(__DIR__.'/../../app')]
 final class IdentityPersistenceTest extends DatabaseTestCase
 {
     public function testGuestSessionCanBePersistedWithTheRealDatabaseGuard(): void

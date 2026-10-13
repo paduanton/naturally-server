@@ -27,6 +27,27 @@ abstract class DatabaseTestCase extends TestCase
         $this->database->migrate();
     }
 
+    protected function createUserId(): int
+    {
+        $suffix = bin2hex(random_bytes(12));
+        return $this->database->connection()->table('users')->insertGetId([
+            'name' => 'Synthetic '.$suffix, 'username' => 'user_'.$suffix,
+            'email' => $suffix.'@example.test',
+        ]);
+    }
+
+    protected function assertSqlRejected(callable $operation, int $expectedCode): void
+    {
+        $code = null;
+        try {
+            $operation();
+        } catch (\Illuminate\Database\QueryException $exception) {
+            $code = $exception->errorInfo[1] ?? null;
+        }
+        // Assertions report only the numeric code, never SQL or bindings.
+        self::assertSame($expectedCode, $code);
+    }
+
     protected function tearDown(): void
     {
         try {

@@ -47,6 +47,7 @@ use Symfony\Component\Process\Process;
 #[UsesClass(LoadRuntimeEnvironment::class)]
 #[UsesClass(RuntimeConfiguration::class)]
 #[UsesClass(\App\Modules\Identity\Infrastructure\IdentityServiceProvider::class)]
+#[\PHPUnit\Framework\Attributes\UsesDirectoryRecursively(__DIR__.'/../../app')]
 final class RuntimeBootstrapTest extends TestCase
 {
     private string $directory;
