@@ -20,6 +20,7 @@
             <file>tests/Integration/IdentityPersistenceTest.php</file>
             <file>tests/Integration/IdentityPhoneSchemaTest.php</file>
             <file>tests/Integration/RecipeSchemaTest.php</file>
+            <file>tests/Integration/RecipePersistenceTest.php</file>
         </testsuite>
     </testsuites>
     <source>
