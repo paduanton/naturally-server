@@ -19,6 +19,7 @@
         </testsuite>
         <testsuite name="Architecture">
             <file>tests/Architecture/ModuleArchitectureTest.php</file>
+            <file>tests/Architecture/CoverageSuiteTest.php</file>
         </testsuite>
     </testsuites>
     <source>

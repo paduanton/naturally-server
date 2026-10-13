@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         cacheDirectory="/tmp/naturally-phpunit"
+         recordTestRunHistory="false"
+         colors="false"
+         failOnAllIssues="true"
+         failOnEmptyTestSuite="true"
+         requireCoverageMetadata="true"
+         beStrictAboutCoverageMetadata="true"
+         beStrictAboutOutputDuringTests="true"
+         displayDetailsOnAllIssues="true">
+    <testsuites>
+        <testsuite name="Runtime">
+            <file>tests/Unit/RuntimeConfigurationTest.php</file>
+            <file>tests/Integration/RuntimeEnvironmentTest.php</file>
+            <file>tests/Integration/RuntimeBootstrapTest.php</file>
+        </testsuite>
+        <testsuite name="Architecture">
+            <file>tests/Architecture/ModuleArchitectureTest.php</file>
+            <file>tests/Architecture/CoverageSuiteTest.php</file>
+        </testsuite>
+        <testsuite name="Persistence">
+            <file>tests/Integration/RuntimeServicesTest.php</file>
+            <file>tests/Integration/IdentitySchemaTest.php</file>
+            <file>tests/Integration/DatabaseFixtureTest.php</file>
+            <file>tests/Integration/IdentityCredentialsSchemaTest.php</file>
+            <file>tests/Integration/IdentityPersistenceTest.php</file>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory suffix=".php">app</directory>
+            <directory suffix=".php">config</directory>
+            <directory suffix=".php">bootstrap</directory>
+            <directory suffix=".php">routes</directory>
+            <directory suffix=".php">public</directory>
+            <file>artisan</file>
+        </include>
+    </source>
+    <coverage branchCoverage="true" includeUncoveredFiles="true" disableCodeCoverageIgnore="true"/>
+</phpunit>

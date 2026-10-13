@@ -36,18 +36,59 @@ jobs:
           docker compose -p naturally-modern-tests -f compose.modern.yml run --rm tools composer validate --strict --no-plugins
           docker compose -p naturally-modern-tests -f compose.modern.yml run --rm tools composer check-platform-reqs --no-plugins
           docker compose -p naturally-modern-tests -f compose.modern.yml run --rm tools composer audit --locked --no-plugins
-      - name: Test runtime and report lines and branches for every source file
-        # Include unexecuted files. Child-process coverage is not aggregated; this
-        # report does not certify legacy coverage or a completed functional module.
-        run: docker compose -p naturally-modern-tests -f compose.modern.yml run --rm -e XDEBUG_MODE=coverage tools php -d memory_limit=512M vendor/bin/phpunit --coverage-text
+      - name: Test runtime and architecture before database startup
+        run: docker compose -p naturally-modern-tests -f compose.modern.yml run --rm tools php vendor/bin/phpunit --no-coverage
+      - name: Test coverage thresholds without network or mounted secrets
+        run: docker run --rm --network none --read-only --tmpfs /tmp:mode=1777 --mount type=volume,source=naturally-modern-tests_vendor,target=/app/vendor,readonly --mount type=bind,source=./tools/coverage,target=/coverage-tools,readonly naturally-php-development:local php vendor/bin/phpunit --configuration /coverage-tools/phpunit.xml --no-coverage
       - name: Test secret generation and report tooling coverage separately
         # init.php runs in child processes. Shell/PowerShell and child coverage
         # are not part of this PHP report; never claim it is application coverage.
         run: docker compose -p naturally-modern-tests -f compose.modern.yml run --rm -e XDEBUG_MODE=coverage volume-tests php -d memory_limit=512M vendor/bin/phpunit --configuration /development/phpunit.xml --coverage-text
       - name: Start real isolated MySQL and Redis without published ports
         run: docker compose -p naturally-modern-tests -f compose.modern.yml up -d --wait db redis
-      - name: Test real database transactions cache expiry and locks
-        run: docker compose -p naturally-modern-tests -f compose.modern.yml run --rm -e NATURALLY_CONFIG_PATH=/app/settings/testing.json tools php vendor/bin/phpunit --configuration phpunit.services.xml --no-coverage
+      - name: Measure runtime architecture and real service tests together
+        # All source files stay included. Child-process coverage is not aggregated;
+        # this job does not certify legacy coverage or functional module completion.
+        run: docker compose -p naturally-modern-tests -f compose.modern.yml run --rm -e NATURALLY_CONFIG_PATH=/app/settings/testing.json -e XDEBUG_MODE=coverage tools php -d memory_limit=512M vendor/bin/phpunit --configuration phpunit.foundation.xml --coverage-text=/run/runtime/coverage/report.txt --coverage-html=/run/runtime/coverage/html --coverage-clover=/run/runtime/coverage/clover.xml --coverage-jsonl=/run/runtime/coverage/branches
+      - name: Check modern line and observed branch thresholds and expose limitations
+        # The JSON explicitly reports files lacking branch data. Strict final
+        # acceptance remains blocked until subprocess/legacy evidence is complete.
+        run: docker run --rm --network none --read-only --mount type=volume,source=naturally-modern-tests_app-runtime,target=/run/runtime,readonly --mount type=bind,source=./tools/coverage,target=/coverage-tools,readonly naturally-php-development:local php /coverage-tools/check.php /run/runtime/coverage/report.txt
+      - name: Export only generated coverage reports
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/modern-coverage
+          container=$(docker create --network none --mount type=volume,source=naturally-modern-tests_app-runtime,target=/run/runtime,readonly naturally-php-development:local)
+          [[ "$container" =~ ^[0-9a-f]{64}$ ]]
+          trap 'docker rm "$container" >/dev/null' EXIT
+          docker cp "$container:/run/runtime/coverage/." artifacts/modern-coverage/
+      - name: Scan generated reports before uploading
+        shell: bash
+        run: |
+          set -euo pipefail
+          tool_dir="$RUNNER_TEMP/runtime-gitleaks"
+          archive="$tool_dir/gitleaks_8.30.1_linux_x64.tar.gz"
+          mkdir -p "$tool_dir"
+          curl --fail --silent --show-error --location --retry 3 \
+            https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz \
+            --output "$archive"
+          printf '%s  %s\n' 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb "$archive" | sha256sum --check --strict
+          tar -xzf "$archive" -C "$tool_dir" gitleaks
+          # Refuse source/report ignore files; use the same approved scanner policy.
+          test ! -e .gitleaksignore
+          test ! -e artifacts/modern-coverage/.gitleaksignore
+          test ! -e "$tool_dir/no-ignore"
+          "$tool_dir/gitleaks" dir artifacts/modern-coverage --config tools/gitleaks/config.toml \
+            --gitleaks-ignore-path "$tool_dir/no-ignore" --ignore-gitleaks-allow --redact=100 --no-banner --no-color
+      - name: Upload reviewed coverage formats with short retention
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: modern-coverage-${{ github.sha }}
+          path: artifacts/modern-coverage/
+          if-no-files-found: error
+          retention-days: 7
+          include-hidden-files: false
       - name: Stop isolated test containers even after a failure
         if: ${{ always() }}
         # Preserve volumes; GitHub-hosted runners discard the entire ephemeral
