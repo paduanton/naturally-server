@@ -17,6 +17,9 @@
             <file>tests/Integration/RuntimeEnvironmentTest.php</file>
             <file>tests/Integration/RuntimeBootstrapTest.php</file>
         </testsuite>
+        <testsuite name="Architecture">
+            <file>tests/Architecture/ModuleArchitectureTest.php</file>
+        </testsuite>
     </testsuites>
     <source>
         <include>

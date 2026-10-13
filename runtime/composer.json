@@ -8,6 +8,7 @@
     "laravel/framework": "^13.0"
   },
   "require-dev": {
+    "nikic/php-parser": "^5.9",
     "phpunit/phpunit": "^13.4"
   },
   "autoload": {
