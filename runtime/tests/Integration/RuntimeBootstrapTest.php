@@ -37,6 +37,8 @@ use Symfony\Component\Process\Process;
 #[CoversFile(__DIR__.'/../../public/index.php')]
 #[CoversFile(__DIR__.'/../../artisan')]
 #[UsesFile(__DIR__.'/../../config/app.php')]
+#[UsesFile(__DIR__.'/../../config/auth.php')]
+#[UsesFile(__DIR__.'/../../config/hashing.php')]
 #[UsesFile(__DIR__.'/../../config/database.php')]
 #[UsesFile(__DIR__.'/../../config/cache.php')]
 #[UsesFile(__DIR__.'/../../config/session.php')]

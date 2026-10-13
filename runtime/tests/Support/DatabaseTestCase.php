@@ -30,6 +30,10 @@ abstract class DatabaseTestCase extends TestCase
     protected function tearDown(): void
     {
         try {
+            \Illuminate\Container\Container::setInstance($this->app);
+            \Illuminate\Support\Facades\Facade::clearResolvedInstances();
+            \Illuminate\Support\Facades\Facade::setFacadeApplication($this->app);
+            \Illuminate\Database\Eloquent\Model::setConnectionResolver($this->app->make('db'));
             if (isset($this->database)) {
                 $this->database->cleanup();
             }

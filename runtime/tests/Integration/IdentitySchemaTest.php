@@ -26,6 +26,8 @@ use PHPUnit\Framework\Attributes\UsesFile;
 #[UsesClass(\App\Shared\Infrastructure\RejectUnsafeRuntimeCommand::class)]
 #[UsesFile(__DIR__.'/../../bootstrap/providers.php')]
 #[UsesFile(__DIR__.'/../../config/app.php')]
+#[UsesFile(__DIR__.'/../../config/auth.php')]
+#[UsesFile(__DIR__.'/../../config/hashing.php')]
 #[UsesFile(__DIR__.'/../../config/database.php')]
 #[UsesFile(__DIR__.'/../../config/cache.php')]
 #[UsesFile(__DIR__.'/../../config/session.php')]

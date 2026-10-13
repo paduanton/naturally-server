@@ -17,6 +17,7 @@
             <file>tests/Integration/IdentitySchemaTest.php</file>
             <file>tests/Integration/DatabaseFixtureTest.php</file>
             <file>tests/Integration/IdentityCredentialsSchemaTest.php</file>
+            <file>tests/Integration/IdentityPersistenceTest.php</file>
         </testsuite>
     </testsuites>
     <source>
