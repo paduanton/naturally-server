@@ -33,6 +33,7 @@
             <file>tests/Integration/CommunityRelationsTest.php</file>
             <file>tests/Integration/CommunityFeedbackTest.php</file>
             <file>tests/Integration/MediaAssetTest.php</file>
+            <file>tests/Integration/MediaImageTest.php</file>
         </testsuite>
     </testsuites>
     <source>
