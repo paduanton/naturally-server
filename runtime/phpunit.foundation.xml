@@ -31,6 +31,7 @@
             <file>tests/Integration/RecipeSchemaTest.php</file>
             <file>tests/Integration/RecipePersistenceTest.php</file>
             <file>tests/Integration/CommunityRelationsTest.php</file>
+            <file>tests/Integration/CommunityFeedbackTest.php</file>
         </testsuite>
     </testsuites>
     <source>
