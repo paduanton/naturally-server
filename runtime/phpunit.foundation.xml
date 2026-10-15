@@ -38,6 +38,8 @@
             <file>tests/Integration/MediaImageTest.php</file>
             <file>tests/Integration/PdfDownloadPersistenceTest.php</file>
             <file>tests/Integration/IdentityContactPersistenceTest.php</file>
+            <file>tests/Integration/ModularSchemaLifecycleTest.php</file>
+            <file>tests/Integration/SchemaContentionTest.php</file>
         </testsuite>
     </testsuites>
     <source>
