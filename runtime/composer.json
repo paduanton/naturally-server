@@ -5,7 +5,10 @@
   "license": "MIT",
   "require": {
     "php": "^8.5",
-    "laravel/framework": "^13.0"
+    "laravel/fortify": "^1.41",
+    "laravel/framework": "^13.0",
+    "laravel/sanctum": "^4.3",
+    "laravel/socialite": "^5.31"
   },
   "require-dev": {
     "nikic/php-parser": "^5.9",
@@ -26,6 +29,16 @@
     "allow-plugins": false,
     "platform": {
       "php": "8.5.0"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "dont-discover": [
+        "laravel/fortify",
+        "laravel/sanctum",
+        "laravel/socialite",
+        "laravel/passkeys"
+      ]
     }
   }
 }
