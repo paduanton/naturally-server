@@ -45,15 +45,27 @@ final class MysqlTestDatabase
         return $this->application->make('db')->connection($this->name);
     }
 
-    public function migrate(): void
+    public function migrate(?string $module = null): void
     {
+        $modules = match ($module) {
+            null => null,
+            'Identity' => ['Identity'],
+            'Recipes' => ['Identity', 'Recipes'],
+            'Community' => ['Identity', 'Recipes', 'Community'],
+            'Media' => ['Identity', 'Recipes', 'Community', 'Media'],
+            default => throw new \InvalidArgumentException('Unknown database fixture profile.'),
+        };
+        $arguments = ['--force' => true, '--no-interaction' => true];
+        if ($modules !== null) {
+            $arguments['--path'] = array_map(static fn (string $name): string => 'app/Modules/'.$name.'/Infrastructure/Database/Migrations', $modules);
+        }
         $container = Container::getInstance();
         $facadeApplication = Facade::getFacadeApplication();
         Container::setInstance($this->application);
         Facade::clearResolvedInstances();
         Facade::setFacadeApplication($this->application);
         try {
-            $code = $this->application->make(Kernel::class)->call('migrate', ['--force' => true, '--no-interaction' => true]);
+            $code = $this->application->make(Kernel::class)->call('migrate', $arguments);
             if ($code !== 0) {
                 throw new \RuntimeException('Database fixture migration failed.');
             }

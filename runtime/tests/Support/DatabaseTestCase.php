@@ -11,6 +11,7 @@ use Illuminate\Foundation\Testing\TestCase;
 
 abstract class DatabaseTestCase extends TestCase
 {
+    protected const ?string SCHEMA_MODULE = null;
     protected MysqlTestDatabase $database;
 
     public function createApplication(): Application
@@ -24,7 +25,7 @@ abstract class DatabaseTestCase extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->database->migrate();
+        $this->database->migrate(static::SCHEMA_MODULE);
     }
 
     protected function createUserId(): int
