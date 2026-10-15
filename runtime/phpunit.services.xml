@@ -26,6 +26,7 @@
             <file>tests/Integration/MediaAssetTest.php</file>
             <file>tests/Integration/MediaImageTest.php</file>
             <file>tests/Integration/PdfDownloadPersistenceTest.php</file>
+            <file>tests/Integration/IdentityContactPersistenceTest.php</file>
         </testsuite>
     </testsuites>
     <source>

@@ -14,6 +14,8 @@
     <testsuites>
         <testsuite name="Runtime">
             <file>tests/Unit/RuntimeConfigurationTest.php</file>
+            <file>tests/Unit/PhoneNumberTest.php</file>
+            <file>tests/Unit/PhoneNumberCastTest.php</file>
             <file>tests/Integration/RuntimeEnvironmentTest.php</file>
             <file>tests/Integration/RuntimeBootstrapTest.php</file>
         </testsuite>
@@ -35,6 +37,7 @@
             <file>tests/Integration/MediaAssetTest.php</file>
             <file>tests/Integration/MediaImageTest.php</file>
             <file>tests/Integration/PdfDownloadPersistenceTest.php</file>
+            <file>tests/Integration/IdentityContactPersistenceTest.php</file>
         </testsuite>
     </testsuites>
     <source>

@@ -14,6 +14,8 @@
     <testsuites>
         <testsuite name="Runtime">
             <file>tests/Unit/RuntimeConfigurationTest.php</file>
+            <file>tests/Unit/PhoneNumberTest.php</file>
+            <file>tests/Unit/PhoneNumberCastTest.php</file>
             <file>tests/Integration/RuntimeEnvironmentTest.php</file>
             <file>tests/Integration/RuntimeBootstrapTest.php</file>
         </testsuite>
