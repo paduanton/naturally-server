@@ -36,6 +36,7 @@ use PHPUnit\Framework\Attributes\UsesFile;
 #[UsesFile(__DIR__.'/../../config/view.php')]
 #[UsesFile(__DIR__.'/../../routes/health.php')]
 #[\PHPUnit\Framework\Attributes\UsesDirectoryRecursively(__DIR__.'/../../app')]
+#[\PHPUnit\Framework\Attributes\UsesDirectoryRecursively(__DIR__.'/../../config')]
 final class IdentitySchemaTest extends DatabaseTestCase
 {
     public function testMigrationsCreateUserStorageWithUtf8AndOptionalSocialCredentials(): void

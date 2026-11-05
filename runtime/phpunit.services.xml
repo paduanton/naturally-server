@@ -18,6 +18,7 @@
             <file>tests/Integration/DatabaseFixtureTest.php</file>
             <file>tests/Integration/DatabaseScopeTest.php</file>
             <file>tests/Integration/RegistrationCaseTest.php</file>
+            <file>tests/Integration/BrowserTransportTest.php</file>
             <file>tests/Integration/IdentityCredentialsSchemaTest.php</file>
             <file>tests/Integration/IdentityPersistenceTest.php</file>
             <file>tests/Integration/IdentityPhoneSchemaTest.php</file>

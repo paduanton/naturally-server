@@ -30,6 +30,7 @@ use Symfony\Component\Mime\Email;
 #[CoversFile(__DIR__.'/../../config/mail.php')]
 #[CoversFile(__DIR__.'/../../config/logging.php')]
 #[UsesClass(RuntimeConfiguration::class)]
+#[\PHPUnit\Framework\Attributes\UsesDirectoryRecursively(__DIR__.'/../../config')]
 final class RuntimeEnvironmentTest extends TestCase
 {
     private string $directory;

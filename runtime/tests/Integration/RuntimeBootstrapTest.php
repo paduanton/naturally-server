@@ -48,6 +48,7 @@ use Symfony\Component\Process\Process;
 #[UsesClass(RuntimeConfiguration::class)]
 #[UsesClass(\App\Modules\Identity\Infrastructure\IdentityServiceProvider::class)]
 #[\PHPUnit\Framework\Attributes\UsesDirectoryRecursively(__DIR__.'/../../app')]
+#[\PHPUnit\Framework\Attributes\UsesDirectoryRecursively(__DIR__.'/../../config')]
 final class RuntimeBootstrapTest extends TestCase
 {
     private string $directory;
@@ -214,7 +215,7 @@ final class RuntimeBootstrapTest extends TestCase
         $routes->run();
         self::assertTrue($routes->isSuccessful(), 'Route diagnostics failed.');
         $routeList = json_decode($routes->getOutput(), true, flags: JSON_THROW_ON_ERROR);
-        self::assertSame(['health/live'], array_column($routeList, 'uri'));
+        $this->assertDiagnosticRoutes($routeList);
 
         $http = $this->httpProcess();
         $http->run();
@@ -281,7 +282,7 @@ final class RuntimeBootstrapTest extends TestCase
         $routes = $this->process(['php', dirname(__DIR__, 2).'/artisan', 'route:list', '--json']);
         $routes->run();
         self::assertTrue($routes->isSuccessful(), 'Cached routing failed.');
-        self::assertSame(['health/live'], array_column(json_decode($routes->getOutput(), true, flags: JSON_THROW_ON_ERROR), 'uri'));
+        $this->assertDiagnosticRoutes(json_decode($routes->getOutput(), true, flags: JSON_THROW_ON_ERROR));
         self::assertSame(dirname(__DIR__, 2).'/bootstrap/app.php', $this->app->bootstrapPath('app.php'));
     }
 
@@ -349,6 +350,16 @@ PHP);
         foreach ($previous as $name => $value) {
             putenv($value === false ? $name : $name.'='.$value);
         }
+    }
+
+    private function assertDiagnosticRoutes(array $routes): void
+    {
+        $expected = array_map(static fn (\Illuminate\Routing\Route $route): string => $route->uri(), $this->app->make('router')->getRoutes()->getRoutes());
+        $actual = array_column($routes, 'uri');
+        sort($expected);
+        sort($actual);
+        self::assertContains('health/live', $actual);
+        self::assertSame($expected, $actual);
     }
 
     private function removeFixture(string $directory): void

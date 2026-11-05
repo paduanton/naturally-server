@@ -10,6 +10,7 @@ final class IdentityServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->register(BrowserAuthServiceProvider::class);
         $this->app->bind(\App\Modules\Identity\Application\RegistrationStore::class, \App\Modules\Identity\Infrastructure\Persistence\EloquentRegistrationStore::class);
     }
 

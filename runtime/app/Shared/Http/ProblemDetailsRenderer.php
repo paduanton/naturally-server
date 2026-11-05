@@ -24,11 +24,24 @@ final class ProblemDetailsRenderer
         };
         $headers = $exception instanceof HttpExceptionInterface ? $exception->getHeaders() : [];
 
-        return new JsonResponse([
+        $body = [
             'type' => 'about:blank',
             'title' => Response::$statusTexts[$status] ?? 'Request Failed',
             'status' => $status,
-        ], $status, array_merge($headers, [
+        ];
+        if ($request->is('api/v1/*')) {
+            $body['code'] = match ($status) {
+                401 => 'unauthenticated', 403 => 'forbidden', 404 => 'not_found',
+                405 => 'method_not_allowed', 419 => 'csrf_mismatch', 422 => 'validation_failed',
+                429 => 'rate_limited', 503 => 'service_unavailable', default => 'request_failed',
+            };
+            $body['correlation_id'] = $request->attributes->get('correlation_id') ?? bin2hex(random_bytes(16));
+            $headers['X-Request-ID'] = $body['correlation_id'];
+            if ($exception instanceof ValidationException) {
+                $body['errors'] = array_fill_keys(array_keys($exception->errors()), ['The field is invalid.']);
+            }
+        }
+        return new JsonResponse($body, $status, array_merge($headers, [
             'Content-Type' => 'application/problem+json',
             'Cache-Control' => 'no-store',
         ]));
