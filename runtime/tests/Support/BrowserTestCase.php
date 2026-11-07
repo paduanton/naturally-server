@@ -10,13 +10,16 @@ abstract class BrowserTestCase extends DatabaseTestCase
 {
     protected const ?string SCHEMA_MODULE = 'Identity';
     protected array $browserCookies = [];
+    protected ?string $browserIp = null;
 
     protected function browser(string $method, string $path, array $data = [], array $server = [], bool $csrf = true): TestResponse
     {
         $this->app->make('auth')->forgetGuards();
         $this->app->make('session')->forgetDrivers();
         $this->app->forgetInstance('session.store');
-        $headers = ['HTTP_ACCEPT' => 'application/json', 'CONTENT_TYPE' => 'application/json', 'HTTP_ORIGIN' => 'https://naturally.test', 'REMOTE_ADDR' => '192.0.2.10'];
+        foreach ($this->app->make('router')->getRoutes() as $route) { $route->flushController(); }
+        $this->browserIp ??= '2001:db8:'.implode(':', str_split(bin2hex(random_bytes(10)), 4)).':1';
+        $headers = ['HTTP_ACCEPT' => 'application/json', 'CONTENT_TYPE' => 'application/json', 'HTTP_ORIGIN' => 'https://naturally.test', 'REMOTE_ADDR' => $this->browserIp];
         if ($csrf && isset($this->browserCookies['XSRF-TOKEN'])) {
             $headers['HTTP_X_XSRF_TOKEN'] = urldecode($this->browserCookies['XSRF-TOKEN']);
         }

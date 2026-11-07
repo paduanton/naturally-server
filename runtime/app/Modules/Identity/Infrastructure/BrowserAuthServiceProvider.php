@@ -17,11 +17,17 @@ final class BrowserAuthServiceProvider extends ServiceProvider
         Fortify::ignoreRoutes();
         $this->app->register(\Laravel\Fortify\FortifyServiceProvider::class);
         $this->app->register(\Laravel\Sanctum\SanctumServiceProvider::class);
+        $this->app->bind(\App\Modules\Identity\Http\CreateUser::class, fn ($app) => new \App\Modules\Identity\Http\CreateUser($app->make(\App\Modules\Identity\Application\RegisterAccount::class), $app->make('auth')->createUserProvider('users')));
+        $this->app->singleton(\Laravel\Fortify\Contracts\RegisterResponse::class, \App\Modules\Identity\Http\RegisteredResponse::class);
     }
 
     public function boot(): void
     {
         Sanctum::getAccessTokenFromRequestUsing(static fn (): ?string => null);
+        Fortify::createUsersUsing(\App\Modules\Identity\Http\CreateUser::class);
+        $this->app->afterResolving(\Illuminate\Cache\RateLimiter::class, static function (\Illuminate\Cache\RateLimiter $limiter): void {
+            $limiter->for('identity-registration', static fn (\Illuminate\Http\Request $request) => \Illuminate\Cache\RateLimiting\Limit::perMinute(5)->by(hash_hmac('sha256', (string) $request->ip(), config('app.key'))));
+        });
         $this->app->make('router')->middlewareGroup('identity.browser', [
             BrowserBoundary::class,
             \Illuminate\Cookie\Middleware\EncryptCookies::class,
