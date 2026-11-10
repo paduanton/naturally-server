@@ -19,12 +19,23 @@ final class BrowserAuthServiceProvider extends ServiceProvider
         $this->app->register(\Laravel\Sanctum\SanctumServiceProvider::class);
         $this->app->bind(\App\Modules\Identity\Http\CreateUser::class, fn ($app) => new \App\Modules\Identity\Http\CreateUser($app->make(\App\Modules\Identity\Application\RegisterAccount::class), $app->make('auth')->createUserProvider('users')));
         $this->app->singleton(\Laravel\Fortify\Contracts\RegisterResponse::class, \App\Modules\Identity\Http\RegisteredResponse::class);
+        $this->app->bind(\Laravel\Fortify\Http\Requests\LoginRequest::class, \App\Modules\Identity\Http\BoundedLoginRequest::class);
+        $this->app->bind(\Laravel\Fortify\LoginRateLimiter::class, OpaqueLoginRateLimiter::class);
+        $this->app->singleton(\Laravel\Fortify\Contracts\LoginResponse::class, \App\Modules\Identity\Http\SessionResponse::class);
     }
 
     public function boot(): void
     {
         Sanctum::getAccessTokenFromRequestUsing(static fn (): ?string => null);
         Fortify::createUsersUsing(\App\Modules\Identity\Http\CreateUser::class);
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Login::class, StampAuthentication::class);
+        $this->app->afterResolving(\Illuminate\Cache\RateLimiter::class, static function (\Illuminate\Cache\RateLimiter $limiter): void {
+            $limiter->for('identity-login', static fn (\Illuminate\Http\Request $request) => [
+                \Illuminate\Cache\RateLimiting\Limit::perMinute(5)->by(hash_hmac('sha256', 'account|'.strtolower(trim(is_string($request->input('email')) ? $request->input('email') : '')).'|'.$request->ip(), config('app.key'))),
+                \Illuminate\Cache\RateLimiting\Limit::perMinute(30)->by(hash_hmac('sha256', 'ip|'.$request->ip(), config('app.key'))),
+            ]);
+        });
+        $this->app->make('router')->aliasMiddleware('identity.throttle', \App\Modules\Identity\Http\Middleware\FailClosedThrottle::class);
         $this->app->afterResolving(\Illuminate\Cache\RateLimiter::class, static function (\Illuminate\Cache\RateLimiter $limiter): void {
             $limiter->for('identity-registration', static fn (\Illuminate\Http\Request $request) => \Illuminate\Cache\RateLimiting\Limit::perMinute(5)->by(hash_hmac('sha256', (string) $request->ip(), config('app.key'))));
         });

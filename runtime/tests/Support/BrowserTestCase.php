@@ -15,6 +15,7 @@ abstract class BrowserTestCase extends DatabaseTestCase
     protected function browser(string $method, string $path, array $data = [], array $server = [], bool $csrf = true): TestResponse
     {
         $this->app->make('auth')->forgetGuards();
+        $this->app->forgetInstance('auth.driver');
         $this->app->make('session')->forgetDrivers();
         $this->app->forgetInstance('session.store');
         foreach ($this->app->make('router')->getRoutes() as $route) { $route->flushController(); }
