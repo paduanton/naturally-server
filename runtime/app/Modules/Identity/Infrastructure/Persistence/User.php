@@ -9,11 +9,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-final class User extends Authenticatable
+final class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory;
     use SoftDeletes;
+    use \Illuminate\Notifications\Notifiable;
+
+    public function sendEmailVerificationNotification(): void
+    {
+        app(\App\Modules\Identity\Application\VerificationDelivery::class)->sendForActor((int) $this->getAuthIdentifier());
+    }
 
     protected $guarded = ['*'];
     protected $hidden = ['password', 'deleted_at'];

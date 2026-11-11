@@ -11,6 +11,8 @@ final class IdentityServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->register(BrowserAuthServiceProvider::class);
+        $this->app->bind(\App\Modules\Identity\Application\EmailVerificationStore::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlEmailVerificationStore::class);
+        $this->app->bind(\App\Modules\Identity\Application\VerificationDelivery::class, EmailVerificationDelivery::class);
         $this->app->bind(\App\Modules\Identity\Application\PasswordMutation::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlPasswordMutation::class);
         $this->app->bind(\App\Modules\Identity\Application\SessionRevocation::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlSessionRevocation::class);
         $this->app->bind(\App\Modules\Identity\Application\AccountReader::class, \App\Modules\Identity\Infrastructure\Persistence\EloquentAccountReader::class);

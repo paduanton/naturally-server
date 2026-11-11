@@ -38,6 +38,7 @@ final class BrowserAuthServiceProvider extends ServiceProvider
         Sanctum::getAccessTokenFromRequestUsing(static fn (): ?string => null);
         Fortify::createUsersUsing(IdentityHttp\CreateUser::class);
         Fortify::updateUserPasswordsUsing(IdentityHttp\UpdatePassword::class);
+        \Illuminate\Auth\Notifications\VerifyEmail::createUrlUsing(static fn ($user): string => \Illuminate\Support\Facades\URL::temporarySignedRoute('identity.email.verify', \Illuminate\Support\Facades\Date::now()->addMinutes(60), ['id' => $user->getAuthIdentifier(), 'hash' => sha1($user->getEmailForVerification())]));
         Event::listen(Login::class, StampAuthentication::class);
         $this->app->afterResolving(RateLimiter::class, static function (RateLimiter $limiter): void {
             $limiter->for('identity-login', static function (Request $request): array {

@@ -10,6 +10,7 @@ use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 Route::prefix('api/v1/auth')->middleware('identity.browser')->group(static function (): void {
     Route::get('csrf-cookie', [CsrfCookieController::class, 'show'])->name('identity.csrf');
     Route::get('me', CurrentAccount::class)->middleware('auth:sanctum')->name('identity.me');
+    Route::get('email/verify/{id}/{hash}', VerifyEmail::class)->whereNumber('id')->where('hash', '[a-f0-9]{40}')->middleware(['auth:web', 'signed'])->name('identity.email.verify');
     Route::post('logout', [\Laravel\Fortify\Http\Controllers\AuthenticatedSessionController::class, 'destroy'])->middleware('auth:web')->name('identity.logout');
     Route::delete('sessions/others', RevokeOtherSessions::class)->middleware(['auth:web', Middleware\RequireRecentAuthentication::class])->name('identity.sessions.others');
     Route::post('password/confirm', [BoundedPasswordConfirmation::class, 'store'])->middleware(['auth:web', 'identity.throttle:identity-confirmation'])->name('identity.password.confirm');
