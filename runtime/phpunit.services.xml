@@ -22,6 +22,7 @@
             <file>tests/Integration/BrowserRegistrationTest.php</file>
             <file>tests/Integration/BrowserLoginTest.php</file>
             <file>tests/Integration/BrowserSessionTest.php</file>
+            <file>tests/Integration/BrowserRevocationTest.php</file>
             <file>tests/Integration/IdentityCredentialsSchemaTest.php</file>
             <file>tests/Integration/IdentityPersistenceTest.php</file>
             <file>tests/Integration/IdentityPhoneSchemaTest.php</file>

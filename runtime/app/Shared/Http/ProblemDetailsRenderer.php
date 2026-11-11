@@ -32,7 +32,7 @@ final class ProblemDetailsRenderer
         if ($request->is('api/v1/*')) {
             $body['code'] = match ($status) {
                 401 => 'unauthenticated', 403 => 'forbidden', 404 => 'not_found',
-                405 => 'method_not_allowed', 419 => 'csrf_mismatch', 422 => 'validation_failed',
+                405 => 'method_not_allowed', 419 => 'csrf_mismatch', 422 => 'validation_failed', 423 => 'reauthentication_required',
                 429 => 'rate_limited', 503 => 'service_unavailable', default => 'request_failed',
             };
             $body['correlation_id'] = $request->attributes->get('correlation_id') ?? bin2hex(random_bytes(16));

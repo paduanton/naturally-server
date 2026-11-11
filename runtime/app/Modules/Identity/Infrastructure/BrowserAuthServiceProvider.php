@@ -22,6 +22,7 @@ final class BrowserAuthServiceProvider extends ServiceProvider
         $this->app->bind(\Laravel\Fortify\Http\Requests\LoginRequest::class, \App\Modules\Identity\Http\BoundedLoginRequest::class);
         $this->app->bind(\Laravel\Fortify\LoginRateLimiter::class, OpaqueLoginRateLimiter::class);
         $this->app->singleton(\Laravel\Fortify\Contracts\LoginResponse::class, \App\Modules\Identity\Http\SessionResponse::class);
+        $this->app->singleton(\Laravel\Fortify\Contracts\LogoutResponse::class, \App\Modules\Identity\Http\SessionResponse::class);
     }
 
     public function boot(): void
