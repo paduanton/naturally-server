@@ -17,6 +17,7 @@
             <file>tests/Unit/PhoneNumberTest.php</file>
             <file>tests/Unit/PhoneNumberCastTest.php</file>
             <file>tests/Unit/CredentialValuesTest.php</file>
+            <file>tests/Unit/CredentialInputsTest.php</file>
             <file>tests/Integration/RuntimeEnvironmentTest.php</file>
             <file>tests/Integration/RuntimeBootstrapTest.php</file>
         </testsuite>
@@ -35,6 +36,8 @@
             <file>tests/Integration/BrowserLoginTest.php</file>
             <file>tests/Integration/BrowserSessionTest.php</file>
             <file>tests/Integration/BrowserRevocationTest.php</file>
+            <file>tests/Integration/BrowserPasswordTest.php</file>
+            <file>tests/Integration/PasswordMutationTest.php</file>
             <file>tests/Integration/IdentityCredentialsSchemaTest.php</file>
             <file>tests/Integration/IdentityPersistenceTest.php</file>
             <file>tests/Integration/IdentityPhoneSchemaTest.php</file>

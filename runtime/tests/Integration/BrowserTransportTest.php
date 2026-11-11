@@ -55,4 +55,23 @@ final class BrowserTransportTest extends BrowserTestCase
         self::assertMatchesRegularExpression('/\A[a-f0-9]{32}\z/', $response->json('correlation_id'));
         foreach (['/login', '/register', '/sanctum/csrf-cookie'] as $path) { $this->browser('GET', $path)->assertNotFound(); }
     }
+
+    public function testPublishedBrowserRoutesMatchTheExplicitContract(): void
+    {
+        $routes = [];
+        foreach ($this->app->make('router')->getRoutes() as $route) {
+            if (str_starts_with($route->uri(), 'api/v1/auth/')) { $routes[$route->uri()] = $route->methods(); }
+        }
+        ksort($routes);
+        self::assertSame([
+            'api/v1/auth/csrf-cookie' => ['GET', 'HEAD'],
+            'api/v1/auth/login' => ['POST'],
+            'api/v1/auth/logout' => ['POST'],
+            'api/v1/auth/me' => ['GET', 'HEAD'],
+            'api/v1/auth/password' => ['PUT'],
+            'api/v1/auth/password/confirm' => ['POST'],
+            'api/v1/auth/register' => ['POST'],
+            'api/v1/auth/sessions/others' => ['DELETE'],
+        ], $routes);
+    }
 }
