@@ -16,7 +16,7 @@ final class EloquentRegistrationStore implements RegistrationStore
     {
         try {
             $user = new User();
-            $user->forceFill(['name' => $account->name, 'username' => $account->username->value, 'email' => $account->email->value, 'password' => $account->password->reveal()]);
+            $user->forceFill(['name' => $account->name->value, 'username' => $account->username->value, 'email' => $account->email->value, 'password' => $account->password->reveal()]);
             $user->save();
         } catch (QueryException $exception) {
             if (($exception->errorInfo[1] ?? null) === 1062) {

@@ -7,8 +7,9 @@ namespace App\Modules\Identity\Application;
 use App\Modules\Identity\Domain\EmailAddress;
 use App\Modules\Identity\Domain\Username;
 use App\Modules\Identity\Domain\NewPassword;
+use App\Modules\Identity\Domain\DisplayName;
 
 final readonly class NewAccountData
 {
-    public function __construct(public string $name, public Username $username, public EmailAddress $email, public NewPassword $password) {}
+    public function __construct(public DisplayName $name, public Username $username, public EmailAddress $email, public NewPassword $password) {}
 }
