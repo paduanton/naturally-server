@@ -105,15 +105,4 @@ final class BrowserPasswordTest extends BrowserTestCase
         self::assertTrue($this->app->make('hash')->check($password, $user->fresh()->password));
     }
 
-    public function testSocialOnlyCredentialsCannotBeConfirmedOrReplacedImplicitly(): void
-    {
-        $password = bin2hex(random_bytes(24));
-        $user = User::factory()->create(['password' => $password]);
-        $this->login($user, $password);
-        $user->forceFill(['password' => null])->save();
-        $this->browser('POST', '/api/v1/auth/password/confirm', ['password' => $password])->assertUnprocessable();
-        $next = bin2hex(random_bytes(24));
-        $this->browser('PUT', '/api/v1/auth/password', ['password' => $next, 'password_confirmation' => $next])->assertUnprocessable();
-        self::assertNull($user->fresh()->password);
-    }
 }

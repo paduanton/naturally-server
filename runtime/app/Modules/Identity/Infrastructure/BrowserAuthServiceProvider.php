@@ -27,7 +27,7 @@ final class BrowserAuthServiceProvider extends ServiceProvider
         $this->app->bind(\Laravel\Fortify\Http\Requests\LoginRequest::class, IdentityHttp\BoundedLoginRequest::class);
         $this->app->bind(\Laravel\Fortify\LoginRateLimiter::class, OpaqueLoginRateLimiter::class);
         $this->app->singleton(FortifyResponses\RegisterResponse::class, IdentityHttp\RegisteredResponse::class);
-        $this->app->singleton(FortifyResponses\LoginResponse::class, IdentityHttp\SessionResponse::class);
+        $this->app->singleton(FortifyResponses\LoginResponse::class, IdentityHttp\AuthenticatedResponse::class);
         $this->app->singleton(FortifyResponses\LogoutResponse::class, IdentityHttp\SessionResponse::class);
         $this->app->singleton(FortifyResponses\PasswordConfirmedResponse::class, IdentityHttp\SessionResponse::class);
         $this->app->singleton(FortifyResponses\PasswordUpdateResponse::class, IdentityHttp\PasswordChangedResponse::class);
@@ -59,6 +59,7 @@ final class BrowserAuthServiceProvider extends ServiceProvider
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             IdentityHttp\Middleware\EnforceSessionAge::class,
+            \Laravel\Sanctum\Http\Middleware\AuthenticateSession::class,
             IdentityHttp\Middleware\VerifyBrowserRequest::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);

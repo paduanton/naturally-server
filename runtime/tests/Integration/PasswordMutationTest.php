@@ -82,4 +82,18 @@ final class PasswordMutationTest extends BrowserTestCase
             self::assertSame(1, $connection->table('sessions')->where('user_id', $user->id)->count());
         } finally { $connection->getSchemaBuilder()->drop('session_delete_blockers'); }
     }
+
+    public function testSocialSessionDoesNotConfirmLocalCredentialsOrCreateAPassword(): void
+    {
+        $user = User::factory()->socialOnly()->create();
+        $this->bootstrapBrowser();
+        $this->app->make('auth')->guard('web')->login($user);
+        $session = $this->app->make('session')->driver();
+        $session->save();
+        self::assertFalse($session->has('auth.password_confirmed_at'));
+        try {
+            $this->app->make(ChangePassword::class)->handle(new PasswordChangeInput($user->id, $session->getId(), bin2hex(random_bytes(24))));
+            self::fail('Social account received implicit local credentials.');
+        } catch (\App\Modules\Identity\Application\CredentialChangeDenied) { self::assertNull($user->fresh()->password); }
+    }
 }
