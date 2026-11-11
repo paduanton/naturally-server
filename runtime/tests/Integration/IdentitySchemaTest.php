@@ -39,6 +39,8 @@ use PHPUnit\Framework\Attributes\UsesFile;
 #[\PHPUnit\Framework\Attributes\UsesDirectoryRecursively(__DIR__.'/../../config')]
 final class IdentitySchemaTest extends DatabaseTestCase
 {
+    protected const ?string SCHEMA_MODULE = 'Identity';
+
     public function testMigrationsCreateUserStorageWithUtf8AndOptionalSocialCredentials(): void
     {
         $connection = $this->app->make('db')->connection();
@@ -157,13 +159,13 @@ final class IdentitySchemaTest extends DatabaseTestCase
             'name' => 'Chef', 'username' => 'chef', 'email' => 'chef@example.test',
         ]);
         $kernel = $this->app->make(Kernel::class);
-        self::assertSame(0, $kernel->call('migrate', ['--force' => true]));
+        self::assertSame(0, $kernel->call('migrate', ['--force' => true, '--path' => ['app/Modules/Identity/Infrastructure/Database/Migrations']]));
         self::assertSame(1, $connection->table('users')->count());
         self::assertSame(0, $kernel->call('migrate:rollback', ['--force' => true]));
         self::assertFalse($connection->getSchemaBuilder()->hasTable('users'));
         self::assertFalse($connection->getSchemaBuilder()->hasTable('sessions'));
         self::assertSame(0, $connection->table('migrations')->count());
-        self::assertSame(0, $kernel->call('migrate', ['--force' => true]));
+        self::assertSame(0, $kernel->call('migrate', ['--force' => true, '--path' => ['app/Modules/Identity/Infrastructure/Database/Migrations']]));
         self::assertTrue($connection->getSchemaBuilder()->hasTable('sessions'));
         self::assertSame(0, $connection->table('users')->count());
     }

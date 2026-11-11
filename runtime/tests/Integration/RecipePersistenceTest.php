@@ -24,6 +24,8 @@ use Tests\Support\DatabaseTestCase;
 #[UsesDirectoryRecursively(__DIR__.'/../../routes')]
 final class RecipePersistenceTest extends DatabaseTestCase
 {
+    protected const ?string SCHEMA_MODULE = 'Recipes';
+
     public function testFactoriesRequireExplicitOwnershipAndPersistIndependentRecipes(): void
     {
         $owner = $this->createUserId();

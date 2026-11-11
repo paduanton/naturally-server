@@ -19,6 +19,8 @@ use Tests\Support\DatabaseTestCase;
 #[UsesDirectoryRecursively(__DIR__.'/../../routes')]
 final class CommunityRelationsTest extends DatabaseTestCase
 {
+    protected const ?string SCHEMA_MODULE = 'Community';
+
     public function testUserRecipeEdgesAreUniqueAndDeletionDoesNotTouchAnotherUsersEdge(): void
     {
         $first = $this->createUserId();

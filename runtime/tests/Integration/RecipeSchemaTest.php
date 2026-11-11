@@ -17,6 +17,8 @@ use Tests\Support\DatabaseTestCase;
 #[UsesDirectoryRecursively(__DIR__.'/../../routes')]
 final class RecipeSchemaTest extends DatabaseTestCase
 {
+    protected const ?string SCHEMA_MODULE = 'Recipes';
+
     public function testRecipeStoresUnicodeExactYieldsAndDurationsOverOneDay(): void
     {
         $db = $this->database->connection();

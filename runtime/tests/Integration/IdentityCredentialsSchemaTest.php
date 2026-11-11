@@ -12,6 +12,8 @@ use Tests\Support\DatabaseTestCase;
 #[CoversNothing]
 final class IdentityCredentialsSchemaTest extends DatabaseTestCase
 {
+    protected const ?string SCHEMA_MODULE = 'Identity';
+
     public function testProviderIdentityIsUniqueAcrossUsersAndPreservesOpaqueIdentifiers(): void
     {
         $connection = $this->database->connection();

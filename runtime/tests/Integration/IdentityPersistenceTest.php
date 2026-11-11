@@ -39,6 +39,8 @@ use Illuminate\Support\Carbon;
 #[\PHPUnit\Framework\Attributes\UsesDirectoryRecursively(__DIR__.'/../../config')]
 final class IdentityPersistenceTest extends DatabaseTestCase
 {
+    protected const ?string SCHEMA_MODULE = 'Identity';
+
     public function testGuestSessionCanBePersistedWithTheRealDatabaseGuard(): void
     {
         $session = $this->app->make('session')->driver();

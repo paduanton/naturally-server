@@ -17,6 +17,8 @@ use Tests\Support\DatabaseTestCase;
 #[UsesDirectoryRecursively(__DIR__.'/../../routes')]
 final class IdentityPhoneSchemaTest extends DatabaseTestCase
 {
+    protected const ?string SCHEMA_MODULE = 'Identity';
+
     public function testCanonicalNumbersAreUniqueAndOnlyOneActiveMainPhoneIsAllowed(): void
     {
         $db = $this->database->connection();

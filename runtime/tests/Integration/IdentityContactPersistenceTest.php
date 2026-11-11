@@ -22,6 +22,8 @@ use Tests\Support\DatabaseTestCase;
 #[UsesDirectoryRecursively(__DIR__.'/../../routes')]
 final class IdentityContactPersistenceTest extends DatabaseTestCase
 {
+    protected const ?string SCHEMA_MODULE = 'Identity';
+
     public function testPhoneCastAndStorageAcceptTheSameCanonicalBounds(): void
     {
         $user = $this->createUserId();
