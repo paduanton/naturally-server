@@ -44,6 +44,7 @@ final class BrowserAuthServiceProvider extends ServiceProvider
             \Illuminate\Cookie\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
+            \App\Modules\Identity\Http\Middleware\EnforceSessionAge::class,
             VerifyBrowserRequest::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
