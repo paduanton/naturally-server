@@ -15,7 +15,10 @@ final class BrowserBoundary
         $request->headers->set('Accept', 'application/json');
         $request->attributes->set('correlation_id', bin2hex(random_bytes(16)));
         $url = parse_url(config('app.url'));
-        $origin = $url['scheme'].'://'.$url['host'].(isset($url['port']) ? ':'.$url['port'] : '');
+        $scheme = strtolower($url['scheme']);
+        $defaultPort = $scheme === 'https' ? 443 : 80;
+        $port = $url['port'] ?? $defaultPort;
+        $origin = $scheme.'://'.strtolower($url['host']).($port === $defaultPort ? '' : ':'.$port);
         abort_unless($request->getSchemeAndHttpHost() === $origin, 403);
         $sentOrigin = $request->headers->get('Origin');
         abort_if(($sentOrigin !== null && $sentOrigin !== $origin) || $request->header('Sec-Fetch-Site') === 'cross-site', 403);
