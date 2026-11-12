@@ -38,6 +38,7 @@ final class BrowserAuthServiceProvider extends ServiceProvider
         Sanctum::getAccessTokenFromRequestUsing(static fn (): ?string => null);
         Fortify::createUsersUsing(IdentityHttp\CreateUser::class);
         Fortify::updateUserPasswordsUsing(IdentityHttp\UpdatePassword::class);
+        \Illuminate\Auth\Notifications\ResetPassword::createUrlUsing(static fn ($user, $token): string => rtrim(config('app.url'), '/').'/auth/reset-password#'.http_build_query(['token' => $token, 'email' => $user->getEmailForPasswordReset()], '', '&', PHP_QUERY_RFC3986));
         \Illuminate\Auth\Notifications\VerifyEmail::createUrlUsing(static fn ($user): string => \Illuminate\Support\Facades\URL::temporarySignedRoute('identity.email.verify', \Illuminate\Support\Facades\Date::now()->addMinutes(60), ['id' => $user->getAuthIdentifier(), 'hash' => sha1($user->getEmailForVerification())]));
         Event::listen(Login::class, StampAuthentication::class);
         $this->app->afterResolving(RateLimiter::class, static function (RateLimiter $limiter): void {
@@ -56,6 +57,14 @@ final class BrowserAuthServiceProvider extends ServiceProvider
                 Limit::perMinute(30)->by(hash_hmac('sha256', 'verification-ip|'.$request->ip(), config('app.key'))),
             ]);
             $limiter->for('identity-verification-check', static fn (Request $request) => Limit::perMinute(12)->by(hash_hmac('sha256', 'verification-check|'.$request->user()->getAuthIdentifier(), config('app.key'))));
+            $limiter->for('identity-recovery', static function (Request $request): array {
+                $email = $request->input('email');
+                $identity = is_string($email) ? strtolower(trim($email)) : '';
+                return [
+                    Limit::perMinute(5)->by(hash_hmac('sha256', 'recovery|'.$identity.'|'.$request->ip(), config('app.key'))),
+                    Limit::perMinute(30)->by(hash_hmac('sha256', 'recovery-ip|'.$request->ip(), config('app.key'))),
+                ];
+            });
         });
         $router = $this->app->make('router');
         $router->aliasMiddleware('identity.throttle', IdentityHttp\Middleware\FailClosedThrottle::class);

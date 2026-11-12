@@ -12,6 +12,7 @@ Route::prefix('api/v1/auth')->middleware('identity.browser')->group(static funct
     Route::get('me', CurrentAccount::class)->middleware('auth:sanctum')->name('identity.me');
     Route::get('email/verify/{id}/{hash}', VerifyEmail::class)->whereNumber('id')->where('hash', '[a-f0-9]{40}')->middleware(['auth:web', 'signed', 'identity.throttle:identity-verification-check'])->name('identity.email.verify');
     Route::post('email/verification-notification', ResendVerification::class)->middleware(['auth:web', 'identity.throttle:identity-verification-send'])->name('identity.email.send');
+    Route::post('password/recovery', RequestRecovery::class)->middleware([Middleware\RequireGuest::class, 'identity.throttle:identity-recovery'])->name('identity.password.recovery');
     Route::post('logout', [\Laravel\Fortify\Http\Controllers\AuthenticatedSessionController::class, 'destroy'])->middleware('auth:web')->name('identity.logout');
     Route::delete('sessions/others', RevokeOtherSessions::class)->middleware(['auth:web', Middleware\RequireRecentAuthentication::class])->name('identity.sessions.others');
     Route::post('password/confirm', [BoundedPasswordConfirmation::class, 'store'])->middleware(['auth:web', 'identity.throttle:identity-confirmation'])->name('identity.password.confirm');
