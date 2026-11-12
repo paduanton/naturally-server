@@ -51,6 +51,11 @@ final class BrowserAuthServiceProvider extends ServiceProvider
             });
             $limiter->for('identity-registration', static fn (Request $request) => Limit::perMinute(5)->by(hash_hmac('sha256', (string) $request->ip(), config('app.key'))));
             $limiter->for('identity-confirmation', static fn (Request $request) => Limit::perMinute(5)->by(hash_hmac('sha256', 'confirm|'.$request->user()->getAuthIdentifier().'|'.$request->ip(), config('app.key'))));
+            $limiter->for('identity-verification-send', static fn (Request $request) => [
+                Limit::perMinute(6)->by(hash_hmac('sha256', 'verification-send|'.$request->user()->getAuthIdentifier(), config('app.key'))),
+                Limit::perMinute(30)->by(hash_hmac('sha256', 'verification-ip|'.$request->ip(), config('app.key'))),
+            ]);
+            $limiter->for('identity-verification-check', static fn (Request $request) => Limit::perMinute(12)->by(hash_hmac('sha256', 'verification-check|'.$request->user()->getAuthIdentifier(), config('app.key'))));
         });
         $router = $this->app->make('router');
         $router->aliasMiddleware('identity.throttle', IdentityHttp\Middleware\FailClosedThrottle::class);

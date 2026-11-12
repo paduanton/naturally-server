@@ -38,6 +38,7 @@ final class MysqlTestDatabase
         $configuration->set('database.connections.'.$this->name, $connection);
         $configuration->set('database.default', $this->name);
         $configuration->set('session.connection', $this->name);
+        $configuration->set('cache.prefix', 'naturally:test:'.$this->name.':');
     }
 
     public function connection(): Connection

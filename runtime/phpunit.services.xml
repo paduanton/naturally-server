@@ -21,6 +21,7 @@
             <file>tests/Integration/BrowserTransportTest.php</file>
             <file>tests/Integration/BrowserOriginTest.php</file>
             <file>tests/Integration/BrowserEmailVerificationTest.php</file>
+            <file>tests/Integration/BrowserVerificationResendTest.php</file>
             <file>tests/Integration/BrowserRegistrationTest.php</file>
             <file>tests/Integration/BrowserLoginTest.php</file>
             <file>tests/Integration/BrowserSessionTest.php</file>

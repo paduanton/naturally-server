@@ -65,6 +65,7 @@ final class BrowserTransportTest extends BrowserTestCase
         ksort($routes);
         self::assertSame([
             'api/v1/auth/csrf-cookie' => ['GET', 'HEAD'],
+            'api/v1/auth/email/verification-notification' => ['POST'],
             'api/v1/auth/email/verify/{id}/{hash}' => ['GET', 'HEAD'],
             'api/v1/auth/login' => ['POST'],
             'api/v1/auth/logout' => ['POST'],
