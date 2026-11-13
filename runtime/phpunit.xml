@@ -18,6 +18,7 @@
             <file>tests/Unit/PhoneNumberCastTest.php</file>
             <file>tests/Unit/CredentialValuesTest.php</file>
             <file>tests/Unit/DisplayNameTest.php</file>
+            <file>tests/Unit/RecoveryProofTest.php</file>
             <file>tests/Unit/CredentialInputsTest.php</file>
             <file>tests/Integration/RuntimeEnvironmentTest.php</file>
             <file>tests/Integration/RuntimeBootstrapTest.php</file>
