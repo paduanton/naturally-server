@@ -65,6 +65,7 @@ final class BrowserAuthServiceProvider extends ServiceProvider
                     Limit::perMinute(30)->by(hash_hmac('sha256', 'recovery-ip|'.$request->ip(), config('app.key'))),
                 ];
             });
+            $limiter->for('identity-reset', static fn (Request $request) => Limit::perMinute(10)->by(hash_hmac('sha256', 'reset-ip|'.$request->ip(), config('app.key'))));
         });
         $router = $this->app->make('router');
         $router->aliasMiddleware('identity.throttle', IdentityHttp\Middleware\FailClosedThrottle::class);

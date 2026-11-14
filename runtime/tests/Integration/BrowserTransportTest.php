@@ -73,6 +73,7 @@ final class BrowserTransportTest extends BrowserTestCase
             'api/v1/auth/password' => ['PUT'],
             'api/v1/auth/password/confirm' => ['POST'],
             'api/v1/auth/password/recovery' => ['POST'],
+            'api/v1/auth/password/reset' => ['POST'],
             'api/v1/auth/register' => ['POST'],
             'api/v1/auth/sessions/others' => ['DELETE'],
         ], $routes);
