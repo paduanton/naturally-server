@@ -22,6 +22,7 @@
             <file>tests/Unit/CredentialInputsTest.php</file>
             <file>tests/Integration/RuntimeEnvironmentTest.php</file>
             <file>tests/Integration/RuntimeBootstrapTest.php</file>
+            <file>tests/Integration/IdentityContractTest.php</file>
         </testsuite>
         <testsuite name="Architecture">
             <file>tests/Architecture/ModuleArchitectureTest.php</file>

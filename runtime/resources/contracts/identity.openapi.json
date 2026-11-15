@@ -1,0 +1,1594 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Naturally BFF — Identity",
+    "version": "1.0.0",
+    "description": "Contrato do navegador na mesma origem do BFF. HTTPS obrigatório em produção. Credenciais somente em JSON; não incluir em query strings, logs ou armazenamento persistente do navegador. Sessão: 120 minutos de inatividade e 12 horas absolutas. Respostas pessoais sem cache compartilhado."
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {
+    "/api/v1/auth/csrf-cookie": {
+      "get": {
+        "operationId": "bootstrapCsrf",
+        "description": "Inicializa a sessão anônima e o cookie XSRF-TOKEN. O cliente envia seu valor decodificado no cabeçalho X-XSRF-TOKEN das escritas.",
+        "responses": {
+          "204": {
+            "description": "Operação concluída.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "no-store"
+              },
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "operationId": "registerAccount",
+        "description": "Somente visitante. Cria conta não verificada, inicia sessão e solicita envio de verificação. Campos protegidos não são gravados.",
+        "responses": {
+          "201": {
+            "description": "Operação concluída.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "no-store"
+              },
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Created"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "419": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "csrfToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Register"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "login",
+        "description": "Somente visitante. Login por e-mail; regenera sessão. Sem bearer, remember-me ou refresh token.",
+        "responses": {
+          "204": {
+            "description": "Operação concluída.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "no-store"
+              },
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "419": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "csrfToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "currentAccount",
+        "description": "A identidade vem exclusivamente da sessão.",
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "no-store"
+              },
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Account"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "logout",
+        "description": "Invalida a sessão atual e renova CSRF.",
+        "responses": {
+          "204": {
+            "description": "Operação concluída.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "no-store"
+              },
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "419": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfToken": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/sessions/others": {
+      "delete": {
+        "operationId": "revokeOtherSessions",
+        "description": "Exige confirmação de senha há menos de 15 minutos; preserva a sessão atual e sessões de outros usuários. Repetível.",
+        "responses": {
+          "204": {
+            "description": "Operação concluída.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "no-store"
+              },
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "419": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "423": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfToken": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/password/confirm": {
+      "post": {
+        "operationId": "confirmPassword",
+        "description": "Renova apenas a prova de senha; não estende o limite absoluto da sessão.",
+        "responses": {
+          "204": {
+            "description": "Operação concluída.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "no-store"
+              },
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "419": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Confirmation"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/password": {
+      "put": {
+        "operationId": "changePassword",
+        "description": "Exige confirmação recente. Troca senha e invalida recuperação e todas as sessões do usuário. Exige novo login.",
+        "responses": {
+          "204": {
+            "description": "Operação concluída.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "no-store"
+              },
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "419": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "423": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordChange"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/email/verify/{id}/{hash}": {
+      "get": {
+        "operationId": "verifyEmail",
+        "description": "Prova assinada de 60 minutos e sessão do titular. Idempotente. Confirma o e-mail atual e emite evento somente após commit.",
+        "responses": {
+          "204": {
+            "description": "Operação concluída.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "no-store"
+              },
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "hash",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{40}$"
+            }
+          },
+          {
+            "name": "expires",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "signature",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/email/verification-notification": {
+      "post": {
+        "operationId": "resendVerification",
+        "description": "Reenvia somente ao ator atual; contas verificadas não recebem outra mensagem. Limite separado da confirmação do link.",
+        "responses": {
+          "202": {
+            "description": "Solicitação aceita; não confirma existência de conta nem entrega de mensagem.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "no-store"
+              },
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "419": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfToken": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/password/recovery": {
+      "post": {
+        "operationId": "requestPasswordRecovery",
+        "description": "Somente visitante. Resposta uniforme para conta local, desconhecida, removida ou apenas social. Prova por hash no banco; mensagem enviada após a resposta.",
+        "responses": {
+          "202": {
+            "description": "Solicitação aceita; não confirma existência de conta nem entrega de mensagem.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "no-store"
+              },
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "419": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "csrfToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Recovery"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/password/reset": {
+      "post": {
+        "operationId": "resetPassword",
+        "description": "Somente visitante. Prova de uso único por 30 minutos. Consumo, troca de senha e revogação são atômicos. Não autentica o navegador.",
+        "responses": {
+          "204": {
+            "description": "Operação concluída.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "no-store"
+              },
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "419": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "csrfToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reset"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "sessionCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "naturally_session",
+        "description": "Cookie HttpOnly e SameSite=Lax, Secure sob HTTPS, sem Domain compartilhado."
+      },
+      "csrfToken": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-XSRF-TOKEN",
+        "description": "Valor decodificado do cookie XSRF-TOKEN; usar com cookies habilitados."
+      }
+    },
+    "schemas": {
+      "NewPassword": {
+        "type": "string",
+        "format": "password",
+        "writeOnly": true,
+        "minLength": 15,
+        "maxLength": 1024
+      },
+      "Email": {
+        "type": "string",
+        "format": "email",
+        "maxLength": 255
+      },
+      "Problem": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code",
+          "correlation_id"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri-reference"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "code": {
+            "type": "string"
+          },
+          "correlation_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "Register": {
+        "type": "object",
+        "required": [
+          "name",
+          "username",
+          "email",
+          "password",
+          "password_confirmation"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "Espaços externos removidos; caracteres de controle não permitidos."
+          },
+          "username": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 20,
+            "pattern": "^[a-zA-Z0-9]+(?:[._][a-zA-Z0-9]+)?$"
+          },
+          "email": {
+            "$ref": "#/components/schemas/Email"
+          },
+          "password": {
+            "$ref": "#/components/schemas/NewPassword"
+          },
+          "password_confirmation": {
+            "$ref": "#/components/schemas/NewPassword"
+          }
+        }
+      },
+      "Login": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "$ref": "#/components/schemas/Email"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "writeOnly": true,
+            "minLength": 1,
+            "maxLength": 1024
+          }
+        }
+      },
+      "Confirmation": {
+        "type": "object",
+        "required": [
+          "password"
+        ],
+        "properties": {
+          "password": {
+            "type": "string",
+            "format": "password",
+            "writeOnly": true,
+            "minLength": 1,
+            "maxLength": 1024
+          }
+        }
+      },
+      "PasswordChange": {
+        "type": "object",
+        "required": [
+          "password",
+          "password_confirmation"
+        ],
+        "properties": {
+          "password": {
+            "$ref": "#/components/schemas/NewPassword"
+          },
+          "password_confirmation": {
+            "$ref": "#/components/schemas/NewPassword"
+          }
+        }
+      },
+      "Recovery": {
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "$ref": "#/components/schemas/Email"
+          }
+        }
+      },
+      "Reset": {
+        "type": "object",
+        "required": [
+          "email",
+          "token",
+          "password",
+          "password_confirmation"
+        ],
+        "properties": {
+          "email": {
+            "$ref": "#/components/schemas/Email"
+          },
+          "token": {
+            "type": "string",
+            "writeOnly": true,
+            "minLength": 64,
+            "maxLength": 64,
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "password": {
+            "$ref": "#/components/schemas/NewPassword"
+          },
+          "password_confirmation": {
+            "$ref": "#/components/schemas/NewPassword"
+          }
+        }
+      },
+      "Created": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1
+              }
+            }
+          }
+        }
+      },
+      "Account": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "name",
+              "username",
+              "email",
+              "email_verified"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1
+              },
+              "name": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              },
+              "email": {
+                "$ref": "#/components/schemas/Email"
+              },
+              "email_verified": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
