@@ -11,12 +11,13 @@ use App\Modules\Identity\Domain\NewPassword;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Timebox;
 
 final class MysqlRecoveryConsumer implements RecoveryConsumer
 {
     public function consume(EmailAddress $email, #[\SensitiveParameter] RecoveryToken $token, #[\SensitiveParameter] NewPassword $password): bool
     {
-        return DB::transaction(static function () use ($email, $token, $password): bool {
+        return app(Timebox::class)->call(static fn (): bool => DB::transaction(static function () use ($email, $token, $password): bool {
             $user = User::query()->where('email', $email->value)->lockForUpdate()->first();
             if ($user === null || $user->password === null) { return false; }
             $record = DB::table('password_reset_tokens')->where('email', $user->email)->lockForUpdate()->first();
@@ -28,6 +29,6 @@ final class MysqlRecoveryConsumer implements RecoveryConsumer
             DB::table('password_reset_tokens')->where('email', $user->email)->delete();
             DB::table('sessions')->where('user_id', $user->id)->delete();
             return true;
-        });
+        }), 200000);
     }
 }
