@@ -26,7 +26,7 @@ final class IdentityContractTest extends TestCase
         self::assertSame('3.1.0', $spec['openapi']);
         $actual = [];
         foreach ($this->app->make('router')->getRoutes() as $route) {
-            if (str_starts_with($route->uri(), 'api/v1/auth/')) {
+            if (str_starts_with($route->getName() ?? '', 'identity.')) {
                 foreach ($route->methods() as $method) { if ($method !== 'HEAD') { $actual[] = strtolower($method).' /'.$route->uri(); } }
             }
         }

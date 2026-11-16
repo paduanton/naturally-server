@@ -35,6 +35,7 @@
             <file>tests/Integration/DatabaseScopeTest.php</file>
             <file>tests/Integration/RegistrationCaseTest.php</file>
             <file>tests/Integration/ProfileMutationTest.php</file>
+            <file>tests/Integration/BrowserProfileTest.php</file>
             <file>tests/Integration/BrowserTransportTest.php</file>
             <file>tests/Integration/BrowserOriginTest.php</file>
             <file>tests/Integration/BrowserEmailVerificationTest.php</file>

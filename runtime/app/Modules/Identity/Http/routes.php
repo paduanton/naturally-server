@@ -7,6 +7,10 @@ namespace App\Modules\Identity\Http;
 use Illuminate\Support\Facades\Route;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
+Route::prefix('api/v1/users/me')->middleware(['identity.browser', 'auth:web'])->group(static function (): void {
+    Route::patch('', UpdateProfile::class)->middleware(Middleware\RequireRecentAuthentication::class)->name('identity.account.profile');
+});
+
 Route::prefix('api/v1/auth')->middleware('identity.browser')->group(static function (): void {
     Route::get('csrf-cookie', [CsrfCookieController::class, 'show'])->name('identity.csrf');
     Route::get('me', CurrentAccount::class)->middleware('auth:sanctum')->name('identity.me');

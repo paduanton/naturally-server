@@ -37,6 +37,10 @@ erros usam `Cache-Control: no-store`. O contrato legível por ferramentas está 
 | `POST password/recovery` | `email` e CSRF; sem sessão autenticada | 202 vazio, independentemente da existência ou elegibilidade da conta |
 | `POST password/reset` | `email`, `token`, `password`, `password_confirmation` e CSRF; sem sessão autenticada | 204; consome prova uma vez, troca senha e revoga sessões; exige novo login |
 
+`PATCH /api/v1/users/me` altera `name`, `username` ou ambos. A chamada exige sessão,
+CSRF e autenticação recente e retorna 204. Campos extras e nomes de usuário indisponíveis
+retornam 422. Use `GET /api/v1/auth/me` para ler os dados atualizados.
+
 O autor vem exclusivamente da sessão. Identificadores enviados no corpo ou na query não
 selecionam outro usuário. O cadastro rejeita campos protegidos e não aceita remember-me.
 Envie um identificador no login. O campo `email` aceita um endereço de e-mail.
