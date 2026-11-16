@@ -11,8 +11,7 @@ final class OpaqueLoginRateLimiter extends LoginRateLimiter
 {
     protected function throttleKey(Request $request): string
     {
-        $email = $request->input('email');
-        $identity = is_string($email) ? strtolower(trim($email)) : '';
+        $identity = app(LoginThrottleIdentity::class)->forIdentifier($request->input('login', $request->input('email')));
         return hash_hmac('sha256', $identity.'|'.$request->ip(), config('app.key'));
     }
 }

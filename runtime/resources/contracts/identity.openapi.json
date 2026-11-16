@@ -225,7 +225,7 @@
     "/api/v1/auth/login": {
       "post": {
         "operationId": "login",
-        "description": "Somente visitante. Login por e-mail; regenera sessão. Sem bearer, remember-me ou refresh token.",
+        "description": "Somente visitante. Aceita e-mail no campo email ou e-mail ou nome de usuário no campo login. Regenera a sessão. Sem bearer, remember-me ou refresh token.",
         "responses": {
           "204": {
             "description": "Operação concluída.",
@@ -1533,7 +1533,6 @@
       "Login": {
         "type": "object",
         "required": [
-          "email",
           "password"
         ],
         "properties": {
@@ -1546,8 +1545,26 @@
             "writeOnly": true,
             "minLength": 1,
             "maxLength": 1024
+          },
+          "login": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "Nome de usuário ou e-mail da conta. Envie somente este campo ou email."
           }
-        }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "email"
+            ]
+          },
+          {
+            "required": [
+              "login"
+            ]
+          }
+        ]
       },
       "Confirmation": {
         "type": "object",

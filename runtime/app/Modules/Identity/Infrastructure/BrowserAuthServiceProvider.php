@@ -20,6 +20,9 @@ final class BrowserAuthServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->afterResolving('auth', static function (\Illuminate\Auth\AuthManager $auth): void {
+            $auth->provider('naturally', static fn ($app, array $configuration) => new LoginUserProvider($app['hash'], $configuration['model']));
+        });
         Fortify::ignoreRoutes();
         $this->app->register(\Laravel\Fortify\FortifyServiceProvider::class);
         $this->app->register(\Laravel\Sanctum\SanctumServiceProvider::class);
@@ -43,8 +46,7 @@ final class BrowserAuthServiceProvider extends ServiceProvider
         Event::listen(Login::class, StampAuthentication::class);
         $this->app->afterResolving(RateLimiter::class, static function (RateLimiter $limiter): void {
             $limiter->for('identity-login', static function (Request $request): array {
-                $email = $request->input('email');
-                $identity = is_string($email) ? strtolower(trim($email)) : '';
+                $identity = app(LoginThrottleIdentity::class)->forIdentifier($request->input('login', $request->input('email')));
                 return [
                     Limit::perMinute(5)->by(hash_hmac('sha256', 'account|'.$identity.'|'.$request->ip(), config('app.key'))),
                     Limit::perMinute(30)->by(hash_hmac('sha256', 'ip|'.$request->ip(), config('app.key'))),

@@ -28,6 +28,7 @@
             <file>tests/Integration/RecoveryConcurrencyTest.php</file>
             <file>tests/Integration/BrowserRegistrationTest.php</file>
             <file>tests/Integration/BrowserLoginTest.php</file>
+            <file>tests/Integration/BrowserUsernameLoginTest.php</file>
             <file>tests/Integration/BrowserSessionTest.php</file>
             <file>tests/Integration/BrowserRevocationTest.php</file>
             <file>tests/Integration/BrowserPasswordTest.php</file>

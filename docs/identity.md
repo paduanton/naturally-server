@@ -26,7 +26,7 @@ erros usam `Cache-Control: no-store`. O contrato legível por ferramentas está 
 | --- | --- | --- |
 | `GET csrf-cookie` | Sem corpo | 204; inicializa cookies/CSRF |
 | `POST register` | `name`, `username`, `email`, `password`, `password_confirmation` | 201 com `data.id`; inicia sessão |
-| `POST login` | `email`, `password` | 204; regenera identificador da sessão |
+| `POST login` | `password` e um identificador, `email` ou `login` | 204; regenera identificador da sessão |
 | `GET me` | Sessão autenticada | 200 com `data`: `id`, `name`, `username`, `email`, `email_verified` |
 | `POST logout` | Sessão e CSRF | 204; invalida a sessão atual e regenera CSRF |
 | `DELETE sessions/others` | Sessão, CSRF e autenticação recente | 204; encerra outras sessões do mesmo usuário; repetível |
@@ -39,7 +39,8 @@ erros usam `Cache-Control: no-store`. O contrato legível por ferramentas está 
 
 O autor vem exclusivamente da sessão. Identificadores enviados no corpo ou na query não
 selecionam outro usuário. O cadastro rejeita campos protegidos e não aceita remember-me.
-O login inicial usa e-mail; login por username ainda não foi migrado.
+Envie um identificador no login. O campo `email` aceita um endereço de e-mail.
+O campo `login` aceita nome de usuário ou e-mail. Ambos passam pela normalização do domínio.
 
 E-mail e username são normalizados no domínio. Username mantém 4–20 caracteres ASCII
 alfanuméricos, com no máximo um ponto ou underscore interno. A senha nova tem 15–1024
@@ -71,8 +72,9 @@ campos e mensagens genéricas, sem refletir valores, SQL, senhas ou detalhes int
 | 429 | Limite excedido; respeitar `Retry-After` |
 | 503 | Redis indisponível durante a limitação; a autenticação não prossegue |
 
-Redis limita cadastro a 5/minuto por IP; login a 5/minuto por combinação e-mail/IP e
-30/minuto por IP; confirmação a 5/minuto por usuário/IP. Reenvio de verificação permite
+Redis limita cadastro a 5/minuto por IP. No login, e-mail e nome de usuário da mesma
+conta compartilham 5 tentativas por minuto por conta e IP, com limite adicional de 30
+tentativas por minuto por IP. A confirmação permite 5 tentativas por minuto por usuário e IP. Reenvio de verificação permite
 6/minuto por usuário e 30/minuto por IP; verificação permite 12/minuto por usuário.
 Recuperação permite 5/minuto por e-mail/IP e 30/minuto por IP; consumo permite 10/minuto
 por IP. O repositório nativo também impede emitir outro token em menos de 60 segundos.
@@ -110,7 +112,7 @@ produção ainda precisam de configuração segura e homologação antes do AKS.
 ## Limites desta migração
 
 Este contrato cobre credenciais locais, sessões, verificação de e-mail e recuperação HTTP.
-Ainda faltam login por username, exclusão/restauração, vinculação e login social, autorização dos
+Ainda faltam exclusão/restauração, vinculação e login social, autorização dos
 demais módulos, agregação da cobertura de subprocessos e aceitação final do AKS.
 O cadastro cria conta não verificada; `email_verified` informa esse estado e não deve ser
 tratado como autorização para ações que futuramente exigirão verificação. Não há habilitação
