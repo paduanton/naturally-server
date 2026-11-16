@@ -10,6 +10,7 @@ final class IdentityServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->bind(\App\Modules\Identity\Application\ProfileMutation::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlProfileMutation::class);
         $this->app->register(BrowserAuthServiceProvider::class);
         $this->app->bind(\App\Modules\Identity\Application\RecoveryConsumer::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlRecoveryConsumer::class);
         $this->app->bind(\App\Modules\Identity\Application\RecoveryDelivery::class, RecoveryLinkDelivery::class);
