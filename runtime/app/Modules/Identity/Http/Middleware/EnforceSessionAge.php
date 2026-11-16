@@ -17,7 +17,9 @@ final class EnforceSessionAge
         $guard = auth()->guard('web');
         $issuedAt = $request->session()->get('_identity_issued_at');
         $now = Date::now()->getTimestamp();
-        if ($guard->check() && (!is_int($issuedAt) || $issuedAt > $now || $now - $issuedAt >= 43200)) {
+        $binding = $request->session()->get('_identity_account_binding');
+        if ($guard->check() && (!is_int($issuedAt) || $issuedAt > $now || $now - $issuedAt >= 43200
+            || !is_string($binding) || !hash_equals(hash_hmac('sha256', $guard->id().'|'.$guard->user()->getEmailForVerification(), config('app.key')), $binding))) {
             $guard->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();

@@ -18,6 +18,28 @@ use Tests\Support\BrowserTestCase;
 #[UsesDirectoryRecursively(__DIR__.'/../../routes')]
 final class BrowserCredentialRevisionTest extends BrowserTestCase
 {
+    public function testEmailChangedAfterCredentialValidationInvalidatesTheLateSession(): void
+    {
+        $password = bin2hex(random_bytes(24));
+        $user = User::factory()->create(['password' => $password]);
+        $this->bootstrapBrowser();
+        Event::listen(Validated::class, function (Validated $event): void {
+            User::findOrFail($event->user->getAuthIdentifier())->forceFill(['email' => bin2hex(random_bytes(8)).'@example.test', 'email_verified_at' => null])->save();
+            $this->database->connection()->table('sessions')->where('user_id', $event->user->getAuthIdentifier())->delete();
+        });
+        $this->browser('POST', '/api/v1/auth/login', ['email' => $user->email, 'password' => $password])->assertNoContent();
+        $this->browser('GET', '/api/v1/auth/me')->assertUnauthorized();
+    }
+
+    public function testMissingAccountBindingFailsClosed(): void
+    {
+        $this->authenticated();
+        $session = $this->app->make('session')->driver();
+        $session->forget('_identity_account_binding');
+        $session->save();
+        $this->browser('GET', '/api/v1/auth/me')->assertUnauthorized();
+    }
+
     public function testLoginValidatedBeforeCredentialMutationCannotCreateAUsableStaleSession(): void
     {
         $password = bin2hex(random_bytes(24));

@@ -19,6 +19,7 @@ use Tests\Support\BrowserTestCase;
 #[UsesDirectoryRecursively(__DIR__.'/../../routes')]
 final class BrowserEmailVerificationTest extends BrowserTestCase
 {
+    private string $registrationPassword;
     public function testSignedVerificationAllowsWebmailNavigationButRejectsCrossOriginFetches(): void
     {
         $user = $this->register();
@@ -64,7 +65,7 @@ final class BrowserEmailVerificationTest extends BrowserTestCase
     {
         $this->bootstrapBrowser();
         $suffix = bin2hex(random_bytes(4));
-        $password = bin2hex(random_bytes(24));
+        $password = $this->registrationPassword = bin2hex(random_bytes(24));
         $this->browser('POST', '/api/v1/auth/register', ['name' => 'Synthetic Name', 'username' => 'user'.$suffix, 'email' => $suffix.'@example.test', 'password' => $password, 'password_confirmation' => $password])->assertCreated();
         return User::query()->sole();
     }
@@ -117,6 +118,9 @@ final class BrowserEmailVerificationTest extends BrowserTestCase
         try { $this->browser('GET', $path)->assertForbidden(); }
         finally { Date::setTestNow(); }
         $user->forceFill(['email' => bin2hex(random_bytes(8)).'@example.test'])->save();
+        $this->browser('GET', '/api/v1/auth/me')->assertUnauthorized();
+        $this->bootstrapBrowser();
+        $this->browser('POST', '/api/v1/auth/login', ['email' => $user->email, 'password' => $this->registrationPassword])->assertNoContent();
         $this->browser('GET', $path)->assertForbidden();
         self::assertNull($user->fresh()->email_verified_at);
     }
