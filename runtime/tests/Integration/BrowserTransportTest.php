@@ -17,6 +17,21 @@ use Tests\Support\BrowserTestCase;
 #[UsesDirectoryRecursively(__DIR__.'/../../routes')]
 final class BrowserTransportTest extends BrowserTestCase
 {
+    public function testCredentialsInQueryAreRejectedBeforeAuthentication(): void
+    {
+        $password = bin2hex(random_bytes(24));
+        $user = \App\Modules\Identity\Infrastructure\Persistence\User::factory()->create(['password' => $password]);
+        $this->bootstrapBrowser();
+        $query = http_build_query(['email' => $user->email, 'password' => $password], '', '&', PHP_QUERY_RFC3986);
+        $this->browser('POST', '/api/v1/auth/login?'.$query)->assertStatus(400)->assertJsonPath('code', 'invalid_request');
+        $this->browser('GET', '/api/v1/auth/me')->assertUnauthorized();
+        $this->browser('POST', '/api/v1/auth/login', ['email' => $user->email, 'password' => $password])->assertNoContent();
+        foreach (['POST' => '/password/confirm', 'PUT' => '/password', 'DELETE' => '/sessions/others'] as $method => $path) {
+            $this->browser($method, '/api/v1/auth'.$path.'?user_id='.$user->id)->assertStatus(400);
+        }
+        self::assertTrue($this->app->make('hash')->check($password, $user->fresh()->password));
+    }
+
     public function testCsrfBootstrapUsesSecureDistinctCookiePrivileges(): void
     {
         $response = $this->browser('GET', '/api/v1/auth/csrf-cookie')->assertNoContent();

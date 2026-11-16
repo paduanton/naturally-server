@@ -60,6 +60,7 @@ campos e mensagens genéricas, sem refletir valores, SQL, senhas ou detalhes int
 
 | Status | Significado |
 | --- | --- |
+| 400 | `invalid_request` em operações de escrita com parâmetros na query |
 | 401 | Sessão ausente, inválida ou expirada |
 | 403 | Origem/host incompatíveis ou prova de verificação inválida |
 | 409 | Cadastro, login ou recuperação de senha solicitados com sessão já autenticada |

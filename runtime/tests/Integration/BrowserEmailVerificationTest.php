@@ -19,6 +19,19 @@ use Tests\Support\BrowserTestCase;
 #[UsesDirectoryRecursively(__DIR__.'/../../routes')]
 final class BrowserEmailVerificationTest extends BrowserTestCase
 {
+    public function testSignedVerificationAllowsWebmailNavigationButRejectsCrossOriginFetches(): void
+    {
+        $user = $this->register();
+        $path = $this->path();
+        $navigation = ['HTTP_ORIGIN' => null, 'HTTP_SEC_FETCH_SITE' => 'cross-site', 'HTTP_SEC_FETCH_MODE' => 'navigate', 'HTTP_SEC_FETCH_DEST' => 'document'];
+        $this->browser('GET', $path, server: $navigation)->assertNoContent();
+        self::assertNotNull($user->fresh()->email_verified_at);
+        $this->browser('GET', str_replace(sha1($user->email), str_repeat('0', 40), $path), server: $navigation)->assertForbidden();
+        $this->browser('GET', $path, server: array_replace($navigation, ['HTTP_ORIGIN' => 'https://hostile.test']))->assertForbidden();
+        $this->browser('GET', $path, server: array_replace($navigation, ['HTTP_SEC_FETCH_MODE' => 'cors', 'HTTP_SEC_FETCH_DEST' => 'empty']))->assertForbidden();
+        $this->browser('GET', '/api/v1/auth/me', server: $navigation)->assertForbidden();
+    }
+
     public function testVerificationEventFollowsOuterCommitAndRollbackLeavesNoVerifiedState(): void
     {
         $user = User::factory()->create();

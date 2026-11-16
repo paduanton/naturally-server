@@ -96,6 +96,16 @@
               }
             }
           },
+          "400": {
+            "description": "A operação de escrita rejeita parâmetros de query.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Problem Details, sem valores de entrada ou detalhes internos.",
             "content": {
@@ -230,6 +240,16 @@
                 "schema": {
                   "type": "string",
                   "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A operação de escrita rejeita parâmetros de query.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -439,6 +459,16 @@
               }
             }
           },
+          "400": {
+            "description": "A operação de escrita rejeita parâmetros de query.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Problem Details, sem valores de entrada ou detalhes internos.",
             "content": {
@@ -516,6 +546,16 @@
                 "schema": {
                   "type": "string",
                   "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A operação de escrita rejeita parâmetros de query.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -607,6 +647,16 @@
                 "schema": {
                   "type": "string",
                   "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A operação de escrita rejeita parâmetros de query.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -736,6 +786,16 @@
                 "schema": {
                   "type": "string",
                   "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A operação de escrita rejeita parâmetros de query.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -977,6 +1037,16 @@
               }
             }
           },
+          "400": {
+            "description": "A operação de escrita rejeita parâmetros de query.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Problem Details, sem valores de entrada ou detalhes internos.",
             "content": {
@@ -1082,6 +1152,16 @@
                 "schema": {
                   "type": "string",
                   "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A operação de escrita rejeita parâmetros de query.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -1220,6 +1300,16 @@
                 "schema": {
                   "type": "string",
                   "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A operação de escrita rejeita parâmetros de query.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }

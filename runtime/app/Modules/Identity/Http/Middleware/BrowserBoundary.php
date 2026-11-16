@@ -21,8 +21,14 @@ final class BrowserBoundary
         $origin = $scheme.'://'.strtolower($url['host']).($port === $defaultPort ? '' : ':'.$port);
         abort_unless($request->getSchemeAndHttpHost() === $origin, 403);
         $sentOrigin = $request->headers->get('Origin');
-        abort_if(($sentOrigin !== null && $sentOrigin !== $origin) || $request->header('Sec-Fetch-Site') === 'cross-site', 403);
-        abort_if(!in_array($request->method(), ['GET', 'HEAD', 'OPTIONS'], true) && !$request->isJson(), 415);
+        $signedNavigation = $request->isMethod('GET') && $request->routeIs('identity.email.verify')
+            && $sentOrigin === null && $request->header('Sec-Fetch-Mode') === 'navigate'
+            && $request->header('Sec-Fetch-Dest') === 'document';
+        abort_if(($sentOrigin !== null && $sentOrigin !== $origin)
+            || ($request->header('Sec-Fetch-Site') === 'cross-site' && !$signedNavigation), 403);
+        $writing = !in_array($request->method(), ['GET', 'HEAD', 'OPTIONS'], true);
+        abort_if($writing && $request->query->count() > 0, 400);
+        abort_if($writing && !$request->isJson(), 415);
         $response = $next($request);
         $response->headers->set('Cache-Control', 'no-store, private');
         $response->headers->set('X-Request-ID', $request->attributes->get('correlation_id'));
