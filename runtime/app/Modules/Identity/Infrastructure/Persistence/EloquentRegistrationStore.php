@@ -9,6 +9,7 @@ use App\Modules\Identity\Application\NewAccountData;
 use App\Modules\Identity\Application\RegistrationConflict;
 use App\Modules\Identity\Application\RegistrationStore;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Hash;
 
 final class EloquentRegistrationStore implements RegistrationStore
 {
@@ -16,7 +17,7 @@ final class EloquentRegistrationStore implements RegistrationStore
     {
         try {
             $user = new User();
-            $user->forceFill(['name' => $account->name->value, 'username' => $account->username->value, 'email' => $account->email->value, 'password' => $account->password->reveal()]);
+            $user->forceFill(['name' => $account->name->value, 'username' => $account->username->value, 'email' => $account->email->value, 'password' => Hash::make($account->password->reveal())]);
             $user->save();
         } catch (QueryException $exception) {
             if (($exception->errorInfo[1] ?? null) === 1062) {

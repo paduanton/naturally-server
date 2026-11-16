@@ -21,6 +21,16 @@ final class RegistrationCaseTest extends DatabaseTestCase
 {
     protected const ?string SCHEMA_MODULE = 'Identity';
 
+    public function testHashShapedPasswordIsTreatedAsTheLiteralChosenSecret(): void
+    {
+        $preimage = bin2hex(random_bytes(4));
+        $password = $this->app->make('hash')->make($preimage);
+        $result = $this->app->make(RegisterAccount::class)->handle(new RegistrationInput('Name', 'user.name', 'user@example.test', $password));
+        $stored = User::findOrFail($result->id)->password;
+        self::assertTrue($this->app->make('hash')->check($password, $stored));
+        self::assertFalse($this->app->make('hash')->check($preimage, $stored));
+    }
+
     public function testRegistrationNormalizesIdentifiersHashesPasswordAndReturnsOnlyAccountData(): void
     {
         $password = bin2hex(random_bytes(24));

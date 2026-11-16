@@ -9,6 +9,7 @@ use App\Modules\Identity\Application\InactiveSession;
 use App\Modules\Identity\Application\PasswordMutation;
 use App\Modules\Identity\Domain\NewPassword;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 final class MysqlPasswordMutation implements PasswordMutation
 {
@@ -19,7 +20,7 @@ final class MysqlPasswordMutation implements PasswordMutation
             $session = DB::table('sessions')->where('user_id', $actorId)->where('id', $sessionId)->lockForUpdate()->first(['id']);
             if ($user === null || $session === null) { throw new InactiveSession(); }
             if ($user->password === null) { throw new CredentialChangeDenied(); }
-            $user->forceFill(['password' => $password->reveal()])->save();
+            $user->forceFill(['password' => Hash::make($password->reveal())])->save();
             DB::table('password_reset_tokens')->where('email', $user->email)->delete();
             DB::table('sessions')->where('user_id', $actorId)->delete();
         });

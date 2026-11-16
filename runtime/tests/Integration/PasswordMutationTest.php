@@ -19,6 +19,20 @@ use Tests\Support\BrowserTestCase;
 #[UsesDirectoryRecursively(__DIR__.'/../../routes')]
 final class PasswordMutationTest extends BrowserTestCase
 {
+    public function testHashShapedReplacementDoesNotEnableItsShortPreimage(): void
+    {
+        $user = $this->authenticated();
+        $preimage = bin2hex(random_bytes(4));
+        $password = $this->app->make('hash')->make($preimage);
+        $this->browser('PUT', '/api/v1/auth/password', ['password' => $password, 'password_confirmation' => $password])->assertNoContent();
+        $stored = $user->fresh()->password;
+        self::assertTrue($this->app->make('hash')->check($password, $stored));
+        self::assertFalse($this->app->make('hash')->check($preimage, $stored));
+        $this->bootstrapBrowser();
+        $this->browser('POST', '/api/v1/auth/login', ['email' => $user->email, 'password' => $preimage])->assertUnprocessable();
+        $this->browser('POST', '/api/v1/auth/login', ['email' => $user->email, 'password' => $password])->assertNoContent();
+    }
+
     private function authenticated(): User
     {
         $password = bin2hex(random_bytes(24));
