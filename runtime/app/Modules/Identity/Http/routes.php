@@ -14,6 +14,7 @@ Route::prefix('api/v1/users/me')->middleware(['identity.browser', 'auth:web'])->
 });
 
 Route::prefix('api/v1/auth')->middleware('identity.browser')->group(static function (): void {
+    Route::post('account/restoration', RequestRestoration::class)->middleware([Middleware\RequireGuest::class, 'identity.throttle:identity-restoration-request'])->name('identity.account.restoration.request');
     Route::get('csrf-cookie', [CsrfCookieController::class, 'show'])->name('identity.csrf');
     Route::get('me', CurrentAccount::class)->middleware('auth:sanctum')->name('identity.me');
     Route::get('email/verify/{id}/{hash}', VerifyEmail::class)->whereNumber('id')->where('hash', '[a-f0-9]{40}')->middleware(['auth:web', 'signed', 'identity.throttle:identity-verification-check'])->name('identity.email.verify');
