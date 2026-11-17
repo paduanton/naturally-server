@@ -36,6 +36,8 @@
             <file>tests/Integration/DatabaseScopeTest.php</file>
             <file>tests/Integration/RegistrationCaseTest.php</file>
             <file>tests/Integration/ProfileMutationTest.php</file>
+            <file>tests/Integration/PhoneContactsTest.php</file>
+            <file>tests/Integration/PhoneContactConcurrencyTest.php</file>
             <file>tests/Integration/EmailMutationTest.php</file>
             <file>tests/Integration/AccountDeletionTest.php</file>
             <file>tests/Integration/RestorationProofTest.php</file>
