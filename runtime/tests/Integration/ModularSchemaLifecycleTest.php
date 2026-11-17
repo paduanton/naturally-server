@@ -32,7 +32,7 @@ use Tests\Support\DatabaseTestCase;
 #[UsesDirectoryRecursively(__DIR__.'/../../routes')]
 final class ModularSchemaLifecycleTest extends DatabaseTestCase
 {
-    private const TABLES = ['users', 'sessions', 'social_accounts', 'password_reset_tokens', 'phones', 'recipes', 'ingredients', 'instructions', 'tags', 'recipe_tags', 'recipe_likes', 'recipe_favorites', 'follows', 'ratings', 'comments', 'reports', 'media_assets', 'recipe_images', 'rating_images', 'profile_images', 'pdf_downloads'];
+    private const TABLES = ['users', 'sessions', 'social_accounts', 'password_reset_tokens', 'account_restoration_tokens', 'phones', 'recipes', 'ingredients', 'instructions', 'tags', 'recipe_tags', 'recipe_likes', 'recipe_favorites', 'follows', 'ratings', 'comments', 'reports', 'media_assets', 'recipe_images', 'rating_images', 'profile_images', 'pdf_downloads'];
 
     public function testAllModuleTablesUseTransactionalUtf8StorageAndRepeatableMigrations(): void
     {

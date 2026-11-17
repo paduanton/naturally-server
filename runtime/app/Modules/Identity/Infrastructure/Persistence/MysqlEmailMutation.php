@@ -25,6 +25,7 @@ final class MysqlEmailMutation implements EmailMutation
                 if ($user->email === $email->value) { return false; }
                 $old = $user->email;
                 $user->forceFill(['email' => $email->value, 'email_verified_at' => null])->save();
+                DB::table('account_restoration_tokens')->whereIn('email', [$old, $email->value])->delete();
                 DB::table('password_reset_tokens')->where('email', $old)->delete();
                 DB::table('sessions')->where('user_id', $actorId)->delete();
                 return true;

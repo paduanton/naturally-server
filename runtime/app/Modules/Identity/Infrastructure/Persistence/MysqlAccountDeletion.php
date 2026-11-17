@@ -17,6 +17,7 @@ final class MysqlAccountDeletion implements AccountDeletion
             $session = DB::table('sessions')->where('user_id', $actorId)->where('id', $sessionId)->lockForUpdate()->first(['id']);
             if ($user === null || $session === null) { throw new InactiveSession(); }
             $user->delete();
+            DB::table('account_restoration_tokens')->where('email', $user->email)->delete();
             DB::table('password_reset_tokens')->where('email', $user->email)->delete();
             DB::table('sessions')->where('user_id', $actorId)->delete();
         });
