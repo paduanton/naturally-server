@@ -45,6 +45,7 @@ final class BrowserAuthServiceProvider extends ServiceProvider
         \Illuminate\Auth\Notifications\VerifyEmail::createUrlUsing(static fn ($user): string => \Illuminate\Support\Facades\URL::temporarySignedRoute('identity.email.verify', \Illuminate\Support\Facades\Date::now()->addMinutes(60), ['id' => $user->getAuthIdentifier(), 'hash' => sha1($user->getEmailForVerification())]));
         Event::listen(Login::class, StampAuthentication::class);
         $this->app->afterResolving(RateLimiter::class, static function (RateLimiter $limiter): void {
+            $limiter->for('identity-email-change', static fn (Request $request) => Limit::perMinute(5)->by(hash_hmac('sha256', 'email-change|'.$request->user()->getAuthIdentifier().'|'.$request->ip(), config('app.key'))));
             $limiter->for('identity-login', static function (Request $request): array {
                 $identity = app(LoginThrottleIdentity::class)->forIdentifier($request->input('login', $request->input('email')));
                 return [

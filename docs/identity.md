@@ -41,6 +41,11 @@ erros usam `Cache-Control: no-store`. O contrato legível por ferramentas está 
 CSRF e autenticação recente e retorna 204. Campos extras e nomes de usuário indisponíveis
 retornam 422. Use `GET /api/v1/auth/me` para ler os dados atualizados.
 
+`PUT /api/v1/users/me/email` aceita apenas email e exige sessão, CSRF e autenticação recente.
+A troca é limitada a cinco tentativas por minuto por conta e IP. O retorno é 204.
+Se o endereço mudar, as sessões são encerradas e o novo endereço precisa ser verificado.
+Reenviar o mesmo endereço mantém a sessão e a verificação.
+
 O autor vem exclusivamente da sessão. Identificadores enviados no corpo ou na query não
 selecionam outro usuário. O cadastro rejeita campos protegidos e não aceita remember-me.
 Envie um identificador no login. O campo `email` aceita um endereço de e-mail.
