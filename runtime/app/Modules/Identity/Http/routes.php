@@ -14,6 +14,7 @@ Route::prefix('api/v1/users/me')->middleware(['identity.browser', 'auth:web'])->
 });
 
 Route::prefix('api/v1/auth')->middleware('identity.browser')->group(static function (): void {
+    Route::post('account/restore', ConsumeRestoration::class)->middleware([Middleware\RequireGuest::class, 'identity.throttle:identity-restoration-consume'])->name('identity.account.restoration.consume');
     Route::post('account/restoration', RequestRestoration::class)->middleware([Middleware\RequireGuest::class, 'identity.throttle:identity-restoration-request'])->name('identity.account.restoration.request');
     Route::get('csrf-cookie', [CsrfCookieController::class, 'show'])->name('identity.csrf');
     Route::get('me', CurrentAccount::class)->middleware('auth:sanctum')->name('identity.me');

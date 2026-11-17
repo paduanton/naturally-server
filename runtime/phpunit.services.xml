@@ -22,6 +22,7 @@
             <file>tests/Integration/EmailMutationTest.php</file>
             <file>tests/Integration/AccountDeletionTest.php</file>
             <file>tests/Integration/RestorationProofTest.php</file>
+            <file>tests/Integration/AccountRestorationTest.php</file>
             <file>tests/Integration/BrowserRestorationRequestTest.php</file>
             <file>tests/Integration/BrowserEmailChangeTest.php</file>
             <file>tests/Integration/BrowserProfileTest.php</file>

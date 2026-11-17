@@ -37,6 +37,7 @@ erros usam `Cache-Control: no-store`. O contrato legível por ferramentas está 
 | `POST password/recovery` | `email` e CSRF; sem sessão autenticada | 202 vazio, independentemente da existência ou elegibilidade da conta |
 | `POST password/reset` | `email`, `token`, `password`, `password_confirmation` e CSRF; sem sessão autenticada | 204; consome prova uma vez, troca senha e revoga sessões; exige novo login |
 | `POST account/restoration` | `email` e CSRF; sem sessão autenticada | 202 vazio; solicita o link para contas locais excluídas, sem indicar elegibilidade ou entrega |
+| `POST account/restore` | `email`, `token`, `password`, `password_confirmation` e CSRF; sem sessão autenticada | 204; restaura a conta local, troca a senha e revoga sessões; exige novo login |
 
 `PATCH /api/v1/users/me` altera `name`, `username` ou ambos. A chamada exige sessão,
 CSRF e autenticação recente e retorna 204. Campos extras e nomes de usuário indisponíveis
@@ -127,7 +128,7 @@ produção ainda precisam de configuração segura e homologação antes do AKS.
 ## Limites desta migração
 
 Este contrato cobre credenciais locais, sessões, verificação de e-mail e recuperação HTTP.
-Ainda faltam confirmar a restauração, vincular contas, oferecer login social e autorizar os
+Ainda faltam vincular contas, oferecer login e restauração social e autorizar os
 demais módulos. Também faltam agregar a cobertura de subprocessos e concluir a aceitação do AKS.
 O cadastro cria conta não verificada; `email_verified` informa esse estado e não deve ser
 tratado como autorização para ações que futuramente exigirão verificação. Não há habilitação
