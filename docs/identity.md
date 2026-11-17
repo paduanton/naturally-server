@@ -46,6 +46,11 @@ A troca é limitada a cinco tentativas por minuto por conta e IP. O retorno é 2
 Se o endereço mudar, as sessões são encerradas e o novo endereço precisa ser verificado.
 Reenviar o mesmo endereço mantém a sessão e a verificação.
 
+`DELETE /api/v1/users/me` exclui logicamente a conta da sessão. Envie
+`Content-Type: application/json` e `{}`. A chamada exige sessão, CSRF e autenticação
+recente. O retorno 204 indica que a conta foi excluída e suas sessões e tokens de
+recuperação foram revogados.
+
 O autor vem exclusivamente da sessão. Identificadores enviados no corpo ou na query não
 selecionam outro usuário. O cadastro rejeita campos protegidos e não aceita remember-me.
 Envie um identificador no login. O campo `email` aceita um endereço de e-mail.

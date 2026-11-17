@@ -9,6 +9,7 @@ use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
 Route::prefix('api/v1/users/me')->middleware(['identity.browser', 'auth:web'])->group(static function (): void {
     Route::patch('', UpdateProfile::class)->middleware(Middleware\RequireRecentAuthentication::class)->name('identity.account.profile');
+    Route::delete('', DeleteCurrentAccount::class)->middleware(Middleware\RequireRecentAuthentication::class)->name('identity.account.delete');
     Route::put('email', UpdateEmail::class)->middleware([Middleware\RequireRecentAuthentication::class, 'identity.throttle:identity-email-change'])->name('identity.account.email');
 });
 
