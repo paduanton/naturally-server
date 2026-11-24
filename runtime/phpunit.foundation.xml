@@ -15,6 +15,7 @@
         <testsuite name="Runtime">
             <file>tests/Unit/RuntimeConfigurationTest.php</file>
             <file>tests/Unit/PhoneNumberTest.php</file>
+            <file>tests/Unit/MobilePhoneValidationTest.php</file>
             <file>tests/Unit/PhoneNumberCastTest.php</file>
             <file>tests/Unit/CredentialValuesTest.php</file>
             <file>tests/Unit/DisplayNameTest.php</file>
@@ -37,6 +38,7 @@
             <file>tests/Integration/RegistrationCaseTest.php</file>
             <file>tests/Integration/ProfileMutationTest.php</file>
             <file>tests/Integration/PhoneContactsTest.php</file>
+            <file>tests/Integration/PhoneContactValidationTest.php</file>
             <file>tests/Integration/PhoneContactConcurrencyTest.php</file>
             <file>tests/Integration/EmailMutationTest.php</file>
             <file>tests/Integration/AccountDeletionTest.php</file>

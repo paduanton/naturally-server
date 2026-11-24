@@ -15,6 +15,7 @@
         <testsuite name="Runtime">
             <file>tests/Unit/RuntimeConfigurationTest.php</file>
             <file>tests/Unit/PhoneNumberTest.php</file>
+            <file>tests/Unit/MobilePhoneValidationTest.php</file>
             <file>tests/Unit/PhoneNumberCastTest.php</file>
             <file>tests/Unit/CredentialValuesTest.php</file>
             <file>tests/Unit/DisplayNameTest.php</file>

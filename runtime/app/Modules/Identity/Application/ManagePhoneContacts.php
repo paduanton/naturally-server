@@ -8,7 +8,7 @@ use App\Modules\Identity\Domain\PhoneContact;
 
 final readonly class ManagePhoneContacts
 {
-    public function __construct(private PhoneContactStore $contacts) {}
+    public function __construct(private PhoneContactStore $contacts, private MobilePhoneValidation $mobileNumbers) {}
 
     /** @return list<PhoneContactData> */
     public function listing(PhoneContactSession $session): array
@@ -18,7 +18,11 @@ final readonly class ManagePhoneContacts
 
     public function add(PhoneContactSession $session, string $label, string $countryCode, string $number, bool $main): PhoneContactData
     {
-        return $this->contacts->addForSession($session, PhoneContact::fromStrings($label, $countryCode, $number, $main));
+        $contact = PhoneContact::fromStrings($label, $countryCode, $number, $main);
+        if (!$this->mobileNumbers->accepts($contact->number, $contact->countryCode)) {
+            throw new \InvalidArgumentException('Invalid mobile phone contact.');
+        }
+        return $this->contacts->addForSession($session, $contact);
     }
 
     public function remove(PhoneContactSession $session, int $phoneId): void

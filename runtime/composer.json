@@ -5,6 +5,7 @@
   "license": "MIT",
   "require": {
     "php": "^8.5",
+    "giggsey/libphonenumber-for-php-lite": "^9.0.41",
     "laravel/fortify": "^1.41",
     "laravel/framework": "^13.0",
     "laravel/sanctum": "^4.3",
