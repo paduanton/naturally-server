@@ -1,5 +1,5 @@
 # Development/test tools only; application source is mounted when needed.
-FROM php:8.5.12-cli-bookworm@sha256:050713ce008e2360ea9dc96e1f9a075690132388d917fc3552806f7a7be6f2a0 AS development
+FROM php:8.5.13-cli-bookworm@sha256:7594f2ba7a3bfef73dbf26d92b26d7247165a46040dc1950f015a9beb1242ccf AS development
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git unzip libonig-dev libxml2-dev libzip-dev libpng-dev libicu-dev libjpeg62-turbo-dev libwebp-dev \
