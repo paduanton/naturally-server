@@ -6,8 +6,7 @@ namespace App\Modules\Identity\Application;
 
 interface SocialAccountStore
 {
-    /** @return list<SocialAccountData> */
-    public function listForSession(SessionActor $actor): array;
+    public function listForSession(SessionActor $actor, int $page, int $perPage): SocialAccountPage;
 
     public function removeForSession(SessionActor $actor, int $accountId): void;
 }

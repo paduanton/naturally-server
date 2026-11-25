@@ -7,7 +7,7 @@ namespace Tests\Integration;
 use App\Modules\Identity\Application\InactiveSession;
 use App\Modules\Identity\Application\ManageSocialAccounts;
 use App\Modules\Identity\Application\SessionActor;
-use App\Modules\Identity\Domain\LastLoginMethodRemovalDenied;
+use App\Modules\Identity\Application\SocialAccountRemovalConflict;
 use App\Modules\Identity\Domain\SocialProvider;
 use App\Modules\Identity\Infrastructure\Persistence\SocialAccount;
 use App\Modules\Identity\Infrastructure\Persistence\User;
@@ -31,13 +31,14 @@ final class SocialAccountsTest extends DatabaseTestCase
         $other = SocialAccount::factory()->forUser(User::factory()->create()->id)->create();
         $case = $this->app->make(ManageSocialAccounts::class);
 
-        $rows = $case->listing($actor);
-        self::assertCount(1, $rows);
+        $page = $case->listing($actor);
+        self::assertSame(1, $page->total);
+        self::assertCount(1, $page->data);
         self::assertEquals([
             'id' => $own->id,
             'provider' => 'google',
             'linkedAt' => $own->created_at->toIso8601String(),
-        ], get_object_vars($rows[0]));
+        ], get_object_vars($page->data[0]));
 
         $case->remove($actor, $other->id);
         $case->remove($actor, 999999);
@@ -47,7 +48,20 @@ final class SocialAccountsTest extends DatabaseTestCase
         $case->remove($actor, $own->id);
         $case->remove($actor, $own->id);
         self::assertNull($own->fresh());
-        self::assertSame([], $case->listing($actor));
+        self::assertSame([], $case->listing($actor)->data);
+    }
+
+    public function testDirectListingRejectsOutOfRangePagination(): void
+    {
+        $actor = $this->actor();
+        $case = $this->app->make(ManageSocialAccounts::class);
+
+        foreach ([[0, 20], [1000001, 20], [1, 0], [1, 101]] as [$page, $perPage]) {
+            $this->assertThrows(
+                fn () => $case->listing($actor, $page, $perPage),
+                \InvalidArgumentException::class,
+            );
+        }
     }
 
     public function testCannotRemoveTheLastLoginMethodOfASocialOnlyAccount(): void
@@ -64,7 +78,7 @@ final class SocialAccountsTest extends DatabaseTestCase
         try {
             $case->remove($actor, $second->id);
             self::fail('Last login method removed.');
-        } catch (LastLoginMethodRemovalDenied) {
+        } catch (SocialAccountRemovalConflict) {
             self::assertNotNull($second->fresh());
         }
     }

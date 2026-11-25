@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
 Route::prefix('api/v1/users/me')->middleware(['identity.browser', 'auth:web'])->group(static function (): void {
+    Route::get('social-accounts', [SocialAccountsController::class, 'index'])->name('identity.social.index');
+    Route::delete('social-accounts/{account}', [SocialAccountsController::class, 'destroy'])
+        ->where('account', '[1-9][0-9]*')
+        ->middleware([Middleware\RequireRecentAuthentication::class, 'identity.throttle:identity-social-change'])
+        ->name('identity.social.destroy');
     Route::get('phones', [PhoneContactsController::class, 'index'])->name('identity.phones.index');
     Route::patch('phones/{phone}', [PhoneContactsController::class, 'update'])->where('phone', '[1-9][0-9]*')->middleware([Middleware\RequireRecentAuthentication::class, 'identity.throttle:identity-phone-change'])->name('identity.phones.update');
     Route::post('phones', [PhoneContactsController::class, 'store'])->middleware([Middleware\RequireRecentAuthentication::class, 'identity.throttle:identity-phone-change'])->name('identity.phones.store');

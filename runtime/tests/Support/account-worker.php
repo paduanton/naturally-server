@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Modules\Identity\Application as Cases;
-use App\Modules\Identity\Domain\LastLoginMethodRemovalDenied;
 use App\Shared\Infrastructure\RuntimeApplicationFactory;
 use Illuminate\Contracts\Console\Kernel;
 
@@ -56,7 +55,7 @@ try {
     };
 
     echo "ACCEPTED\n";
-} catch (Cases\RestorationDenied|Cases\InactiveSession|LastLoginMethodRemovalDenied) {
+} catch (Cases\RestorationDenied|Cases\InactiveSession|Cases\SocialAccountRemovalConflict) {
     echo "REJECTED\n";
 } catch (Throwable) {
     fwrite(STDERR, "Account worker failed.\n");
