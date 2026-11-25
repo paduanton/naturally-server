@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         cacheDirectory="/tmp/naturally-phpunit"
+         recordTestRunHistory="false"
+         colors="false"
+         failOnAllIssues="true"
+         failOnEmptyTestSuite="true"
+         requireCoverageMetadata="true"
+         beStrictAboutCoverageMetadata="true"
+         beStrictAboutOutputDuringTests="true"
+         displayDetailsOnAllIssues="true">
+    <testsuites>
+        <testsuite name="Runtime">
+            <file>tests/Unit/RuntimeConfigurationTest.php</file>
+            <file>tests/Unit/PhoneNumberTest.php</file>
+            <file>tests/Unit/MobilePhoneValidationTest.php</file>
+            <file>tests/Unit/PhoneNumberCastTest.php</file>
+            <file>tests/Unit/CredentialValuesTest.php</file>
+            <file>tests/Unit/SocialIdentityTest.php</file>
+            <file>tests/Unit/DisplayNameTest.php</file>
+            <file>tests/Unit/BirthDateTest.php</file>
+            <file>tests/Unit/RecoveryProofTest.php</file>
+            <file>tests/Unit/CredentialInputsTest.php</file>
+            <file>tests/Unit/AccountInputsTest.php</file>
+            <file>tests/Integration/RuntimeEnvironmentTest.php</file>
+            <file>tests/Integration/RuntimeBootstrapTest.php</file>
+            <file>tests/Integration/IdentityContractTest.php</file>
+        </testsuite>
+        <testsuite name="Architecture">
+            <file>tests/Architecture/ModuleArchitectureTest.php</file>
+            <file>tests/Architecture/CoverageSuiteTest.php</file>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory suffix=".php">app</directory>
+            <directory suffix=".php">config</directory>
+            <directory suffix=".php">bootstrap</directory>
+            <directory suffix=".php">routes</directory>
+            <directory suffix=".php">public</directory>
+            <file>artisan</file>
+        </include>
+    </source>
+    <coverage branchCoverage="true" includeUncoveredFiles="true" disableCodeCoverageIgnore="true"/>
+</phpunit>

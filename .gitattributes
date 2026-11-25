@@ -3,3 +3,4 @@
 *.scss linguist-vendored
 *.js linguist-vendored
 CHANGELOG.md export-ignore
+docker/runtime/mysql-entrypoint.sh text eol=lf

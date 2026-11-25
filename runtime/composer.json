@@ -1,0 +1,45 @@
+{
+  "name": "naturally/bff",
+  "description": "Naturally modular backend for frontend",
+  "type": "project",
+  "license": "MIT",
+  "require": {
+    "php": "^8.5",
+    "giggsey/libphonenumber-for-php-lite": "^9.0.41",
+    "laravel/fortify": "^1.41",
+    "laravel/framework": "^13.0",
+    "laravel/sanctum": "^4.3",
+    "laravel/socialite": "^5.31"
+  },
+  "require-dev": {
+    "nikic/php-parser": "^5.9",
+    "phpunit/phpunit": "^13.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": false,
+    "platform": {
+      "php": "8.5.0"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "dont-discover": [
+        "laravel/fortify",
+        "laravel/sanctum",
+        "laravel/socialite",
+        "laravel/passkeys"
+      ]
+    }
+  }
+}

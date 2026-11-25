@@ -1,0 +1,42 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Identity\Http;
+
+use Illuminate\Support\Facades\Route;
+use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
+
+Route::prefix('api/v1/users/me')->middleware(['identity.browser', 'auth:web'])->group(static function (): void {
+    Route::get('social-accounts', [SocialAccountsController::class, 'index'])->name('identity.social.index');
+    Route::delete('social-accounts/{account}', [SocialAccountsController::class, 'destroy'])
+        ->where('account', '[1-9][0-9]*')
+        ->middleware([Middleware\RequireRecentAuthentication::class, 'identity.throttle:identity-social-change'])
+        ->name('identity.social.destroy');
+    Route::get('phones', [PhoneContactsController::class, 'index'])->name('identity.phones.index');
+    Route::patch('phones/{phone}', [PhoneContactsController::class, 'update'])->where('phone', '[1-9][0-9]*')->middleware([Middleware\RequireRecentAuthentication::class, 'identity.throttle:identity-phone-change'])->name('identity.phones.update');
+    Route::post('phones', [PhoneContactsController::class, 'store'])->middleware([Middleware\RequireRecentAuthentication::class, 'identity.throttle:identity-phone-change'])->name('identity.phones.store');
+    Route::delete('phones/{phone}', [PhoneContactsController::class, 'destroy'])->where('phone', '[1-9][0-9]*')->middleware([Middleware\RequireRecentAuthentication::class, 'identity.throttle:identity-phone-change'])->name('identity.phones.destroy');
+    Route::patch('', UpdateProfile::class)->middleware(Middleware\RequireRecentAuthentication::class)->name('identity.account.profile');
+    Route::delete('', DeleteCurrentAccount::class)->middleware(Middleware\RequireRecentAuthentication::class)->name('identity.account.delete');
+    Route::put('email', UpdateEmail::class)->middleware([Middleware\RequireRecentAuthentication::class, 'identity.throttle:identity-email-change'])->name('identity.account.email');
+});
+
+Route::prefix('api/v1/auth')->middleware('identity.browser')->group(static function (): void {
+    Route::post('account/restore', ConsumeRestoration::class)->middleware([Middleware\RequireGuest::class, 'identity.throttle:identity-restoration-consume'])->name('identity.account.restoration.consume');
+    Route::post('account/restoration', RequestRestoration::class)->middleware([Middleware\RequireGuest::class, 'identity.throttle:identity-restoration-request'])->name('identity.account.restoration.request');
+    Route::get('csrf-cookie', [CsrfCookieController::class, 'show'])->name('identity.csrf');
+    Route::get('me', CurrentAccount::class)->middleware('auth:sanctum')->name('identity.me');
+    Route::get('email/verify/{id}/{hash}', VerifyEmail::class)->whereNumber('id')->where('hash', '[a-f0-9]{40}')->middleware(['auth:web', 'signed', 'identity.throttle:identity-verification-check'])->name('identity.email.verify');
+    Route::post('email/verification-notification', ResendVerification::class)->middleware(['auth:web', 'identity.throttle:identity-verification-send'])->name('identity.email.send');
+    Route::post('password/recovery', RequestRecovery::class)->middleware([Middleware\RequireGuest::class, 'identity.throttle:identity-recovery'])->name('identity.password.recovery');
+    Route::post('password/reset', ResetPassword::class)->middleware([Middleware\RequireGuest::class, 'identity.throttle:identity-reset'])->name('identity.password.reset');
+    Route::post('logout', [\Laravel\Fortify\Http\Controllers\AuthenticatedSessionController::class, 'destroy'])->middleware('auth:web')->name('identity.logout');
+    Route::delete('sessions/others', RevokeOtherSessions::class)->middleware(['auth:web', Middleware\RequireRecentAuthentication::class])->name('identity.sessions.others');
+    Route::get('sessions', CurrentSessions::class)->middleware('auth:web')->name('identity.sessions.index');
+    Route::delete('sessions/{session}', RevokeSessionEndpoint::class)->where('session', '[a-f0-9]{64}')->middleware(['auth:web', Middleware\RequireRecentAuthentication::class, 'identity.throttle:identity-session-change'])->name('identity.sessions.destroy');
+    Route::post('password/confirm', [BoundedPasswordConfirmation::class, 'store'])->middleware(['auth:web', 'identity.throttle:identity-confirmation'])->name('identity.password.confirm');
+    Route::put('password', [\Laravel\Fortify\Http\Controllers\PasswordController::class, 'update'])->middleware(['auth:web', Middleware\RequireRecentAuthentication::class])->name('identity.password.update');
+    Route::post('register', [\Laravel\Fortify\Http\Controllers\RegisteredUserController::class, 'store'])->middleware([\App\Modules\Identity\Http\Middleware\RequireGuest::class, 'identity.throttle:identity-registration'])->name('identity.register');
+    Route::post('login', [\Laravel\Fortify\Http\Controllers\AuthenticatedSessionController::class, 'store'])->middleware([\App\Modules\Identity\Http\Middleware\RequireGuest::class, 'identity.throttle:identity-login'])->name('identity.login');
+});

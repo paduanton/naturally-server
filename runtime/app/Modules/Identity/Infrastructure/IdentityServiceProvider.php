@@ -1,0 +1,38 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Identity\Infrastructure;
+
+use Illuminate\Support\ServiceProvider;
+
+final class IdentityServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        $this->app->bind(\App\Modules\Identity\Application\SocialAccountStore::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlSocialAccountStore::class);
+        $this->app->bind(\App\Modules\Identity\Application\SessionRemoval::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlSessionRemoval::class);
+        $this->app->bind(\App\Modules\Identity\Application\SessionInventory::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlSessionInventory::class);
+        $this->app->bind(\App\Modules\Identity\Application\MobilePhoneValidation::class, LibphonenumberMobileValidation::class);
+        $this->app->bind(\App\Modules\Identity\Application\PhoneContactStore::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlPhoneContactStore::class);
+        $this->app->bind(\App\Modules\Identity\Application\RestorationConsumer::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlRestorationConsumer::class);
+        $this->app->bind(\App\Modules\Identity\Application\RestorationDelivery::class, RestorationLinkDelivery::class);
+        $this->app->bind(\App\Modules\Identity\Application\AccountDeletion::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlAccountDeletion::class);
+        $this->app->bind(\App\Modules\Identity\Application\EmailMutation::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlEmailMutation::class);
+        $this->app->bind(\App\Modules\Identity\Application\ProfileMutation::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlProfileMutation::class);
+        $this->app->register(BrowserAuthServiceProvider::class);
+        $this->app->bind(\App\Modules\Identity\Application\RecoveryConsumer::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlRecoveryConsumer::class);
+        $this->app->bind(\App\Modules\Identity\Application\RecoveryDelivery::class, RecoveryLinkDelivery::class);
+        $this->app->bind(\App\Modules\Identity\Application\EmailVerificationStore::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlEmailVerificationStore::class);
+        $this->app->bind(\App\Modules\Identity\Application\VerificationDelivery::class, EmailVerificationDelivery::class);
+        $this->app->bind(\App\Modules\Identity\Application\PasswordMutation::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlPasswordMutation::class);
+        $this->app->bind(\App\Modules\Identity\Application\SessionRevocation::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlSessionRevocation::class);
+        $this->app->bind(\App\Modules\Identity\Application\AccountReader::class, \App\Modules\Identity\Infrastructure\Persistence\EloquentAccountReader::class);
+        $this->app->bind(\App\Modules\Identity\Application\RegistrationStore::class, \App\Modules\Identity\Infrastructure\Persistence\EloquentRegistrationStore::class);
+    }
+
+    public function boot(): void
+    {
+        $this->loadMigrationsFrom(__DIR__.'/Database/Migrations');
+    }
+}

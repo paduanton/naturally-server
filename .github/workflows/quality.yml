@@ -1,0 +1,113 @@
+name: Quality
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out source and baseline
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Validate legacy inventory
+        run: node scripts/inventory.mjs --check
+      - name: Test inventory validator
+        run: node --test scripts/tests/inventory.test.mjs
+  commits:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out commit history
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Install commit policy tooling
+        run: npm ci --prefix tools/commitlint --ignore-scripts --no-audit --no-fund
+      - name: Test commit policy
+        run: npm --prefix tools/commitlint test
+      - name: Validate new commit messages
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          [[ "$HEAD_SHA" =~ ^[0-9a-f]{40}$ && "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          # The approved history is exempt; never rewrite it to introduce this policy.
+          revisions=("$HEAD_SHA" "^c4b21e67bdb4b4f254e91e4a8e6210f10ec652c2")
+          if [[ "$BASE_SHA" != "0000000000000000000000000000000000000000" ]]; then
+            git cat-file -e "$BASE_SHA^{commit}"
+            revisions+=("^$BASE_SHA")
+          fi
+          commits=$(git rev-list --reverse "${revisions[@]}")
+          while IFS= read -r commit; do
+            [[ -z "$commit" ]] && continue
+            git show -s --format=%B "$commit" | npm --prefix tools/commitlint run lint --
+          done <<< "$commits"
+  secrets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out source and history
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Install verified Gitleaks
+        shell: bash
+        run: |
+          set -euo pipefail
+          tool_dir="$RUNNER_TEMP/gitleaks"
+          archive="$tool_dir/gitleaks_8.30.1_linux_x64.tar.gz"
+          mkdir -p "$tool_dir"
+          curl --fail --silent --show-error --location --retry 3 \
+            https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz \
+            --output "$archive"
+          printf '%s  %s\n' 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb "$archive" \
+            | sha256sum --check --strict
+          tar -xzf "$archive" -C "$tool_dir" gitleaks
+          echo "$tool_dir" >> "$GITHUB_PATH"
+      - name: Test detection and report redaction
+        run: node --test scripts/tests/secrets.test.mjs
+      - name: Scan versioned tree and post-adoption history
+        shell: bash
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          [[ "$HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          adoption=4fc7496b28e007d19f9a0ca2e3994d7b8334f45c
+          git cat-file -e "$HEAD_SHA^{commit}"
+          git cat-file -e "$adoption^{commit}"
+          scan_dir=$(mktemp -d "$RUNNER_TEMP/secrets.XXXXXX")
+          mkdir "$scan_dir/tree"
+          git archive "$HEAD_SHA" | tar -x -C "$scan_dir/tree"
+          node scripts/check-secret-ignores.mjs . "$scan_dir/tree"
+          gitleaks dir "$scan_dir/tree" --config tools/gitleaks/config.toml \
+            --gitleaks-ignore-path "$scan_dir/no-ignore" --ignore-gitleaks-allow \
+            --redact=100 --no-banner --no-color --report-format json --report-path "$scan_dir/tree.json"
+          gitleaks git . --log-opts="$adoption..$HEAD_SHA --full-history --diff-merges=separate" \
+            --config tools/gitleaks/config.toml --gitleaks-ignore-path "$scan_dir/no-ignore" \
+            --ignore-gitleaks-allow --redact=100 --no-banner --no-color \
+            --report-format json --report-path "$scan_dir/history.json"

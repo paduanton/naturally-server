@@ -1,0 +1,17 @@
+{
+  "name": "naturally-commit-policy",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0",
+    "npm": ">=10"
+  },
+  "scripts": {
+    "lint": "commitlint --config commitlint.config.mjs --strict",
+    "test": "node --test policy.test.mjs"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "21.2.3",
+    "@commitlint/config-conventional": "21.2.3"
+  }
+}

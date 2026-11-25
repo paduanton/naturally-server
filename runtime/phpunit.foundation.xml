@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         cacheDirectory="/tmp/naturally-phpunit"
+         recordTestRunHistory="false"
+         colors="false"
+         failOnAllIssues="true"
+         failOnEmptyTestSuite="true"
+         requireCoverageMetadata="true"
+         beStrictAboutCoverageMetadata="true"
+         beStrictAboutOutputDuringTests="true"
+         displayDetailsOnAllIssues="true">
+    <testsuites>
+        <testsuite name="Runtime">
+            <file>tests/Unit/RuntimeConfigurationTest.php</file>
+            <file>tests/Unit/PhoneNumberTest.php</file>
+            <file>tests/Unit/MobilePhoneValidationTest.php</file>
+            <file>tests/Unit/PhoneNumberCastTest.php</file>
+            <file>tests/Unit/CredentialValuesTest.php</file>
+            <file>tests/Unit/SocialIdentityTest.php</file>
+            <file>tests/Unit/DisplayNameTest.php</file>
+            <file>tests/Unit/BirthDateTest.php</file>
+            <file>tests/Unit/RecoveryProofTest.php</file>
+            <file>tests/Unit/CredentialInputsTest.php</file>
+            <file>tests/Unit/AccountInputsTest.php</file>
+            <file>tests/Integration/RuntimeEnvironmentTest.php</file>
+            <file>tests/Integration/RuntimeBootstrapTest.php</file>
+            <file>tests/Integration/IdentityContractTest.php</file>
+        </testsuite>
+        <testsuite name="Architecture">
+            <file>tests/Architecture/ModuleArchitectureTest.php</file>
+            <file>tests/Architecture/CoverageSuiteTest.php</file>
+        </testsuite>
+        <testsuite name="Persistence">
+            <file>tests/Integration/RuntimeServicesTest.php</file>
+            <file>tests/Integration/IdentitySchemaTest.php</file>
+            <file>tests/Integration/DatabaseFixtureTest.php</file>
+            <file>tests/Integration/DatabaseScopeTest.php</file>
+            <file>tests/Integration/RegistrationCaseTest.php</file>
+            <file>tests/Integration/ProfileMutationTest.php</file>
+            <file>tests/Integration/PhoneContactsTest.php</file>
+            <file>tests/Integration/PhoneContactChangeTest.php</file>
+            <file>tests/Integration/PhoneContactValidationTest.php</file>
+            <file>tests/Integration/PhoneContactConcurrencyTest.php</file>
+            <file>tests/Integration/EmailMutationTest.php</file>
+            <file>tests/Integration/AccountDeletionTest.php</file>
+            <file>tests/Integration/RestorationProofTest.php</file>
+            <file>tests/Integration/AccountRestorationTest.php</file>
+            <file>tests/Integration/AccountConcurrencyTest.php</file>
+            <file>tests/Integration/AccountMutationBoundaryTest.php</file>
+            <file>tests/Integration/BrowserRestorationRequestTest.php</file>
+            <file>tests/Integration/BrowserEmailChangeTest.php</file>
+            <file>tests/Integration/BrowserProfileTest.php</file>
+            <file>tests/Integration/BirthdayProfileTest.php</file>
+            <file>tests/Integration/SessionInventoryTest.php</file>
+            <file>tests/Integration/BrowserSessionManagementTest.php</file>
+            <file>tests/Integration/SocialAccountsTest.php</file>
+            <file>tests/Integration/BrowserSocialAccountsTest.php</file>
+            <file>tests/Integration/BrowserPhoneContactsTest.php</file>
+            <file>tests/Integration/BrowserPhoneChangeTest.php</file>
+            <file>tests/Integration/BrowserTransportTest.php</file>
+            <file>tests/Integration/BrowserOriginTest.php</file>
+            <file>tests/Integration/BrowserEmailVerificationTest.php</file>
+            <file>tests/Integration/BrowserVerificationResendTest.php</file>
+            <file>tests/Integration/BrowserRecoveryRequestTest.php</file>
+            <file>tests/Integration/PasswordRecoveryCaseTest.php</file>
+            <file>tests/Integration/BrowserPasswordResetTest.php</file>
+            <file>tests/Integration/RecoveryConcurrencyTest.php</file>
+            <file>tests/Integration/BrowserRegistrationTest.php</file>
+            <file>tests/Integration/BrowserLoginTest.php</file>
+            <file>tests/Integration/BrowserUsernameLoginTest.php</file>
+            <file>tests/Integration/BrowserSessionTest.php</file>
+            <file>tests/Integration/BrowserRevocationTest.php</file>
+            <file>tests/Integration/BrowserPasswordTest.php</file>
+            <file>tests/Integration/BrowserCredentialRevisionTest.php</file>
+            <file>tests/Integration/PasswordMutationTest.php</file>
+            <file>tests/Integration/IdentityCredentialsSchemaTest.php</file>
+            <file>tests/Integration/IdentityPersistenceTest.php</file>
+            <file>tests/Integration/IdentityPhoneSchemaTest.php</file>
+            <file>tests/Integration/RecipeSchemaTest.php</file>
+            <file>tests/Integration/RecipePersistenceTest.php</file>
+            <file>tests/Integration/CommunityRelationsTest.php</file>
+            <file>tests/Integration/CommunityFeedbackTest.php</file>
+            <file>tests/Integration/MediaAssetTest.php</file>
+            <file>tests/Integration/MediaImageTest.php</file>
+            <file>tests/Integration/PdfDownloadPersistenceTest.php</file>
+            <file>tests/Integration/IdentityContactPersistenceTest.php</file>
+            <file>tests/Integration/ModularSchemaLifecycleTest.php</file>
+            <file>tests/Integration/SchemaContentionTest.php</file>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory suffix=".php">app</directory>
+            <directory suffix=".php">config</directory>
+            <directory suffix=".php">bootstrap</directory>
+            <directory suffix=".php">routes</directory>
+            <directory suffix=".php">public</directory>
+            <file>artisan</file>
+        </include>
+    </source>
+    <coverage branchCoverage="true" includeUncoveredFiles="true" disableCodeCoverageIgnore="true"/>
+</phpunit>
