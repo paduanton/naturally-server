@@ -2115,6 +2115,419 @@
           }
         }
       }
+    },
+    "/api/v1/users/me/phones": {
+      "get": {
+        "operationId": "listCurrentPhoneContacts",
+        "description": "Lista somente contatos ativos do ator da sessão, em ordem de ID. Vazio retorna data: []; coleção limitada a dois itens, sem paginação ou parâmetros de consulta.",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contatos privados da própria conta.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "no-store, private"
+              },
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneContactCollection"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "addCurrentPhoneContact",
+        "description": "Adiciona contato privado com sessão, CSRF e autenticação recente. Limite compartilhado com DELETE: 10 mutações/minuto por conta e 30 por IP. Conflitos de número reservado e regras da coleção retornam erro genérico, sem identificar terceiros.",
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhoneContactInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Contato criado.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "no-store, private"
+              },
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneContactEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "419": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "423": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/me/phones/{phone}": {
+      "delete": {
+        "operationId": "removeCurrentPhoneContact",
+        "description": "Exclusão lógica idempotente do próprio contato com sessão, CSRF e autenticação recente. IDs inexistentes, removidos ou de outra conta retornam 204 sem alterar terceiros. Remover o principal promove o contato restante na mesma transação. Não aceita parâmetros de consulta ou flags de exclusão física. Limite compartilhado com POST: 10/minuto por conta e 30 por IP.",
+        "security": [
+          {
+            "sessionCookie": [],
+            "csrfToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            },
+            "description": "Inteiro decimal positivo canônico, dentro do limite int64 do servidor; inválidos retornam 404."
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "maxProperties": 0
+                  },
+                  {
+                    "type": "array",
+                    "maxItems": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Contato removido ou já ausente; resposta vazia.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "no-store, private"
+              },
+              "X-Request-ID": {
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{32}$"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "419": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "423": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Problem Details, sem valores de entrada ou detalhes internos.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2408,6 +2821,104 @@
         "properties": {
           "email": {
             "$ref": "#/components/schemas/Email"
+          }
+        }
+      },
+      "PhoneContactInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "country_code",
+          "number",
+          "main"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 15
+          },
+          "country_code": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{2}$",
+            "description": "País de duas letras; normalizado e validado contra os metadados do número."
+          },
+          "number": {
+            "type": "string",
+            "pattern": "^\\+[1-9][0-9]{1,14}$",
+            "maxLength": 16,
+            "description": "E.164 canônico, compatível com celular no país declarado. FIXED_LINE_OR_MOBILE é aceito em regiões que não distinguem os tipos. Não verifica posse/ativação."
+          },
+          "main": {
+            "type": "boolean",
+            "description": "O primeiro contato precisa ser principal; no máximo dois contatos e um principal."
+          }
+        }
+      },
+      "PhoneContact": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "country_code",
+          "number",
+          "main"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "label": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 15
+          },
+          "country_code": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{2}$",
+            "description": "País de duas letras; normalizado e validado contra os metadados do número."
+          },
+          "number": {
+            "type": "string",
+            "pattern": "^\\+[1-9][0-9]{1,14}$",
+            "maxLength": 16,
+            "description": "E.164 canônico, compatível com celular no país declarado. FIXED_LINE_OR_MOBILE é aceito em regiões que não distinguem os tipos. Não verifica posse/ativação."
+          },
+          "main": {
+            "type": "boolean",
+            "description": "O primeiro contato precisa ser principal; no máximo dois contatos e um principal."
+          }
+        }
+      },
+      "PhoneContactEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/PhoneContact"
+          }
+        }
+      },
+      "PhoneContactCollection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "maxItems": 2,
+            "items": {
+              "$ref": "#/components/schemas/PhoneContact"
+            }
           }
         }
       }
