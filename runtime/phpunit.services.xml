@@ -32,6 +32,7 @@
             <file>tests/Integration/BrowserRestorationRequestTest.php</file>
             <file>tests/Integration/BrowserEmailChangeTest.php</file>
             <file>tests/Integration/BrowserProfileTest.php</file>
+            <file>tests/Integration/BirthdayProfileTest.php</file>
             <file>tests/Integration/BrowserPhoneContactsTest.php</file>
             <file>tests/Integration/BrowserPhoneChangeTest.php</file>
             <file>tests/Integration/BrowserTransportTest.php</file>

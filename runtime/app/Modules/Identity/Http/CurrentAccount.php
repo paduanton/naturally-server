@@ -17,6 +17,6 @@ final readonly class CurrentAccount
     {
         $account = $this->accounts->forActor((int) $request->user()->getAuthIdentifier());
         if ($account === null) { throw new AuthenticationException(); }
-        return new JsonResponse(['data' => ['id' => $account->id, 'name' => $account->name, 'username' => $account->username, 'email' => $account->email, 'email_verified' => $account->verified]], 200, ['Cache-Control' => 'no-store']);
+        return new JsonResponse(['data' => ['id' => $account->id, 'name' => $account->name, 'username' => $account->username, 'email' => $account->email, 'email_verified' => $account->verified, 'birthday' => $account->birthday]], 200, ['Cache-Control' => 'no-store']);
     }
 }

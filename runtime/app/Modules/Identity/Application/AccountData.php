@@ -6,5 +6,5 @@ namespace App\Modules\Identity\Application;
 
 final readonly class AccountData
 {
-    public function __construct(public int $id, public string $name, public string $username, public string $email, public bool $verified) {}
+    public function __construct(public int $id, public string $name, public string $username, public string $email, public bool $verified, public ?string $birthday = null) {}
 }

@@ -19,6 +19,7 @@
             <file>tests/Unit/PhoneNumberCastTest.php</file>
             <file>tests/Unit/CredentialValuesTest.php</file>
             <file>tests/Unit/DisplayNameTest.php</file>
+            <file>tests/Unit/BirthDateTest.php</file>
             <file>tests/Unit/RecoveryProofTest.php</file>
             <file>tests/Unit/CredentialInputsTest.php</file>
             <file>tests/Unit/AccountInputsTest.php</file>
@@ -50,6 +51,7 @@
             <file>tests/Integration/BrowserRestorationRequestTest.php</file>
             <file>tests/Integration/BrowserEmailChangeTest.php</file>
             <file>tests/Integration/BrowserProfileTest.php</file>
+            <file>tests/Integration/BirthdayProfileTest.php</file>
             <file>tests/Integration/BrowserPhoneContactsTest.php</file>
             <file>tests/Integration/BrowserPhoneChangeTest.php</file>
             <file>tests/Integration/BrowserTransportTest.php</file>

@@ -19,6 +19,7 @@
             <file>tests/Unit/PhoneNumberCastTest.php</file>
             <file>tests/Unit/CredentialValuesTest.php</file>
             <file>tests/Unit/DisplayNameTest.php</file>
+            <file>tests/Unit/BirthDateTest.php</file>
             <file>tests/Unit/RecoveryProofTest.php</file>
             <file>tests/Unit/CredentialInputsTest.php</file>
             <file>tests/Unit/AccountInputsTest.php</file>

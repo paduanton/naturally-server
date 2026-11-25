@@ -1433,7 +1433,7 @@
     "/api/v1/users/me": {
       "patch": {
         "operationId": "updateCurrentProfile",
-        "description": "Altera o nome de exibição ou o nome de usuário da conta da sessão. Exige autenticação recente.",
+        "description": "Atualiza somente nome, username e aniversário opcional do ator da sessão com confirmação recente; null limpa birthday. Não altera e-mail/senha.",
         "security": [
           {
             "sessionCookie": [],
@@ -2948,7 +2948,8 @@
               "name",
               "username",
               "email",
-              "email_verified"
+              "email_verified",
+              "birthday"
             ],
             "properties": {
               "id": {
@@ -2967,6 +2968,14 @@
               },
               "email_verified": {
                 "type": "boolean"
+              },
+              "birthday": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date",
+                "description": "Data ISO opcional, posterior a 1920-01-01 e idade calendária mínima de 7 anos na data UTC do servidor, conforme regra existente. null limpa o campo; não comprova idade/identidade."
               }
             }
           }
@@ -2985,9 +2994,35 @@
           "username": {
             "type": "string",
             "minLength": 4,
-            "maxLength": 20
+            "maxLength": 20,
+            "description": "Normalizado no domínio; 4–20 caracteres ASCII alfanuméricos e no máximo um ponto/underscore interno."
+          },
+          "birthday": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "description": "Data ISO opcional, posterior a 1920-01-01 e idade calendária mínima de 7 anos na data UTC do servidor, conforme regra existente. null limpa o campo; não comprova idade/identidade."
           }
-        }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "name"
+            ]
+          },
+          {
+            "required": [
+              "username"
+            ]
+          },
+          {
+            "required": [
+              "birthday"
+            ]
+          }
+        ]
       },
       "EmailUpdate": {
         "type": "object",

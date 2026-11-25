@@ -31,7 +31,7 @@ final class BrowserSessionTest extends BrowserTestCase
         $this->browser('GET', '/api/v1/auth/me')->assertUnauthorized();
         $user = $this->login();
         $other = User::factory()->create();
-        $this->browser('GET', '/api/v1/auth/me?user_id='.$other->id)->assertOk()->assertExactJson(['data' => ['id' => $user->id, 'name' => $user->name, 'username' => $user->username, 'email' => $user->email, 'email_verified' => false]]);
+        $this->browser('GET', '/api/v1/auth/me?user_id='.$other->id)->assertOk()->assertExactJson(['data' => ['id' => $user->id, 'name' => $user->name, 'username' => $user->username, 'email' => $user->email, 'email_verified' => false, 'birthday' => null]]);
     }
 
     public function testIdleTimeoutAndAbsoluteTimeoutAreIndependent(): void

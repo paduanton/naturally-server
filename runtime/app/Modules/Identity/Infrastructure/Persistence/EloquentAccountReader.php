@@ -12,6 +12,6 @@ final class EloquentAccountReader implements AccountReader
     public function forActor(int $actorId): ?AccountData
     {
         $user = User::find($actorId);
-        return $user === null ? null : new AccountData($user->id, $user->name, $user->username, $user->email, $user->email_verified_at !== null);
+        return $user === null ? null : new AccountData($user->id, $user->name, $user->username, $user->email, $user->email_verified_at !== null, $user->birthday?->format('Y-m-d'));
     }
 }

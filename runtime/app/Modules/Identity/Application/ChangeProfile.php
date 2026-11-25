@@ -13,7 +13,8 @@ final readonly class ChangeProfile
 
     public function handle(ProfileChangeInput $input): AccountData
     {
-        if ($input->name === null && $input->username === null) { throw new \InvalidArgumentException('No profile changes supplied.'); }
-        return $this->profiles->updateForSession($input->actorId, $input->sessionId(), $input->name === null ? null : DisplayName::fromString($input->name), $input->username === null ? null : Username::fromString($input->username));
+        $birthdayProvided = $input->birthdayProvided || $input->birthday !== null;
+        if ($input->name === null && $input->username === null && !$birthdayProvided) { throw new \InvalidArgumentException('No profile changes supplied.'); }
+        return $this->profiles->updateForSession($input->actorId, $input->sessionId(), $input->name === null ? null : DisplayName::fromString($input->name), $input->username === null ? null : Username::fromString($input->username), $input->birthday === null ? null : \App\Modules\Identity\Domain\BirthDate::fromString($input->birthday), $birthdayProvided);
     }
 }
