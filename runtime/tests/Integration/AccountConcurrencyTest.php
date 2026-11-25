@@ -15,7 +15,7 @@ final class AccountConcurrencyTest extends DatabaseTestCase
 {
     protected const ?string SCHEMA_MODULE = 'Identity';
 
-    private function race(User $user, #[\SensitiveParameter] array $inputs): void
+    private function race(User $user, #[\SensitiveParameter] array $inputs, array $expected = ["WAITING\nACCEPTED", "WAITING\nREJECTED"]): void
     {
         $db = $this->database->connection();
         $workers = [];
@@ -51,7 +51,7 @@ final class AccountConcurrencyTest extends DatabaseTestCase
                 $outcomes[] = trim($worker->getOutput());
             }
             sort($outcomes);
-            self::assertSame(["WAITING\nACCEPTED", "WAITING\nREJECTED"], $outcomes);
+            self::assertSame($expected, $outcomes);
         } finally {
             if ($db->transactionLevel() > 0) {
                 $db->rollBack();
@@ -89,5 +89,24 @@ final class AccountConcurrencyTest extends DatabaseTestCase
         $result = User::withTrashed()->findOrFail($user->id);
         self::assertNotSame($result->trashed(), $result->email === $next);
         self::assertSame(0, $this->database->connection()->table('sessions')->where('user_id', $user->id)->count());
+    }
+
+    public function testOverlappingSingleSessionRevocationsAreIdempotentAndIsolated(): void
+    {
+        $user = User::factory()->create();
+        $this->app->make('auth')->guard('web')->login($user);
+        $session = $this->app->make('session')->driver(); $session->save();
+        $db = $this->database->connection();
+        $target = bin2hex(random_bytes(20)); $foreign = bin2hex(random_bytes(20));
+        $other = User::factory()->create();
+        $db->table('sessions')->insert([
+            ['id' => $target, 'user_id' => $user->id, 'payload' => '', 'last_activity' => time()],
+            ['id' => $foreign, 'user_id' => $other->id, 'payload' => '', 'last_activity' => time()],
+        ]);
+        $input = ['action' => 'session-revoke', 'actor' => $user->id, 'session' => $session->getId(), 'reference' => \App\Modules\Identity\Infrastructure\Persistence\SessionReferenceEncoder::encode($user->id, $target)];
+        $this->race($user, [$input, $input], ["WAITING\nACCEPTED", "WAITING\nACCEPTED"]);
+        self::assertNull($db->table('sessions')->find($target));
+        self::assertNotNull($db->table('sessions')->find($session->getId()));
+        self::assertNotNull($db->table('sessions')->find($foreign));
     }
 }

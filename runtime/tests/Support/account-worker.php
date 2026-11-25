@@ -43,6 +43,10 @@ try {
         'delete' => $app->make(Cases\DeleteAccount::class)->handle(
             new Cases\AccountDeletionInput($input['actor'], $input['session']),
         ),
+        'session-revoke' => $app->make(Cases\RevokeSession::class)->handle(
+            new Cases\SessionActor($input['actor'], $input['session']),
+            $input['reference'],
+        ),
         default => throw new RuntimeException(),
     };
 

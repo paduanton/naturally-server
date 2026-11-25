@@ -34,6 +34,7 @@
             <file>tests/Integration/BrowserProfileTest.php</file>
             <file>tests/Integration/BirthdayProfileTest.php</file>
             <file>tests/Integration/SessionInventoryTest.php</file>
+            <file>tests/Integration/BrowserSessionManagementTest.php</file>
             <file>tests/Integration/BrowserPhoneContactsTest.php</file>
             <file>tests/Integration/BrowserPhoneChangeTest.php</file>
             <file>tests/Integration/BrowserTransportTest.php</file>

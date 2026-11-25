@@ -94,6 +94,7 @@ final class BrowserTransportTest extends BrowserTestCase
             'api/v1/auth/register' => ['POST'],
             'api/v1/auth/sessions' => ['GET', 'HEAD'],
             'api/v1/auth/sessions/others' => ['DELETE'],
+            'api/v1/auth/sessions/{session}' => ['DELETE'],
         ], $routes);
     }
 }
