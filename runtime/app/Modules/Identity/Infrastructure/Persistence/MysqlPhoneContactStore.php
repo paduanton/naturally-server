@@ -63,6 +63,26 @@ final class MysqlPhoneContactStore implements PhoneContactStore
         if ($user === null || $active === null) { throw new InactiveSession(); }
     }
 
+    public function changeForSession(PhoneContactSession $session, int $phoneId, \App\Modules\Identity\Domain\PhoneContactChange $change): PhoneContactData
+    {
+        return DB::transaction(function () use ($session, $phoneId, $change): PhoneContactData {
+            $this->lockActiveSession($session);
+            $phones = Phone::where('user_id', $session->actorId)->orderBy('id')->lockForUpdate()->get();
+            $phone = $phones->firstWhere('id', $phoneId);
+            if ($phone === null) { throw new \App\Modules\Identity\Application\PhoneContactNotFound(); }
+            $change->assertApplicableTo($phone->main);
+            if ($change->main === true) {
+                foreach ($phones as $other) {
+                    if ($other->id !== $phoneId && $other->main) { $other->forceFill(['main' => false])->save(); }
+                }
+            }
+            if ($change->label !== null) { $phone->forceFill(['label' => $change->label->value]); }
+            if ($change->main !== null) { $phone->forceFill(['main' => $change->main]); }
+            $phone->save();
+            return $this->data($phone);
+        });
+    }
+
     private function data(Phone $phone): PhoneContactData
     {
         return new PhoneContactData($phone->id, $phone->label, $phone->country_code, $phone->number->value, $phone->main);

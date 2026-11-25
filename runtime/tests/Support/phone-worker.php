@@ -22,10 +22,13 @@ try {
             flush();
         }
     });
-    $app->make(\App\Modules\Identity\Application\ManagePhoneContacts::class)->add(
-        new \App\Modules\Identity\Application\PhoneContactSession($input['actor'], $input['session']),
-        'Mobile', 'BR', $input['number'], false,
-    );
+    $contacts = $app->make(\App\Modules\Identity\Application\ManagePhoneContacts::class);
+    $session = new \App\Modules\Identity\Application\PhoneContactSession($input['actor'], $input['session']);
+    match ($input['action'] ?? 'add') {
+        'add' => $contacts->add($session, 'Mobile', 'BR', $input['number'], false),
+        'change' => $contacts->change($session, $input['phone'], null, true),
+        default => throw new RuntimeException(),
+    };
     echo "ACCEPTED\n";
 } catch (\App\Modules\Identity\Domain\PhoneContactConflict|\App\Modules\Identity\Application\InactiveSession) {
     echo "REJECTED\n";

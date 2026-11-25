@@ -20,6 +20,7 @@
             <file>tests/Integration/RegistrationCaseTest.php</file>
             <file>tests/Integration/ProfileMutationTest.php</file>
             <file>tests/Integration/PhoneContactsTest.php</file>
+            <file>tests/Integration/PhoneContactChangeTest.php</file>
             <file>tests/Integration/PhoneContactValidationTest.php</file>
             <file>tests/Integration/PhoneContactConcurrencyTest.php</file>
             <file>tests/Integration/EmailMutationTest.php</file>

@@ -11,9 +11,9 @@ final readonly class PhoneContact
 
     public static function fromStrings(string $label, string $countryCode, string $number, bool $main): self
     {
-        $label = trim($label);
+        $label = PhoneLabel::fromString($label)->value;
         $countryCode = strtoupper(trim($countryCode));
-        if (mb_strlen($label) < 4 || mb_strlen($label) > 15 || preg_match('/[\p{C}]/u', $label) !== 0 || preg_match('/\A[A-Z]{2}\z/D', $countryCode) !== 1) {
+        if (preg_match('/\A[A-Z]{2}\z/D', $countryCode) !== 1) {
             throw new \InvalidArgumentException('Invalid phone contact details.');
         }
         return new self($label, $countryCode, PhoneNumber::fromString($number), $main);
