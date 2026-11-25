@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Modules\Identity\Application as Cases;
+use App\Modules\Identity\Domain\LastLoginMethodRemovalDenied;
 use App\Shared\Infrastructure\RuntimeApplicationFactory;
 use Illuminate\Contracts\Console\Kernel;
 
@@ -47,11 +48,15 @@ try {
             new Cases\SessionActor($input['actor'], $input['session']),
             $input['reference'],
         ),
+        'social-remove' => $app->make(Cases\ManageSocialAccounts::class)->remove(
+            new Cases\SessionActor($input['actor'], $input['session']),
+            $input['account'],
+        ),
         default => throw new RuntimeException(),
     };
 
     echo "ACCEPTED\n";
-} catch (Cases\RestorationDenied|Cases\InactiveSession) {
+} catch (Cases\RestorationDenied|Cases\InactiveSession|LastLoginMethodRemovalDenied) {
     echo "REJECTED\n";
 } catch (Throwable) {
     fwrite(STDERR, "Account worker failed.\n");

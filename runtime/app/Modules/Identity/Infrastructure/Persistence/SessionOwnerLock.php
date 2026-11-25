@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\DB;
 
 final class SessionOwnerLock
 {
-    public static function acquire(SessionActor $actor): void
+    public static function acquire(SessionActor $actor): User
     {
         $user = User::query()->lockForUpdate()->find($actor->actorId);
         $session = DB::table('sessions')->where('user_id', $actor->actorId)->where('id', $actor->sessionId())->lockForUpdate()->first(['last_activity']);
         if ($user === null || $session === null || $session->last_activity < Date::now()->getTimestamp() - (config('session.lifetime') * 60)) { throw new InactiveSession(); }
+
+        return $user;
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
+use App\Modules\Identity\Domain\SocialProvider;
+use App\Modules\Identity\Infrastructure\Persistence\SocialAccount;
 use App\Modules\Identity\Infrastructure\Persistence\User;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use Symfony\Component\Process\Process;
@@ -108,5 +110,25 @@ final class AccountConcurrencyTest extends DatabaseTestCase
         self::assertNull($db->table('sessions')->find($target));
         self::assertNotNull($db->table('sessions')->find($session->getId()));
         self::assertNotNull($db->table('sessions')->find($foreign));
+    }
+
+    public function testOverlappingSocialUnlinksLeaveOneLoginMethod(): void
+    {
+        $user = User::factory()->socialOnly()->create();
+        $this->app->make('auth')->guard('web')->login($user);
+        $session = $this->app->make('session')->driver();
+        $session->save();
+
+        $first = SocialAccount::factory()->forUser($user->id)->forProvider(SocialProvider::Google)->create();
+        $second = SocialAccount::factory()->forUser($user->id)->forProvider(SocialProvider::Facebook)->create();
+        $input = ['action' => 'social-remove', 'actor' => $user->id, 'session' => $session->getId()];
+        $this->race($user, [
+            $input + ['account' => $first->id],
+            $input + ['account' => $second->id],
+        ]);
+
+        $db = $this->database->connection();
+        self::assertSame(1, $db->table('social_accounts')->where('user_id', $user->id)->count());
+        self::assertNotNull($db->table('sessions')->find($session->getId()));
     }
 }

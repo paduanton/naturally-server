@@ -10,6 +10,7 @@ final class IdentityServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->bind(\App\Modules\Identity\Application\SocialAccountStore::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlSocialAccountStore::class);
         $this->app->bind(\App\Modules\Identity\Application\SessionRemoval::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlSessionRemoval::class);
         $this->app->bind(\App\Modules\Identity\Application\SessionInventory::class, \App\Modules\Identity\Infrastructure\Persistence\MysqlSessionInventory::class);
         $this->app->bind(\App\Modules\Identity\Application\MobilePhoneValidation::class, LibphonenumberMobileValidation::class);
