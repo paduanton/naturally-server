@@ -40,8 +40,15 @@ final class SessionInventoryTest extends BrowserTestCase
     {
         $actor = $this->actor();
         $now = Date::now()->getTimestamp();
+        $currentActivity = $now - 2;
+        $this->database->connection()->table('sessions')
+            ->where('id', $actor->sessionId())
+            ->update(['last_activity' => $currentActivity]);
+
         $ids = [$actor->sessionId()];
-        for ($i = 1; $i <= 25; $i++) { $ids[] = $this->stored($actor->actorId, $now - $i); }
+        for ($i = 1; $i <= 25; $i++) {
+            $ids[] = $this->stored($actor->actorId, $currentActivity - $i);
+        }
         $this->stored(User::factory()->create()->id, $now);
         $this->stored(null, $now);
         $this->stored($actor->actorId, $now - (config('session.lifetime') * 60) - 1);
