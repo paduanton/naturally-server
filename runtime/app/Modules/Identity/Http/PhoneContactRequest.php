@@ -21,6 +21,9 @@ final class PhoneContactRequest extends FormRequest
     public function rules(): array
     {
         if ($this->isMethod('DELETE')) { return ['contact' => 'present|array|size:0']; }
+        if ($this->isMethod('PATCH')) {
+            return ['contact' => 'required|array:label,main', 'contact.label' => 'sometimes|required|string|min:4|max:15', 'contact.main' => 'sometimes|required|boolean:strict'];
+        }
         return [
             'contact' => 'required|array:label,country_code,number,main',
             'contact.label' => 'required|string|min:4|max:15',

@@ -51,6 +51,7 @@
             <file>tests/Integration/BrowserEmailChangeTest.php</file>
             <file>tests/Integration/BrowserProfileTest.php</file>
             <file>tests/Integration/BrowserPhoneContactsTest.php</file>
+            <file>tests/Integration/BrowserPhoneChangeTest.php</file>
             <file>tests/Integration/BrowserTransportTest.php</file>
             <file>tests/Integration/BrowserOriginTest.php</file>
             <file>tests/Integration/BrowserEmailVerificationTest.php</file>

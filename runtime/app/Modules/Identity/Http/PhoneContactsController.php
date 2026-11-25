@@ -36,11 +36,28 @@ final readonly class PhoneContactsController
 
     public function destroy(PhoneContactRequest $request, string $phone): Response
     {
-        $id = filter_var($phone, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        abort_if($id === false, 404);
+        $id = $this->phoneId($phone);
         try { $this->contacts->remove($this->context($request), $id); }
         catch (InactiveSession) { throw new AuthenticationException(); }
         return new Response('', 204);
+    }
+
+    public function update(PhoneContactRequest $request, string $phone): JsonResponse
+    {
+        $id = $this->phoneId($phone);
+        $data = $request->validated('contact');
+        try { $contact = $this->contacts->change($this->context($request), $id, $data['label'] ?? null, $data['main'] ?? null); }
+        catch (InactiveSession) { throw new AuthenticationException(); }
+        catch (\App\Modules\Identity\Application\PhoneContactNotFound) { abort(404); }
+        catch (\DomainException|\InvalidArgumentException) { throw ValidationException::withMessages(['contact' => ['Phone contact is unavailable.']]); }
+        return (new PhoneContactResource($contact))->response();
+    }
+
+    private function phoneId(string $phone): int
+    {
+        $id = filter_var($phone, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        abort_if($id === false, 404);
+        return $id;
     }
 
     private function context(Request $request): PhoneContactSession

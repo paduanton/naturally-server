@@ -9,6 +9,7 @@ use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
 Route::prefix('api/v1/users/me')->middleware(['identity.browser', 'auth:web'])->group(static function (): void {
     Route::get('phones', [PhoneContactsController::class, 'index'])->name('identity.phones.index');
+    Route::patch('phones/{phone}', [PhoneContactsController::class, 'update'])->where('phone', '[1-9][0-9]*')->middleware([Middleware\RequireRecentAuthentication::class, 'identity.throttle:identity-phone-change'])->name('identity.phones.update');
     Route::post('phones', [PhoneContactsController::class, 'store'])->middleware([Middleware\RequireRecentAuthentication::class, 'identity.throttle:identity-phone-change'])->name('identity.phones.store');
     Route::delete('phones/{phone}', [PhoneContactsController::class, 'destroy'])->where('phone', '[1-9][0-9]*')->middleware([Middleware\RequireRecentAuthentication::class, 'identity.throttle:identity-phone-change'])->name('identity.phones.destroy');
     Route::patch('', UpdateProfile::class)->middleware(Middleware\RequireRecentAuthentication::class)->name('identity.account.profile');
